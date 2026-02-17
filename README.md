@@ -4,7 +4,9 @@
 
 Latest installable release: [GitHub Releases](https://github.com/kiranjd/mac-wifi/releases/latest)
 
-Demo issue (with video): ISSUE_LINK_PLACEHOLDER
+Demo issue (with video): https://github.com/kiranjd/mac-wifi/issues/1
+
+https://raw.githubusercontent.com/kiranjd/mac-wifi/main/docs/mac-wifi-demo.mp4
 
 ## Features
 
