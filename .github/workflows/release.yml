@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check release secrets
+        id: release_secrets
+        env:
+          CERT_P12_B64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARY_APPLE_ID: ${{ secrets.APPLE_NOTARY_APPLE_ID }}
+          NOTARY_APP_PASSWORD: ${{ secrets.APPLE_NOTARY_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in CERT_P12_B64 CERT_PASSWORD TEAM_ID NOTARY_APPLE_ID NOTARY_APP_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          done
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "skip_release=1" >> "$GITHUB_OUTPUT"
+            echo "::warning::Skipping signed release build. Missing secrets: ${missing[*]}"
+          else
+            echo "skip_release=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Import Developer ID certificate
+        if: steps.release_secrets.outputs.skip_release != '1'
+        env:
+          CERT_P12_B64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/release-signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 24)"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> "$GITHUB_ENV"
+
+          if ! echo "$CERT_P12_B64" | base64 --decode > "$RUNNER_TEMP/developer-id.p12" 2>/dev/null; then
+            echo "$CERT_P12_B64" | base64 -D > "$RUNNER_TEMP/developer-id.p12"
+          fi
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$RUNNER_TEMP/developer-id.p12" -k "$KEYCHAIN_PATH" -P "$CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+
+      - name: Configure notarytool profile
+        if: steps.release_secrets.outputs.skip_release != '1'
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARY_APPLE_ID: ${{ secrets.APPLE_NOTARY_APPLE_ID }}
+          NOTARY_APP_PASSWORD: ${{ secrets.APPLE_NOTARY_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          xcrun notarytool store-credentials ci-notary \
+            --apple-id "$NOTARY_APPLE_ID" \
+            --team-id "$TEAM_ID" \
+            --password "$NOTARY_APP_PASSWORD"
+
+      - name: Build, sign, notarize DMG
+        if: steps.release_secrets.outputs.skip_release != '1'
+        env:
+          DEVELOPER_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          NOTARIZE: "1"
+          NOTARYTOOL_PROFILE: ci-notary
+        run: |
+          set -euo pipefail
+          ./scripts/release_sign.sh
+
+      - name: Prepare release assets
+        if: steps.release_secrets.outputs.skip_release != '1'
+        run: |
+          set -euo pipefail
+          TAG_NAME="${GITHUB_REF_NAME}"
+          cp dist/MacWiFi.dmg "dist/MacWiFi-${TAG_NAME}.dmg"
+          shasum -a 256 "dist/MacWiFi-${TAG_NAME}.dmg" > "dist/MacWiFi-${TAG_NAME}.dmg.sha256"
+
+      - name: Publish GitHub release
+        if: steps.release_secrets.outputs.skip_release != '1'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/MacWiFi-${{ github.ref_name }}.dmg
+            dist/MacWiFi-${{ github.ref_name }}.dmg.sha256
+          generate_release_notes: true
+
+      - name: Release skipped (secrets not configured)
+        if: steps.release_secrets.outputs.skip_release == '1'
+        run: echo "Release workflow completed without publishing artifacts."
+
+      - name: Cleanup keychain
+        if: always() && steps.release_secrets.outputs.skip_release != '1'
+        run: |
+          set -euo pipefail
+          if [ -n "${KEYCHAIN_PATH:-}" ]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sanitization checks
+        run: |
+          set -euo pipefail
+          if rg -n "\\bapk-installer\\b|\\bkiran\\b|CERT_PASSWORD" Sources scripts docs README.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md LICENSE .github/workflows; then
+            echo "Disallowed personal trace found."
+            exit 1
+          fi
+          if git ls-files | rg "(\\.cer$|\\.p12$|xcuserdata|xcuserstate)"; then
+            echo "Disallowed artifact tracked in git."
+            exit 1
+          fi
+
+      - name: Build
+        run: |
+          swift build
+
+      - name: Test
+        run: |
+          if [ -d Tests ]; then
+            swift test
+          else
+            echo "No Tests target yet; skipping."
+          fi

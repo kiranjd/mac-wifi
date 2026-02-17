@@ -1,0 +1,32 @@
+# Build and packaging artifacts
+.build/
+.build-local/
+.build-release/
+dist/
+DerivedData/
+*.dmg
+*.xcarchive
+
+# Local app bundles
+MacWiFi.app/
+*.app.dSYM
+
+# macOS and Xcode user state
+.DS_Store
+**/xcuserdata/
+*.xcuserstate
+
+# Signing material (never commit)
+*.p12
+*.cer
+*.mobileprovision
+
+# Local runtime/output
+*.log
+tmp/
+output/
+apk-installer.png
+image
+PLAN.md
+CLAUDE.md
+SCRATCHPAD.md
