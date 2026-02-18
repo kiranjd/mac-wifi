@@ -6,8 +6,6 @@
 
 Latest installable release: [GitHub Releases](https://github.com/kiranjd/mac-wifi/releases/latest)
 
-Demo issue (with video): https://github.com/kiranjd/mac-wifi/issues/1
-
 https://github.com/user-attachments/assets/7b97475f-a63f-44f0-ba97-9844473b3c7d
 
 ## Features
