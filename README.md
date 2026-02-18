@@ -1,6 +1,6 @@
 # MacWiFi (macOS)
 
-![MacWiFi app icon](icon.png)
+<img src="icon.png" alt="MacWiFi app icon" width="40%" />
 
 `MacWiFi` is a native macOS menu bar app that diagnoses Wi-Fi and internet stability in plain English while running lightweight live checks.
 
