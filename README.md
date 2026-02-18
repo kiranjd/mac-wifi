@@ -2,9 +2,7 @@
 
 `MacWiFi` is a native macOS menu bar app that diagnoses Wi-Fi and internet stability in plain English while running lightweight live checks.
 
-Latest installable release: [GitHub Releases](https://github.com/kiranjd/mac-wifi/releases/latest)
-
-Demo issue (with video): https://github.com/kiranjd/mac-wifi/issues/1
+Download the latest app: [GitHub Releases](https://github.com/kiranjd/mac-wifi/releases/latest)
 
 https://github.com/user-attachments/assets/7b97475f-a63f-44f0-ba97-9844473b3c7d
 
@@ -43,8 +41,8 @@ The release script is environment-driven and does not store secrets in-repo.
 
 Useful variables:
 
-- `DEVELOPER_TEAM_ID` (default: `MN4M99XHF7`)
-- `APP_SIGN_IDENTITY` (default: `Developer ID Application: Kiran Murthy Jd (MN4M99XHF7)`)
+- `DEVELOPER_TEAM_ID` 
+- `APP_SIGN_IDENTITY` 
 - `DMG_SIGN_IDENTITY`
 - `PREFERRED_DMG_SIGN_IDENTITY` (default matches `APP_SIGN_IDENTITY`)
 - `NOTARIZE=1`
