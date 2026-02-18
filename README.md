@@ -6,7 +6,7 @@ Latest installable release: [GitHub Releases](https://github.com/kiranjd/mac-wif
 
 Demo issue (with video): https://github.com/kiranjd/mac-wifi/issues/1
 
-https://raw.githubusercontent.com/kiranjd/mac-wifi/main/docs/mac-wifi-demo.mp4
+https://github.com/user-attachments/assets/7b97475f-a63f-44f0-ba97-9844473b3c7d
 
 ## Features
 
@@ -43,14 +43,15 @@ The release script is environment-driven and does not store secrets in-repo.
 
 Useful variables:
 
-- `DEVELOPER_TEAM_ID`
-- `APP_SIGN_IDENTITY`
+- `DEVELOPER_TEAM_ID` (default: `MN4M99XHF7`)
+- `APP_SIGN_IDENTITY` (default: `Developer ID Application: Kiran Murthy Jd (MN4M99XHF7)`)
 - `DMG_SIGN_IDENTITY`
-- `PREFERRED_DMG_SIGN_IDENTITY` (used only when `DMG_SIGN_IDENTITY` is unset)
+- `PREFERRED_DMG_SIGN_IDENTITY` (default matches `APP_SIGN_IDENTITY`)
 - `NOTARIZE=1`
-- `NOTARYTOOL_PROFILE`
+- `NOTARYTOOL_PROFILE` (default: `textify-notary`)
+- `SKIP_KEYCHAIN_IDENTITY_DISCOVERY=1` (default; avoids extra `security find-identity` probing)
 
-By default, it uses `DMG_SIGN_IDENTITY` when set, otherwise falls back to `APP_SIGN_IDENTITY`, then the first available `Developer ID Application` identity in keychain.
+By default, it uses fixed identities and skips keychain identity discovery to reduce security prompts. Set `SKIP_KEYCHAIN_IDENTITY_DISCOVERY=0` if you want automatic identity discovery from keychain.
 
 ## Troubleshooting
 
