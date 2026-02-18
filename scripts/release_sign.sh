@@ -110,6 +110,10 @@ fi
 mkdir -p "${DIST_ROOT}" "${EXPORT_PATH}"
 rm -rf "${BUILD_PATH}" "${APP_BUNDLE_PATH}"
 
+if [[ -x "${SCRIPT_DIR}/generate_app_icon.sh" ]]; then
+  "${SCRIPT_DIR}/generate_app_icon.sh"
+fi
+
 swift build \
   -c release \
   --product "${PRODUCT_NAME}" \
@@ -129,6 +133,9 @@ mkdir -p "${APP_BUNDLE_PATH}/Contents/MacOS"
 mkdir -p "${APP_BUNDLE_PATH}/Contents/Resources"
 cp "${APP_BINARY_PATH}" "${APP_BUNDLE_PATH}/Contents/MacOS/${PRODUCT_NAME}"
 cp "${INFO_PLIST_PATH}" "${APP_BUNDLE_PATH}/Contents/Info.plist"
+if [[ -f "${REPO_ROOT}/Resources/AppIcon.icns" ]]; then
+  cp "${REPO_ROOT}/Resources/AppIcon.icns" "${APP_BUNDLE_PATH}/Contents/Resources/AppIcon.icns"
+fi
 
 if [[ -n "${APP_SIGN_IDENTITY}" ]]; then
   echo "Signing app bundle with ${APP_SIGN_IDENTITY}"

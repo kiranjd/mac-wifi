@@ -11,6 +11,7 @@ printf "\n▶️  Building $PRODUCT (debug, build path: $BUILD_PATH)\n"
 swift build -c debug --product "$PRODUCT" --build-path "$BUILD_PATH"
 
 printf "\n📦 Updating app bundle...\n"
+./scripts/generate_app_icon.sh
 # Create bundle structure only if it doesn't exist (preserves permissions)
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
@@ -18,6 +19,7 @@ mkdir -p "$APP_BUNDLE/Contents/Resources"
 # Update binary and plist
 cp "$BIN" "$APP_BUNDLE/Contents/MacOS/$PRODUCT"
 cp "Sources/$PRODUCT/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
+cp "Resources/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
 
 # Skip codesigning to preserve location permission
 

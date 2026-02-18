@@ -1,5 +1,7 @@
 # MacWiFi (macOS)
 
+![MacWiFi app icon](icon.png)
+
 `MacWiFi` is a native macOS menu bar app that diagnoses Wi-Fi and internet stability in plain English while running lightweight live checks.
 
 Latest installable release: [GitHub Releases](https://github.com/kiranjd/mac-wifi/releases/latest)
@@ -58,7 +60,9 @@ By default, it uses fixed identities and skips keychain identity discovery to re
 - App not visible:
   - `MacWiFi` is a menu bar app; check the menu bar icon.
 - Permission issues:
-  - Ensure app has required network access and is not blocked by local security tooling.
+  - `MacWiFi` needs Location access to read SSID names (Apple requirement for Wi-Fi scans).
+  - Open `System Settings > Privacy & Security > Location Services` and allow `MacWiFi`.
+  - If the app only shows `Hidden Network`, Location access is not granted.
 - No useful results:
   - Re-run the test after pausing heavy background transfers.
 
