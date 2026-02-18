@@ -267,10 +267,15 @@ final class WiFiManager {
                 )
 
                 await MainActor.run {
+                    let hiddenOnly = !finalNetworks.isEmpty && finalNetworks.allSatisfy { $0.ssid == "Hidden Network" }
                     self.networks = finalNetworks
                     self.personalHotspots = finalHotspots
                     self.isScanning = false
-                    self.error = nil
+                    if hiddenOnly && !self.locationAuthorized {
+                        self.error = "Location Services required"
+                    } else {
+                        self.error = nil
+                    }
                     self.lastScanTime = Date()
                 }
             } catch let err as NSError {
