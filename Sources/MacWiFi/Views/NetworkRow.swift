@@ -19,41 +19,44 @@ struct NetworkRow: View {
                 // Network name + status
                 VStack(alignment: .leading, spacing: 0) {
                     Text(network.ssid)
-                        .font(.system(size: 12))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .lineLimit(1)
 
                     if isConnecting, let status = connectionStatus {
                         Text(status)
-                            .font(.system(size: 9))
-                            .foregroundStyle(.blue)
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(AppPalette.accent)
                     }
                 }
 
                 Spacer(minLength: 4)
 
                 // Compact info
-                HStack(spacing: 5) {
-                    Text("\(network.rssi) dBm")
-                        .font(.system(size: 8, weight: .medium, design: .monospaced))
+                HStack(spacing: 4) {
+                    Text(String(format: "%4d dBm", network.rssi))
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
                         .foregroundStyle(.tertiary)
+                        .frame(width: 58, alignment: .trailing)
 
                     // Band (only 5/6)
                     if network.band != .twoFour {
                         Text(network.band.rawValue)
-                            .font(.system(size: 8, weight: .medium, design: .rounded))
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
+                            .frame(minWidth: 9, alignment: .center)
                     }
 
                     // Lock
                     if network.security.requiresPassword {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 8))
+                            .font(.system(size: 8.5, weight: .semibold))
                             .foregroundStyle(.tertiary)
+                            .frame(width: 10, alignment: .center)
                     }
                 }
             }
             .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.vertical, 5)
             .background(rowBackground)
             .clipShape(RoundedRectangle(cornerRadius: 5))
         }
@@ -91,7 +94,7 @@ struct NetworkRow: View {
         .frame(width: 20, height: 20)
         .background(
             Circle()
-                .fill(isConnected ? Color.blue : Color.clear)
+                .fill(isConnected ? AppPalette.accent : Color.clear)
         )
     }
 
@@ -113,8 +116,8 @@ struct NetworkRow: View {
         case 4: return .primary
         case 3: return .primary.opacity(0.85)
         case 2: return .secondary
-        case 1: return .orange.opacity(0.85)
-        default: return .red.opacity(0.75)
+        case 1: return AppPalette.accentSoft
+        default: return AppPalette.criticalSoft
         }
     }
 
@@ -123,7 +126,7 @@ struct NetworkRow: View {
         if isPressed {
             Color.primary.opacity(0.12)
         } else if isConnecting {
-            Color.blue.opacity(0.08)
+            AppPalette.accentBackground
         } else if isHovering {
             Color.primary.opacity(0.06)
         } else {

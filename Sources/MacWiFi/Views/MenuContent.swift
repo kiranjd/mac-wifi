@@ -13,35 +13,43 @@ struct MenuContent: View {
     @State private var wifiBadgeHover = false
     @State private var wifiBadgeFlarePosition: CGFloat = -36
     @State private var didCopyDiagnostics = false
+    @State private var passwordPromptError: String?
+    @State private var isSubmittingPassword = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header
             header
                 .padding(.horizontal, 12)
-                .padding(.top, 10)
-                .padding(.bottom, 8)
+                .padding(.top, 13)
+                .padding(.bottom, 9)
 
             if manager.isPoweredOn {
-                // Current network info bar (if connected)
-                if let current = manager.currentNetwork {
-                    connectionInfoBar(current)
-                }
+                if isLocationServicesError {
+                    locationPermissionPrimaryView
+                } else {
+                    // Current network info bar (if connected)
+                    if let current = manager.currentNetwork {
+                        connectionInfoBar(current)
+                    } else {
+                        notConnectedInfoBar
+                    }
 
-                Divider().opacity(0.4).padding(.horizontal, 8)
+                    Divider().opacity(0.4).padding(.horizontal, 8)
 
-                // Networks list
-                if shouldUseScrollableNetworksList {
-                    ScrollView(showsIndicators: true) {
+                    // Networks list
+                    if shouldUseScrollableNetworksList {
+                        ScrollView(showsIndicators: true) {
+                            networksList
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                        }
+                        .frame(height: networksListHeight)
+                    } else {
                         networksList
                             .padding(.horizontal, 6)
                             .padding(.vertical, 4)
                     }
-                    .frame(height: networksListHeight)
-                } else {
-                    networksList
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 4)
                 }
             } else {
                 // WiFi off state
@@ -65,12 +73,15 @@ struct MenuContent: View {
                 .padding(.vertical, 8)
         }
         .frame(width: 336)
+        .background(.regularMaterial)
         .sheet(isPresented: $showPasswordPrompt) {
             PasswordPrompt(
                 network: selectedNetwork,
                 password: $password,
+                errorMessage: passwordPromptError,
+                isConnecting: isSubmittingPassword,
                 onConnect: connectWithPassword,
-                onCancel: { showPasswordPrompt = false; password = "" }
+                onCancel: resetPasswordPrompt
             )
         }
         .onAppear {
@@ -78,16 +89,6 @@ struct MenuContent: View {
                 if manager.networks.isEmpty {
                     manager.scan()
                 }
-                // Start immediately when opening if connected.
-                if manager.currentNetwork != nil && !manager.qualityMonitor.isRunning {
-                    manager.qualityMonitor.start()
-                }
-            }
-        }
-        .onChange(of: manager.currentNetwork?.ssid) { _, newValue in
-            // Start quality test when we connect to a network
-            if newValue != nil && !manager.qualityMonitor.isRunning {
-                manager.qualityMonitor.start()
             }
         }
         .onDisappear {
@@ -121,11 +122,13 @@ struct MenuContent: View {
             $0.isKnown
                 && $0.ssid != manager.currentNetwork?.ssid
                 && !personalHotspotSSIDs.contains($0.ssid.lowercased())
+                && !$0.isHiddenSSID
         }
         let otherNetworks = manager.networks.filter {
             !$0.isKnown
                 && $0.ssid != manager.currentNetwork?.ssid
                 && !personalHotspotSSIDs.contains($0.ssid.lowercased())
+                && !$0.isHiddenSSID
         }
 
         var visibleRowsEstimate = manager.personalHotspots.count + knownNetworks.count
@@ -143,7 +146,7 @@ struct MenuContent: View {
     private var header: some View {
         HStack {
             Text("Wi-Fi")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
 
             Spacer()
 
@@ -166,6 +169,39 @@ struct MenuContent: View {
 
     // MARK: - Connected Network Card (Premium integrated design)
 
+    private var notConnectedInfoBar: some View {
+        HStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(AppPalette.accentBackground.opacity(colorScheme == .dark ? 0.42 : 0.28))
+                    .frame(width: 28, height: 28)
+                Image(systemName: "wifi")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(AppPalette.accent)
+            }
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Not Connected")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.primary)
+                Text("Wi-Fi is on. Select a network below to connect.")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(AppPalette.textMuted)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 10)
+        .padding(.bottom, 9)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(AppPalette.borderSoft.opacity(0.85), lineWidth: 1)
+        )
+        .padding(.horizontal, 8)
+    }
+
     @ViewBuilder
     private func connectionInfoBar(_ network: Network) -> some View {
         let monitor = manager.qualityMonitor
@@ -182,7 +218,7 @@ struct MenuContent: View {
             HStack(spacing: 10) {
                 ZStack {
                     Circle()
-                        .fill(Color.blue)
+                        .fill(AppPalette.accent)
                         .frame(width: 28, height: 28)
                     Image(systemName: "wifi")
                         .font(.system(size: 13, weight: .semibold))
@@ -190,7 +226,7 @@ struct MenuContent: View {
                 }
                 .scaleEffect(wifiBadgeHover ? 1.06 : 1.0)
                 .shadow(
-                    color: Color.blue.opacity(wifiBadgeHover ? 0.45 : 0.18),
+                    color: AppPalette.accent.opacity(wifiBadgeHover ? 0.45 : 0.18),
                     radius: wifiBadgeHover ? 10 : 4,
                     x: 0,
                     y: 0
@@ -230,24 +266,24 @@ struct MenuContent: View {
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(network.ssid)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                     Text("\(network.band.displayName) · \(network.security.rawValue)")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppPalette.textMuted)
                 }
 
                 Spacer()
 
                 Button(action: { manager.disconnect() }) {
                     Text("Disconnect")
-                        .font(.system(size: 9, weight: .regular))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundStyle(.tertiary)
                 }
                 .buttonStyle(.plain)
             }
             .padding(.horizontal, 12)
-            .padding(.top, 12)
-            .padding(.bottom, 4)
+            .padding(.top, 13)
+            .padding(.bottom, 6)
 
             // Graph with overlaid speed numbers
             if showContent {
@@ -255,22 +291,22 @@ struct MenuContent: View {
                     ZStack(alignment: .bottomLeading) {
                         // Graph
                         liveSpeedGraph
-                            .frame(height: 84)
-                            .padding(.horizontal, -8)
+                            .frame(height: 88)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .opacity(isRunning ? 1 : 0.5)
 
                         // Throughput + reliability labels
-                        HStack(spacing: 12) {
+                        HStack(spacing: 10) {
                             speedValueCompact(
                                 value: dlSpeed,
                                 arrow: "arrow.down",
-                                color: .blue,
+                                color: AppPalette.graphDownload,
                                 helpText: "Download speed"
                             )
                             speedValueCompact(
                                 value: ulSpeed,
                                 arrow: "arrow.up",
-                                color: .green,
+                                color: AppPalette.graphUpload,
                                 helpText: "Upload speed"
                             )
 
@@ -285,10 +321,14 @@ struct MenuContent: View {
                                 .buttonStyle(.plain)
                             }
                         }
-                        .shadow(color: colorScheme == .dark ? .black : .white, radius: 1, x: 0, y: 1)
-                        .shadow(color: colorScheme == .dark ? .black.opacity(0.6) : .white.opacity(0.8), radius: 4, x: 0, y: 1)
+                        .shadow(
+                            color: colorScheme == .dark ? .black.opacity(0.24) : .black.opacity(0.10),
+                            radius: 2,
+                            x: 0,
+                            y: 1
+                        )
                         .padding(.horizontal, 10)
-                        .padding(.bottom, 6)
+                        .padding(.bottom, 9)
                     }
 
                     if isRunning {
@@ -307,7 +347,7 @@ struct MenuContent: View {
 
                         detailsExpandedSection
                             .padding(.horizontal, 14)
-                            .padding(.vertical, 12)
+                            .padding(.vertical, 13)
                     }
                     .transition(
                         .asymmetric(
@@ -335,111 +375,118 @@ struct MenuContent: View {
             }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.86), value: isRunning)
-        .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            AppPalette.accentBackground.opacity(colorScheme == .dark ? 0.12 : 0.05),
+                            .clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .allowsHitTesting(false)
+        }
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
+                .strokeBorder(AppPalette.borderSoft.opacity(0.78), lineWidth: 1)
         )
         .padding(.horizontal, 8)
     }
 
     @ViewBuilder
     private func runningGraphStatusFooter(monitor: NetworkQualityMonitor) -> some View {
-        let status = runningPhaseStatusMessage(monitor)
+        let status = runningNetworkLayerStatus(monitor)
 
         VStack(alignment: .leading, spacing: 0) {
             Divider()
                 .opacity(0.18)
                 .padding(.horizontal, 10)
-                .padding(.bottom, 5)
+                .padding(.bottom, 6)
 
-            ZStack(alignment: .leading) {
-                Text(status.message)
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.secondary)
+            TimelineView(.periodic(from: .now, by: monitor.visualUpdateIntervalSeconds)) { _ in
+                let clampedProgress = max(0, min(1, monitor.runProgress))
+                let progressPercent = Int((clampedProgress * 100).rounded())
+
+                Text("\(status.line) · \(progressPercent)%")
+                    .font(.system(size: 10.5, weight: .semibold))
+                    .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .truncationMode(.tail)
+                    .minimumScaleFactor(0.9)
                     .id(status.id)
-                .transition(
-                    .asymmetric(
-                        insertion: .offset(y: 4).combined(with: .opacity),
-                        removal: .offset(y: -4).combined(with: .opacity)
+                    .transition(
+                        .asymmetric(
+                            insertion: .offset(y: 3).combined(with: .opacity),
+                            removal: .offset(y: -3).combined(with: .opacity)
+                        )
                     )
-                )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 10)
-            .padding(.bottom, 7)
-
-            TimelineView(.periodic(from: .now, by: 0.1)) { _ in
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 1.5)
-                            .fill(Color.blue.opacity(0.09))
-                            .frame(height: 3)
-
-                        RoundedRectangle(cornerRadius: 1.5)
-                            .fill(Color.blue.opacity(0.50))
-                            .frame(width: max(3, geo.size.width * monitor.runProgress), height: 3)
-                    }
-                }
-            }
-            .frame(height: 3)
-            .padding(.horizontal, 10)
-            .padding(.bottom, 6)
         }
         .background(
             LinearGradient(
                 colors: [
-                    Color.blue.opacity(0.05),
-                    Color.blue.opacity(0.015)
+                    AppPalette.accentBackground.opacity(colorScheme == .dark ? 0.10 : 0.05),
+                    .clear
                 ],
-                startPoint: .top,
-                endPoint: .bottom
+                startPoint: .leading,
+                endPoint: .trailing
             )
+            .background(.ultraThinMaterial)
         )
-        .animation(.easeInOut(duration: 0.28), value: status.id)
+        .animation(.easeInOut(duration: 0.24), value: status.id)
     }
 
-    private func runningPhaseStatusMessage(_ monitor: NetworkQualityMonitor) -> (id: String, message: String) {
+    private struct RunningPhaseStatus {
+        let id: String
+        let line: String
+    }
+
+    private func runningNetworkLayerStatus(_ monitor: NetworkQualityMonitor) -> RunningPhaseStatus {
         let phase = monitor.testPhaseText.lowercased()
 
-        if monitor.successfulRuns == 0 {
-            return (
-                id: "collecting",
-                message: "Collecting baseline samples…"
-            )
-        }
-
-        if phase.contains("local wi-fi vs internet") {
-            return (id: "path-check", message: "Checking Wi-Fi vs internet path…")
-        }
-        if phase.contains("baseline latency") {
-            return (id: "baseline", message: "Checking baseline latency…")
-        }
-        if phase.contains("preparing run") {
-            return (id: "preparing", message: "Preparing next test pass…")
-        }
-        if phase.contains("stressing link") {
-            return (id: "load", message: "Testing stability under load…")
-        }
-        if phase.contains("stable result reached early") {
-            return (id: "early-stable", message: "Looks stable, running confirmation…")
-        }
-        if phase.contains("initial result ready") {
-            return (id: "refining", message: "Initial result ready, refining…")
-        }
-
-        if monitor.runProgress >= 0.92 {
-            return (
+        if monitor.runProgress >= 0.94 {
+            return RunningPhaseStatus(
                 id: "finalizing",
-                message: "Finalizing summary…"
+                line: "Wrapping up results"
             )
         }
 
-        return (
-            id: "running",
-            message: "Running connection check…"
+        if phase.contains("local wi-fi vs internet")
+            || phase.contains("baseline latency")
+            || (monitor.successfulRuns == 0 && (monitor.gatewayLatencyMs == nil || monitor.internetLatencyMs == nil)) {
+            return RunningPhaseStatus(
+                id: "path-check",
+                line: "Checking Wi-Fi and internet"
+            )
+        }
+
+        if (phase.contains("stressing link") && monitor.successfulRuns == 0)
+            || phase.contains("measuring internet speed") {
+            return RunningPhaseStatus(
+                id: "speed",
+                line: "Measuring download and upload speed"
+            )
+        }
+
+        if phase.contains("preparing run")
+            || phase.contains("initial result ready")
+            || phase.contains("stable result reached early")
+            || phase.contains("stressing link") {
+            return RunningPhaseStatus(
+                id: "stability",
+                line: "Checking connection stability"
+            )
+        }
+
+        return RunningPhaseStatus(
+            id: "stability-default",
+            line: "Checking connection stability"
         )
     }
 
@@ -447,12 +494,12 @@ struct MenuContent: View {
     @ViewBuilder
     private var detailsExpandedSection: some View {
         let diagnosis = currentDiagnosis
-        let monitor = manager.qualityMonitor
-        let showReliability = !monitor.isRunning && monitor.hasFreshTestResults
 
         VStack(alignment: .leading, spacing: 10) {
-            diagnosisSummaryCard(diagnosis: diagnosis, monitor: monitor, showReliability: showReliability)
+            diagnosisSummaryCard(diagnosis: diagnosis)
+            Divider().opacity(0.24)
             whatYouCanDoNowCard(diagnosis: diagnosis)
+            Divider().opacity(0.18)
 
             DisclosureGroup("Advanced info") {
                 connectionBreakdownSection(diagnosis: diagnosis)
@@ -489,206 +536,343 @@ struct MenuContent: View {
     }
 
     private struct DiagnosisSummary {
+        enum Tone {
+            case healthy
+            case caution
+            case unstable
+            case checking
+        }
+
         let title: String
-        let positive: String
-        let issue: String
-        let issueIcon: String
-        let issueColor: Color
+        let detail: String
+        let tone: Tone
     }
 
     private struct QuickActionStatus {
+        enum Severity {
+            case good
+            case warning
+            case poor
+        }
+
         let title: String
+        let icon: String
         let isGood: Bool
-        let detail: String
-    }
+        let severity: Severity
+        let goodDetail: String
+        let warningDetail: String
+        let whyDetail: String
 
-    @ViewBuilder
-    private func diagnosisSummaryCard(diagnosis: ConnectionDiagnosis, monitor: NetworkQualityMonitor, showReliability: Bool) -> some View {
-        let summary = diagnosisSummary(diagnosis)
+        var detail: String {
+            isGood ? goodDetail : warningDetail
+        }
 
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Diagnosis")
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(.tertiary)
-
-            Text(summary.title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.primary)
-
-            diagnosisDetailRow(
-                icon: "checkmark.circle.fill",
-                text: summary.positive,
-                color: .green
-            )
-
-            diagnosisDetailRow(
-                icon: summary.issueIcon,
-                text: summary.issue,
-                color: summary.issueColor
-            )
-
-            if showReliability {
-                diagnosisDetailRow(
-                    icon: "waveform.path.ecg",
-                    text: formatReliabilityLabel(monitor),
-                    color: .secondary
-                )
+        var riskLabel: String {
+            switch severity {
+            case .good:
+                return "Good"
+            case .warning:
+                return "Fair"
+            case .poor:
+                return "Poor"
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.primary.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private enum OutcomeRowKind: Hashable {
+        case calls
+        case streaming
+        case browsing
     }
 
     @ViewBuilder
-    private func diagnosisDetailRow(icon: String, text: String, color: Color) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(color)
-            Text(text)
-                .font(.system(size: 10, weight: .medium))
+    private func diagnosisSummaryCard(diagnosis: ConnectionDiagnosis) -> some View {
+        let summary = diagnosisSummary(diagnosis)
+        let toneColor = diagnosisToneColor(summary.tone)
+
+        VStack(alignment: .leading, spacing: 6) {
+            Text(summary.title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(toneColor)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(summary.detail)
+                .font(.system(size: 10.5, weight: .medium))
                 .foregroundStyle(.secondary)
-            Spacer(minLength: 0)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.horizontal, 2)
     }
 
     private func diagnosisSummary(_ diagnosis: ConnectionDiagnosis) -> DiagnosisSummary {
         guard let internet = diagnosis.internet else {
             return DiagnosisSummary(
-                title: "Checking connection…",
-                positive: "Wi-Fi connected",
-                issue: "Collecting enough samples for a reliable result",
-                issueIcon: "hourglass",
-                issueColor: .secondary
+                title: "Checking internet health",
+                detail: "Running a quick test for speed, delay, and stability.",
+                tone: .checking
             )
         }
 
-        switch diagnosis.connectionIssue {
-        case .ispProblem:
-            let issue = internet.packetLossPercent >= 1
-                ? "High latency + packet loss"
-                : "High latency on the internet path"
-            return DiagnosisSummary(
-                title: "ISP unstable",
-                positive: "Wi-Fi link strong",
-                issue: issue,
-                issueIcon: "exclamationmark.circle.fill",
-                issueColor: .orange
-            )
-        case .wifiProblem:
-            return DiagnosisSummary(
-                title: "Wi-Fi unstable",
-                positive: "Internet path is likely okay",
-                issue: "Weak signal or local interference",
-                issueIcon: "exclamationmark.circle.fill",
-                issueColor: .orange
-            )
-        case .bothProblems:
-            return DiagnosisSummary(
-                title: "Both unstable",
-                positive: "Light tasks may still work",
-                issue: "Wi-Fi interference + ISP latency",
-                issueIcon: "xmark.octagon.fill",
-                issueColor: .red
-            )
-        case .none:
-            if !diagnosis.limitedActivities.isEmpty {
-                return DiagnosisSummary(
-                    title: "Connection mixed",
-                    positive: "Wi-Fi link strong",
-                    issue: "Latency spikes under load",
-                    issueIcon: "exclamationmark.circle.fill",
-                    issueColor: .orange
-                )
+        let isUnstable = diagnosis.connectionIssue == .bothProblems
+            || internet.packetLossPercent >= 1.8
+            || internet.loadedLatencyP95Ms >= 320
+            || internet.latencyInflation >= 7
+        if isUnstable {
+            let detail: String
+            if internet.packetLossPercent >= 1.8 {
+                detail = "Data loss is high, so apps may pause, retry, or drop audio/video."
+            } else if internet.loadedLatencyP95Ms >= 320 || internet.latencyInflation >= 7 {
+                detail = "Delay spikes are high right now, so calls and interactions may feel jumpy."
+            } else {
+                detail = "The connection is unstable, so expect buffering or brief dropouts."
             }
             return DiagnosisSummary(
-                title: "Connection stable",
-                positive: "Wi-Fi link strong",
-                issue: "No major issues detected",
-                issueIcon: "checkmark.circle.fill",
-                issueColor: .green
+                title: "Internet is unstable right now",
+                detail: detail,
+                tone: .unstable
             )
+        }
+
+        let isMixed = !diagnosis.limitedActivities.isEmpty
+            || internet.packetLossPercent >= 0.8
+            || internet.loadedLatencyP95Ms >= 220
+            || internet.latencyInflation >= 4
+            || internet.downloadMbps < 20
+            || internet.uploadMbps < 6
+        if isMixed {
+            return DiagnosisSummary(
+                title: "Internet is usable, but not consistent",
+                detail: "Light browsing should work, but real-time tasks may stutter at times.",
+                tone: .caution
+            )
+        }
+
+        return DiagnosisSummary(
+            title: "Internet looks stable right now",
+            detail: "Speed and responsiveness are in a healthy range for everyday use.",
+            tone: .healthy
+        )
+    }
+
+    private func diagnosisToneColor(_ tone: DiagnosisSummary.Tone) -> Color {
+        switch tone {
+        case .healthy:
+            return AppPalette.graphDownload.opacity(0.9)
+        case .caution:
+            return Color(nsColor: .systemYellow).opacity(0.74)
+        case .unstable:
+            return Color(nsColor: .systemOrange).opacity(0.74)
+        case .checking:
+            return .primary
         }
     }
 
     @ViewBuilder
     private func whatYouCanDoNowCard(diagnosis: ConnectionDiagnosis) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("What you can do right now")
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(.tertiary)
-
             quickActionRow(
                 status: quickActionStatus(
-                    title: "Real-time calls and gaming",
-                    activities: [.videoCalls, .gaming],
+                    kind: .calls,
+                    title: "Calls",
+                    icon: "video.fill",
+                    activities: [.videoCalls],
                     diagnosis: diagnosis,
-                    warningDetail: "May stutter / lag spikes"
+                    goodDetail: "Looks stable",
+                    warningDetail: "May freeze / robotic audio"
                 )
             )
             quickActionRow(
                 status: quickActionStatus(
-                    title: "Streaming (HD/4K)",
+                    kind: .streaming,
+                    title: "Streaming",
+                    icon: "play.rectangle.fill",
                     activities: [.hdStreaming, .fourKStreaming],
                     diagnosis: diagnosis,
-                    warningDetail: "May buffer at times"
+                    goodDetail: "Looks stable",
+                    warningDetail: "May buffer under load"
                 )
             )
             quickActionRow(
                 status: quickActionStatus(
-                    title: "Transfers, uploads, backups",
-                    activities: [.downloads],
+                    kind: .browsing,
+                    title: "Browsing",
+                    icon: "globe",
+                    activities: [.browsing],
                     diagnosis: diagnosis,
-                    warningDetail: "May slow during congestion"
+                    goodDetail: "Should feel quick",
+                    warningDetail: "Pages may load slowly"
                 )
             )
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.primary.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal, 2)
     }
 
     private func quickActionStatus(
+        kind: OutcomeRowKind,
         title: String,
+        icon: String,
         activities: [ConnectionDiagnosis.Activity],
         diagnosis: ConnectionDiagnosis,
+        goodDetail: String,
         warningDetail: String
     ) -> QuickActionStatus {
-        let statusMap = Dictionary(uniqueKeysWithValues: diagnosis.taskImpactStatuses.map { ($0.activity, $0.works) })
-        let isGood = activities.allSatisfy { statusMap[$0] ?? true }
+        let statusMap = Dictionary(uniqueKeysWithValues: diagnosis.taskImpactStatuses.map { ($0.activity, $0) })
+        let selectedStatuses = activities.compactMap { statusMap[$0] }
+        let isGood = selectedStatuses.allSatisfy { $0.works }
+        let severity: QuickActionStatus.Severity
+        if isGood {
+            severity = .good
+        } else if selectedStatuses.contains(where: { status in
+            guard let reason = status.reason?.lowercased() else { return false }
+            return reason.contains("packet loss") || reason.contains("lag spikes")
+        }) {
+            severity = .poor
+        } else {
+            severity = .warning
+        }
+
+        let whyDetail = quickActionWhy(
+            kind: kind,
+            diagnosis: diagnosis,
+            statuses: selectedStatuses,
+            monitor: manager.qualityMonitor
+        )
+
         return QuickActionStatus(
             title: title,
+            icon: icon,
             isGood: isGood,
-            detail: isGood ? "Should be fine" : warningDetail
+            severity: severity,
+            goodDetail: goodDetail,
+            warningDetail: warningDetail,
+            whyDetail: whyDetail
         )
     }
 
     @ViewBuilder
     private func quickActionRow(status: QuickActionStatus) -> some View {
-        HStack(alignment: .center, spacing: 7) {
-            Image(systemName: status.isGood ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(status.isGood ? .green : .orange)
-                .frame(width: 14, alignment: .center)
+        let stateColor = quickActionColor(for: status.severity)
+        let borderColor = quickActionBorderColor(for: status.severity)
 
-            Text(status.title)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.primary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-                .layoutPriority(1)
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: status.icon)
+                    .font(.system(size: 11.5, weight: .semibold))
+                    .foregroundStyle(stateColor)
+                    .frame(width: 16, height: 16, alignment: .center)
+                    .padding(.top, 1)
 
-            Spacer(minLength: 0)
+                Text(status.title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.primary)
+
+                Spacer(minLength: 6)
+
+                riskChip(status: status)
+            }
 
             Text(status.detail)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.secondary)
-                .multilineTextAlignment(.trailing)
-                .lineLimit(2)
-                .frame(width: 122, alignment: .trailing)
+                .fixedSize(horizontal: false, vertical: true)
+
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(borderColor, lineWidth: 0.8)
+        )
+    }
+
+    private func quickActionColor(for severity: QuickActionStatus.Severity) -> Color {
+        switch severity {
+        case .good:
+            return AppPalette.graphDownload.opacity(0.9)
+        case .warning:
+            return Color(nsColor: .systemYellow).opacity(0.78)
+        case .poor:
+            return Color(nsColor: .systemOrange).opacity(0.78)
+        }
+    }
+
+    private func quickActionBorderColor(for severity: QuickActionStatus.Severity) -> Color {
+        switch severity {
+        case .good:
+            return AppPalette.graphDownload.opacity(0.22)
+        case .warning:
+            return Color(nsColor: .systemYellow).opacity(0.24)
+        case .poor:
+            return Color(nsColor: .systemOrange).opacity(0.26)
+        }
+    }
+
+    @ViewBuilder
+    private func riskChip(status: QuickActionStatus) -> some View {
+        let chipColor = quickActionColor(for: status.severity)
+        Text(status.riskLabel)
+            .font(.system(size: 9, weight: .semibold))
+            .foregroundStyle(chipColor)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+            .background(chipColor.opacity(0.13), in: Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(chipColor.opacity(0.25), lineWidth: 0.8)
+            )
+    }
+
+    private func quickActionWhy(
+        kind: OutcomeRowKind,
+        diagnosis: ConnectionDiagnosis,
+        statuses: [ConnectionDiagnosis.ActivityStatus],
+        monitor: NetworkQualityMonitor
+    ) -> String {
+        let loss = max(monitor.gatewayPacketLossPercent ?? 0, monitor.internetPacketLossPercent ?? 0)
+        let jitter = max(monitor.internetJitterMs ?? 0, monitor.loadedJitterMs)
+        let throughputVariationPercent = ((monitor.throughputVariation + monitor.responsivenessVariation) / 2) * 100
+        let dnsMs = monitor.dnsLookupMs ?? 0
+
+        switch kind {
+        case .calls:
+            if jitter >= 30 && loss >= 1.0 {
+                return "High jitter + packet loss"
+            }
+            if jitter >= 30 {
+                return "Jitter is elevated"
+            }
+            if loss >= 1.0 {
+                return "Packet loss is elevated"
+            }
+            if statuses.contains(where: { $0.reason?.contains("lag spikes") == true }) {
+                return "Latency spikes under load"
+            }
+            return "Intermittent real-time instability"
+        case .streaming:
+            if throughputVariationPercent >= 16 {
+                return "Download fluctuating"
+            }
+            if (diagnosis.internet?.downloadMbps ?? 0) < 12 {
+                return "Download throughput is low"
+            }
+            if loss >= 1.5 {
+                return "Packet loss affects playback consistency"
+            }
+            return "Bandwidth varies with network load"
+        case .browsing:
+            if dnsMs >= 120 {
+                return "DNS latency elevated"
+            }
+            if (diagnosis.internet?.loadedLatencyP95Ms ?? 0) >= 260 {
+                return "Page response latency is elevated"
+            }
+            if loss >= 1.0 {
+                return "Packet loss causes page retries"
+            }
+            return "Response time fluctuates across requests"
         }
     }
 
@@ -763,12 +947,12 @@ struct MenuContent: View {
 
     private func diagnosisSeverity(for diagnosis: ConnectionDiagnosis, internet: ConnectionDiagnosis.InternetQuality) -> (icon: String, color: Color) {
         if diagnosis.connectionIssue == .bothProblems || internet.packetLossPercent >= 2.5 {
-            return ("❌", .red)
+            return ("❌", AppPalette.critical)
         }
         if diagnosis.connectionIssue == .none && diagnosis.limitedActivities.isEmpty {
-            return ("✅", .green)
+            return ("✅", AppPalette.accent)
         }
-        return ("⚠️", .orange)
+        return ("⚠️", AppPalette.accentMedium)
     }
 
     @ViewBuilder
@@ -776,29 +960,46 @@ struct MenuContent: View {
         let speedNumber = formatSpeedNumber(value)
 
         HStack(spacing: 1) {
-            ZStack(alignment: .leading) {
-                Text(speedNumber)
-                    .font(.system(size: 15, weight: .semibold, design: .monospaced))
-                    .id(speedNumber)
-                    .transition(
-                        .asymmetric(
-                            insertion: .offset(y: 3).combined(with: .opacity),
-                            removal: .offset(y: -3).combined(with: .opacity)
-                        )
-                    )
+            HStack(spacing: 0) {
+                ForEach(Array(speedNumber.enumerated()), id: \.offset) { item in
+                    let index = item.offset
+                    let character = item.element
+
+                    ZStack(alignment: .leading) {
+                        Text(String(character))
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
+                            .id("\(index)-\(character)")
+                            .transition(
+                                .asymmetric(
+                                    insertion: .offset(y: 3).combined(with: .opacity),
+                                    removal: .offset(y: -3).combined(with: .opacity)
+                                )
+                            )
+                    }
+                    .frame(width: 10, height: 21, alignment: .leading)
+                    .clipped()
+                }
             }
-            .frame(width: 44, height: 20, alignment: .trailing)
+            .frame(height: 21, alignment: .leading)
             .clipped()
             .animation(.easeInOut(duration: 0.18), value: speedNumber)
 
             Text("M")
-                .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.primary)
 
             Image(systemName: arrow)
                 .font(.system(size: 10, weight: .bold))
                 .foregroundStyle(color)
         }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(.ultraThinMaterial, in: Capsule(style: .continuous))
+        .overlay(
+            Capsule(style: .continuous)
+                .stroke(AppPalette.borderSoft.opacity(0.58), lineWidth: 0.7)
+        )
+        .frame(minWidth: 78, alignment: .leading)
         .help(helpText)
     }
 
@@ -827,19 +1028,19 @@ struct MenuContent: View {
         let takeaway = primaryTakeaway(diagnosis: diagnosis)
         HStack(alignment: .top, spacing: 7) {
             Text(takeaway.icon)
-                .font(.system(size: 11))
+                .font(.system(size: 12, weight: .semibold))
                 .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(takeaway.title)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if let subtitle = takeaway.subtitle {
                     Text(subtitle)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppPalette.textMuted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -859,8 +1060,8 @@ struct MenuContent: View {
     private func primaryTakeaway(diagnosis: ConnectionDiagnosis) -> (title: String, subtitle: String?, icon: String, tint: Color) {
         guard let internet = diagnosis.internet else {
             return (
-                title: "Running connection check",
-                subtitle: "Collecting enough samples for a reliable verdict.",
+                title: "Checking your connection",
+                subtitle: "We need a few more seconds to finish the check.",
                 icon: "⏳",
                 tint: .secondary
             )
@@ -870,24 +1071,24 @@ struct MenuContent: View {
         let subtitle: String
         switch diagnosis.connectionIssue {
         case .ispProblem:
-            title = "Diagnosis: ISP unstable"
-            subtitle = "Local Wi-Fi looks strong"
+            title = "Internet looks unstable"
+            subtitle = "Your Wi-Fi signal looks good"
         case .wifiProblem:
-            title = "Diagnosis: Wi-Fi unstable"
-            subtitle = "Internet path looks stable"
+            title = "Wi-Fi signal looks unstable"
+            subtitle = "Your internet service looks okay"
         case .bothProblems:
-            title = "Diagnosis: Both unstable"
-            subtitle = "Wi-Fi interference + ISP latency"
+            title = "Connection is unstable in two places"
+            subtitle = "Your Wi-Fi and internet service both need attention"
         case .none:
             if internet.packetLossPercent >= 1.0 || internet.loadedLatencyP95Ms >= 260 || internet.latencyInflation >= 5 {
-                title = "Diagnosis: ISP unstable"
-                subtitle = "Local Wi-Fi looks strong"
+                title = "Internet looks unstable"
+                subtitle = "Your Wi-Fi signal looks good"
             } else if !diagnosis.limitedActivities.isEmpty {
-                title = "Diagnosis: Mixed performance"
-                subtitle = "Latency spikes under load"
+                title = "Connection is okay, but not consistent"
+                subtitle = "Things can slow down when your network is busy"
             } else {
-                title = "Diagnosis: Stable"
-                subtitle = "Wi-Fi and internet both look healthy"
+                title = "Connection looks healthy"
+                subtitle = "Your Wi-Fi and internet both look good"
             }
         }
 
@@ -913,8 +1114,11 @@ struct MenuContent: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .background(Color.primary.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(AppPalette.borderSoft.opacity(0.68), lineWidth: 0.8)
+        )
     }
 
     @ViewBuilder
@@ -953,11 +1157,11 @@ struct MenuContent: View {
         guard let signal = diagnosis.signal else { return .secondary }
         switch signal.grade {
         case .excellent, .good:
-            return .green
+            return AppPalette.accent
         case .fair:
-            return .orange
+            return AppPalette.accentMedium
         case .poor, .bad:
-            return .red
+            return AppPalette.critical
         }
     }
 
@@ -982,10 +1186,10 @@ struct MenuContent: View {
 
     private func internetHopColor(_ diagnosis: ConnectionDiagnosis) -> Color {
         let label = internetHopLabel(diagnosis)
-        if label == "Stable" { return .green }
-        if label == "Slow" { return .orange }
+        if label == "Stable" { return AppPalette.accent }
+        if label == "Slow" { return AppPalette.accentMedium }
         if label == "Not tested yet" { return .secondary }
-        return .orange
+        return AppPalette.accentMedium
     }
 
     private enum TaskChipState {
@@ -1016,31 +1220,31 @@ struct MenuContent: View {
         case .good:
             return .primary
         case .warning:
-            return Color(nsColor: .systemYellow)
+            return AppPalette.accent
         case .bad:
-            return Color(nsColor: .systemRed)
+            return AppPalette.critical
         }
     }
 
     private func chipBackgroundColor(for state: TaskChipState) -> Color {
         switch state {
         case .good:
-            return Color.green.opacity(0.12)
+            return AppPalette.accentFaint
         case .warning:
-            return Color(nsColor: .systemYellow).opacity(0.18)
+            return AppPalette.accentBackground
         case .bad:
-            return Color(nsColor: .systemRed).opacity(0.16)
+            return AppPalette.criticalBackground
         }
     }
 
     private func chipBorderColor(for state: TaskChipState) -> Color {
         switch state {
         case .good:
-            return Color.green.opacity(0.36)
+            return AppPalette.accentMedium
         case .warning:
-            return Color(nsColor: .systemYellow).opacity(0.58)
+            return AppPalette.accentSoft
         case .bad:
-            return Color(nsColor: .systemRed).opacity(0.58)
+            return AppPalette.criticalSoft
         }
     }
 
@@ -1048,46 +1252,64 @@ struct MenuContent: View {
     private func connectionBreakdownSection(diagnosis: ConnectionDiagnosis) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             let monitor = manager.qualityMonitor
+            let path = pathDiagnosis(monitor: monitor, diagnosis: diagnosis)
 
-            diagnosticsSectionCard(title: "Internet quality", icon: "globe") {
-                metricRow("Latency", latencyLabel(monitor), icon: "timer", tone: callDelayTone(monitor))
-                metricRow("Jitter", jitterLabel(monitor), icon: "waveform.path.ecg", tone: jitterTone(monitor))
-                metricRow("Packet loss", packetLossLabel(monitor), icon: "exclamationmark.triangle.fill", tone: packetLossTone(monitor))
-                metricRow(
-                    "Down / Up",
-                    "\(formatSpeedMbps(monitor.downloadMbps)) / \(formatSpeedMbps(monitor.uploadMbps))",
-                    icon: "arrow.down.and.up.circle.fill",
-                    tone: throughputTone(max(monitor.downloadMbps, monitor.uploadMbps))
-                )
+            diagnosticsSectionCard(title: "Likely issue source", icon: "scope") {
+                metricRow("Path", path.label, icon: "arrow.triangle.branch", tone: path.tone)
             }
 
-            diagnosticsSectionCard(title: "Connection path", icon: "point.3.connected.trianglepath.dotted") {
-                metricRow("Router ping", formatOptionalMs(monitor.gatewayLatencyMs), icon: "dot.radiowaves.left.and.right", tone: pingTone(monitor.gatewayLatencyMs))
-                metricRow("Internet ping", formatOptionalMs(monitor.internetLatencyMs), icon: "network.badge.shield.half.filled", tone: pingTone(monitor.internetLatencyMs))
-                metricRow("DNS time", formatOptionalMs(monitor.dnsLookupMs), icon: "magnifyingglass", tone: dnsTone(monitor.dnsLookupMs))
-            }
-
-            diagnosticsSectionCard(title: "Wi-Fi link", icon: "wifi") {
-                metricRow(
-                    "Signal",
-                    manager.currentNetwork.map { "\(diagnosis.wifiSummaryLine.replacingOccurrences(of: "Wi-Fi: ", with: "")) (\($0.rssi) dBm)" } ?? diagnosis.wifiSummaryLine,
-                    icon: "wifi",
-                    tone: signalTone(diagnosis)
-                )
-                metricRow("RSSI", manager.currentNetwork.map { "\($0.rssi) dBm" } ?? "--", icon: "antenna.radiowaves.left.and.right", tone: signalTone(diagnosis))
-                metricRow("SNR", manager.currentNetwork.map { "\($0.snr) dB" } ?? "--", icon: "gauge.with.dots.needle.67percent", tone: signalTone(diagnosis))
+            diagnosticsSectionCard(title: "Wi-Fi side", icon: "wifi") {
+                metricRow("RSSI / noise", wifiSignalAndNoiseLabel(), icon: "antenna.radiowaves.left.and.right", tone: signalTone(diagnosis))
                 metricRow("Band", manager.currentNetwork?.band.displayName ?? "--", icon: "dot.scope")
-                if let current = manager.currentNetwork {
-                    metricRow("Channel", "\(current.channel) (\(current.channelWidth) MHz)", icon: "point.3.connected.trianglepath.dotted")
-                }
+                metricRow("Channel width", manager.currentNetwork.map { "\($0.channelWidth) MHz (ch \($0.channel))" } ?? "--", icon: "point.3.connected.trianglepath.dotted")
                 metricRow("PHY rate", manager.transmitRateMbps.map { String(format: "%.0f Mbps", $0) } ?? "--", icon: "bolt.horizontal.circle.fill")
+                metricRow("Router ping", formatOptionalMs(monitor.gatewayLatencyMs), icon: "dot.radiowaves.left.and.right", tone: pingTone(monitor.gatewayLatencyMs))
             }
 
-            diagnosticsSectionCard(title: "Recent history", icon: "clock.arrow.2.circlepath") {
-                metricRow("Jitter history", jitterHistoryLabel(monitor), icon: "waveform.path.ecg", tone: .muted)
-                metricRow("Packet loss history", packetLossHistoryLabel(monitor), icon: "chart.line.downtrend.xyaxis", tone: .muted)
+            diagnosticsSectionCard(title: "Internet side", icon: "globe") {
+                metricRow("DNS response", formatOptionalMs(monitor.dnsLookupMs), icon: "magnifyingglass", tone: dnsTone(monitor.dnsLookupMs))
+                metricRow("ISP/public ping", formatOptionalMs(monitor.internetLatencyMs), icon: "network.badge.shield.half.filled", tone: pingTone(monitor.internetLatencyMs))
+                metricRow(
+                    "Packet loss to router",
+                    formatOptionalPercent(monitor.gatewayPacketLossPercent),
+                    icon: "point.3.connected.trianglepath.dotted",
+                    tone: packetLossTone(monitor.gatewayPacketLossPercent)
+                )
+                metricRow(
+                    "Packet loss to internet",
+                    formatOptionalPercent(monitor.internetPacketLossPercent),
+                    icon: "network",
+                    tone: packetLossTone(monitor.internetPacketLossPercent)
+                )
             }
         }
+    }
+
+    private func pathDiagnosis(
+        monitor: NetworkQualityMonitor,
+        diagnosis: ConnectionDiagnosis
+    ) -> (label: String, tone: MetricTone) {
+        switch monitor.connectionIssue {
+        case .wifiProblem:
+            if let signal = diagnosis.signal, signal.grade >= .poor {
+                return ("Wi-Fi weak signal / local interference", .bad)
+            }
+            return ("Wi-Fi/local network issue", .warning)
+        case .ispProblem:
+            return ("ISP/public internet path unstable", .warning)
+        case .bothProblems:
+            return ("Both Wi-Fi and ISP path have issues", .bad)
+        case .none:
+            if monitor.gatewayLatencyMs == nil && monitor.internetLatencyMs == nil {
+                return ("Not enough path data yet", .muted)
+            }
+            return ("No clear split; path looks stable", .good)
+        }
+    }
+
+    private func wifiSignalAndNoiseLabel() -> String {
+        guard let current = manager.currentNetwork else { return "--" }
+        return "\(current.rssi) / \(current.noise) dBm"
     }
 
     @ViewBuilder
@@ -1103,8 +1325,11 @@ struct MenuContent: View {
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 7)
-            .background(Color.primary.opacity(0.04))
-            .clipShape(RoundedRectangle(cornerRadius: 7))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .stroke(AppPalette.borderSoft.opacity(0.62), lineWidth: 0.7)
+            )
         }
     }
 
@@ -1118,6 +1343,11 @@ struct MenuContent: View {
             Text(title)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.secondary)
+
+            if let info = metricInfo(for: title) {
+                MetricInfoPopoverButton(info: info)
+            }
+
             Spacer(minLength: 0)
             Text(value)
                 .font(.system(size: 10, weight: .semibold, design: .monospaced))
@@ -1125,6 +1355,157 @@ struct MenuContent: View {
                 .multilineTextAlignment(.trailing)
         }
         .padding(.vertical, 1)
+    }
+
+    private struct MetricInfo: Hashable {
+        let title: String
+        let explanation: String
+    }
+
+    private struct MetricInfoPopoverButton: View {
+        let info: MetricInfo
+        @State private var isPresented = false
+
+        var body: some View {
+            Button(action: { isPresented.toggle() }) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $isPresented, arrowEdge: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(info.title)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.primary)
+
+                    Text(info.explanation)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(10)
+                .frame(width: 250, alignment: .leading)
+            }
+        }
+    }
+
+    private func metricInfo(for title: String) -> MetricInfo? {
+        switch title {
+        case "Latency":
+            return MetricInfo(
+                title: "Latency",
+                explanation: "Latency is how long your connection takes to respond. Higher latency makes apps feel delayed, especially calls, gaming, and live interactions."
+            )
+        case "Jitter":
+            return MetricInfo(
+                title: "Jitter",
+                explanation: "Jitter is how much your latency jumps around from moment to moment. Even with decent speed, high jitter causes choppy calls and unstable streaming."
+            )
+        case "Packet loss":
+            return MetricInfo(
+                title: "Packet loss",
+                explanation: "Packet loss means some data never arrives and must be resent. That leads to glitches, buffering, and dropped moments during calls or games."
+            )
+        case "Down / Up":
+            return MetricInfo(
+                title: "Download and upload",
+                explanation: "Download affects streaming and browsing, while upload affects video calls, backups, and sending files. Balanced speeds keep both directions feeling smooth."
+            )
+        case "Router ping":
+            return MetricInfo(
+                title: "Router ping",
+                explanation: "Router ping measures delay on your local Wi-Fi link only. If this is high, the issue is usually inside your home network, not your ISP."
+            )
+        case "Path":
+            return MetricInfo(
+                title: "Likely issue source",
+                explanation: "This compares local router metrics and internet path metrics to estimate where instability is coming from: your Wi-Fi side, ISP/public path, or both."
+            )
+        case "RSSI / noise":
+            return MetricInfo(
+                title: "RSSI and noise",
+                explanation: "RSSI is signal strength and noise is background interference. Weak signal or high noise usually points to a local Wi-Fi issue."
+            )
+        case "Channel width":
+            return MetricInfo(
+                title: "Channel width",
+                explanation: "Wider channels can increase throughput, but in crowded environments they can also increase interference and instability."
+            )
+        case "Internet ping":
+            return MetricInfo(
+                title: "Internet ping",
+                explanation: "Internet ping measures delay after traffic leaves your router and reaches the wider internet. If this is high while router ping is low, your ISP path is likely the bottleneck."
+            )
+        case "ISP/public ping":
+            return MetricInfo(
+                title: "ISP/public ping",
+                explanation: "This is the end-to-end ping to a public host. It acts as an ISP/public-path proxy after traffic leaves your local router."
+            )
+        case "DNS time":
+            return MetricInfo(
+                title: "DNS time",
+                explanation: "DNS time is how long it takes to translate a site name into an address. Slow DNS makes pages feel slow to start, even when speed tests look good."
+            )
+        case "DNS response":
+            return MetricInfo(
+                title: "DNS response",
+                explanation: "DNS response time is name lookup delay. Elevated DNS can make websites feel slow even when throughput is fine."
+            )
+        case "Packet loss to router":
+            return MetricInfo(
+                title: "Packet loss to router",
+                explanation: "Loss to router reflects local Wi-Fi/link reliability. If this is elevated, the problem is likely inside your local network."
+            )
+        case "Packet loss to internet":
+            return MetricInfo(
+                title: "Packet loss to internet",
+                explanation: "Loss to internet reflects issues after traffic leaves your local router. If this is elevated while router loss is low, ISP/public path is likely unstable."
+            )
+        case "Signal":
+            return MetricInfo(
+                title: "Signal",
+                explanation: "Signal summarizes how healthy your current Wi-Fi radio link is. Better signal usually means fewer drops and more stable speed."
+            )
+        case "RSSI":
+            return MetricInfo(
+                title: "RSSI",
+                explanation: "RSSI is raw Wi-Fi signal strength in dBm. Values closer to zero are stronger and usually produce better stability."
+            )
+        case "SNR":
+            return MetricInfo(
+                title: "SNR",
+                explanation: "SNR compares your signal against background noise. Higher SNR means cleaner communication and fewer retransmissions."
+            )
+        case "Band":
+            return MetricInfo(
+                title: "Band",
+                explanation: "Band shows which Wi-Fi frequency you’re using. 5 or 6 GHz is often faster, while 2.4 GHz reaches farther but can be more crowded."
+            )
+        case "Channel":
+            return MetricInfo(
+                title: "Channel",
+                explanation: "Channel is the lane your Wi-Fi uses; width shows how wide that lane is. Crowded channels can reduce stability and increase interference."
+            )
+        case "PHY rate":
+            return MetricInfo(
+                title: "PHY rate",
+                explanation: "PHY rate is the raw radio link rate between your Mac and router. Real app speed is usually lower because of overhead, congestion, and internet limits."
+            )
+        case "Jitter history":
+            return MetricInfo(
+                title: "Jitter history",
+                explanation: "This trend shows whether jitter spikes are occasional or persistent. Frequent spikes are a common reason calls feel inconsistent."
+            )
+        case "Packet loss history":
+            return MetricInfo(
+                title: "Packet loss history",
+                explanation: "This trend shows whether dropped packets happen repeatedly. Repeated loss is a strong signal of unstable connection quality."
+            )
+        default:
+            return nil
+        }
     }
 
     private enum MetricTone {
@@ -1140,11 +1521,11 @@ struct MenuContent: View {
         case .neutral:
             return .primary
         case .good:
-            return .green
+            return AppPalette.accent
         case .warning:
-            return .orange
+            return AppPalette.accentMedium
         case .bad:
-            return .red
+            return AppPalette.critical
         case .muted:
             return .secondary
         }
@@ -1177,6 +1558,13 @@ struct MenuContent: View {
         let loss = max(monitor.gatewayPacketLossPercent ?? 0, monitor.internetPacketLossPercent ?? 0)
         if loss < 0.5 { return .good }
         if loss < 2.0 { return .warning }
+        return .bad
+    }
+
+    private func packetLossTone(_ value: Double?) -> MetricTone {
+        guard let value, value >= 0 else { return .muted }
+        if value < 0.5 { return .good }
+        if value < 2.0 { return .warning }
         return .bad
     }
 
@@ -1233,6 +1621,11 @@ struct MenuContent: View {
         return String(format: "%.0f ms", value)
     }
 
+    private func formatOptionalPercent(_ value: Double?) -> String {
+        guard let value, value >= 0 else { return "--" }
+        return String(format: "%.1f%%", value)
+    }
+
     private func jitterHistoryLabel(_ monitor: NetworkQualityMonitor) -> String {
         let recent = monitor.jitterHistoryMs.suffix(5)
         guard !recent.isEmpty else { return "--" }
@@ -1286,58 +1679,121 @@ struct MenuContent: View {
     // MARK: - Live Speed Graph
 
     private var liveSpeedGraph: some View {
-        // Fixed size graph - no layout animation
-        TimelineView(.animation(minimumInterval: 0.05)) { _ in
+        TimelineView(.animation(minimumInterval: manager.qualityMonitor.visualUpdateIntervalSeconds)) { _ in
             Canvas { context, size in
                 let history = smoothedHistory(manager.qualityMonitor.speedHistory)
                 guard history.count >= 2 else { return }
 
-                let maxSpeed = max(manager.qualityMonitor.graphScaleMbps, 10)
-
+                let observedPeak = history.reduce(0.0) { partial, point in
+                    max(partial, max(point.dl, point.ul))
+                }
+                let referenceScale = max(manager.qualityMonitor.graphScaleMbps, observedPeak)
+                // Keep headroom so peaks don't clip against the top edge.
+                let maxSpeed = max(referenceScale * 1.14, 10)
                 let width = size.width
                 let height = size.height
                 let stepX = width / CGFloat(max(history.count - 1, 1))
+                let plotTop = height * 0.14
+                let plotBottom = height * 0.90
+                let plotHeight = max(1, plotBottom - plotTop)
 
-                // Download points - use full height with small padding
-                let dlPoints = history.enumerated().map { (i, point) -> CGPoint in
-                    CGPoint(
-                        x: CGFloat(i) * stepX,
-                        y: height * 0.1 + (height * 0.85) * (1 - CGFloat(point.dl / maxSpeed))
+                // Subtle chart guides for scanability.
+                for marker in [0.22, 0.42, 0.62, 0.82] {
+                    let y = height * marker
+                    var guide = Path()
+                    guide.move(to: CGPoint(x: 0, y: y))
+                    guide.addLine(to: CGPoint(x: width, y: y))
+                    context.stroke(
+                        guide,
+                        with: .color(AppPalette.borderSoft.opacity(0.34)),
+                        style: StrokeStyle(lineWidth: 0.7, lineCap: .round, dash: [3, 4])
                     )
                 }
 
-                // Upload points
-                let ulPoints = history.enumerated().map { (i, point) -> CGPoint in
-                    CGPoint(
+                let dlPoints = history.enumerated().map { (i, point) -> CGPoint in
+                    let normalized = max(0, min(1, point.dl / maxSpeed))
+                    return CGPoint(
                         x: CGFloat(i) * stepX,
-                        y: height * 0.1 + (height * 0.85) * (1 - CGFloat(point.ul / maxSpeed))
+                        y: plotTop + plotHeight * (1 - CGFloat(normalized))
+                    )
+                }
+
+                let ulPoints = history.enumerated().map { (i, point) -> CGPoint in
+                    let normalized = max(0, min(1, point.ul / maxSpeed))
+                    return CGPoint(
+                        x: CGFloat(i) * stepX,
+                        y: plotTop + plotHeight * (1 - CGFloat(normalized))
                     )
                 }
 
                 let dlLine = smoothPath(through: dlPoints)
                 let ulLine = smoothPath(through: ulPoints)
 
-                // Fill under download curve using a single closed path to avoid seam artifacts.
-                var closedFill = dlLine
-                closedFill.addLine(to: CGPoint(x: dlPoints.last!.x, y: height))
-                closedFill.addLine(to: CGPoint(x: dlPoints[0].x, y: height))
-                closedFill.closeSubpath()
-
-                context.fill(closedFill, with: .linearGradient(
+                var dlFill = dlLine
+                dlFill.addLine(to: CGPoint(x: dlPoints.last!.x, y: height))
+                dlFill.addLine(to: CGPoint(x: dlPoints[0].x, y: height))
+                dlFill.closeSubpath()
+                context.fill(dlFill, with: .linearGradient(
                     Gradient(stops: [
-                        .init(color: .blue.opacity(0.30), location: 0),
-                        .init(color: .blue.opacity(0.12), location: 0.5),
-                        .init(color: .blue.opacity(0.0), location: 1.0)
+                        .init(color: AppPalette.graphDownload.opacity(0.26), location: 0),
+                        .init(color: AppPalette.graphDownload.opacity(0.12), location: 0.48),
+                        .init(color: AppPalette.graphDownload.opacity(0.0), location: 1.0)
                     ]),
                     startPoint: CGPoint(x: 0, y: 0),
                     endPoint: CGPoint(x: 0, y: height)
                 ))
 
-                // Draw download line
-                context.stroke(dlLine, with: .color(.blue), style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
+                var ulFill = ulLine
+                ulFill.addLine(to: CGPoint(x: ulPoints.last!.x, y: height))
+                ulFill.addLine(to: CGPoint(x: ulPoints[0].x, y: height))
+                ulFill.closeSubpath()
+                context.fill(ulFill, with: .linearGradient(
+                    Gradient(stops: [
+                        .init(color: AppPalette.graphUpload.opacity(0.11), location: 0),
+                        .init(color: AppPalette.graphUpload.opacity(0.06), location: 0.52),
+                        .init(color: AppPalette.graphUpload.opacity(0.0), location: 1.0)
+                    ]),
+                    startPoint: CGPoint(x: 0, y: 0),
+                    endPoint: CGPoint(x: 0, y: height)
+                ))
 
-                // Draw upload line
-                context.stroke(ulLine, with: .color(.green), style: StrokeStyle(lineWidth: 1.9, lineCap: .round, lineJoin: .round))
+                // Glow + primary strokes.
+                context.stroke(
+                    dlLine,
+                    with: .color(AppPalette.graphDownload.opacity(0.2)),
+                    style: StrokeStyle(lineWidth: 3.8, lineCap: .round, lineJoin: .round)
+                )
+                context.stroke(
+                    ulLine,
+                    with: .color(AppPalette.graphUpload.opacity(0.17)),
+                    style: StrokeStyle(lineWidth: 3.1, lineCap: .round, lineJoin: .round)
+                )
+
+                context.stroke(
+                    dlLine,
+                    with: .color(AppPalette.graphDownload),
+                    style: StrokeStyle(lineWidth: 2.1, lineCap: .round, lineJoin: .round)
+                )
+                context.stroke(
+                    ulLine,
+                    with: .color(AppPalette.graphUpload),
+                    style: StrokeStyle(lineWidth: 1.75, lineCap: .round, lineJoin: .round)
+                )
+
+                // Current-point markers.
+                if let dlPoint = dlPoints.last {
+                    let outer = CGRect(x: dlPoint.x - 4.8, y: dlPoint.y - 4.8, width: 9.6, height: 9.6)
+                    let inner = CGRect(x: dlPoint.x - 2.6, y: dlPoint.y - 2.6, width: 5.2, height: 5.2)
+                    context.fill(Path(ellipseIn: outer), with: .color(AppPalette.graphDownload.opacity(0.35)))
+                    context.fill(Path(ellipseIn: inner), with: .color(AppPalette.graphDownload))
+                }
+
+                if let ulPoint = ulPoints.last {
+                    let outer = CGRect(x: ulPoint.x - 4.2, y: ulPoint.y - 4.2, width: 8.4, height: 8.4)
+                    let inner = CGRect(x: ulPoint.x - 2.2, y: ulPoint.y - 2.2, width: 4.4, height: 4.4)
+                    context.fill(Path(ellipseIn: outer), with: .color(AppPalette.graphUpload.opacity(0.32)))
+                    context.fill(Path(ellipseIn: inner), with: .color(AppPalette.graphUpload))
+                }
             }
         }
         .frame(maxWidth: .infinity)
@@ -1420,16 +1876,18 @@ struct MenuContent: View {
             $0.isKnown
                 && $0.ssid != manager.currentNetwork?.ssid
                 && !personalHotspotSSIDs.contains($0.ssid.lowercased())
+                && !$0.isHiddenSSID
         }
         let otherNetworks = manager.networks.filter {
             !$0.isKnown
                 && $0.ssid != manager.currentNetwork?.ssid
                 && !personalHotspotSSIDs.contains($0.ssid.lowercased())
+                && !$0.isHiddenSSID
         }
 
         VStack(alignment: .leading, spacing: 0) {
             if !manager.personalHotspots.isEmpty {
-                sectionHeaderWithTime("Personal Hotspot", showScanInfo: false)
+                sectionHeaderWithTime("Personal Hotspots", showScanInfo: false)
                 ForEach(manager.personalHotspots) { hotspot in
                     personalHotspotRow(hotspot)
                 }
@@ -1472,17 +1930,10 @@ struct MenuContent: View {
 
     private func otherNetworksRow(count: Int) -> some View {
         HStack(spacing: 6) {
-            Button(action: {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showOtherNetworks.toggle()
-                }
-                if showOtherNetworks && manager.networks.isEmpty {
-                    manager.scan()
-                }
-            }) {
+            Button(action: toggleOtherNetworks) {
                 HStack {
                     Text("Other Networks")
-                        .font(.system(size: 13))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.primary)
 
                     Spacer()
@@ -1509,12 +1960,25 @@ struct MenuContent: View {
                 .frame(width: 16)
             }
 
-            Image(systemName: showOtherNetworks ? "chevron.down" : "chevron.right")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.secondary)
-                .frame(width: 16)
+            Button(action: toggleOtherNetworks) {
+                Image(systemName: showOtherNetworks ? "chevron.down" : "chevron.right")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 16)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.trailing, 10)
+    }
+
+    private func toggleOtherNetworks() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showOtherNetworks.toggle()
+        }
+        if showOtherNetworks && manager.networks.isEmpty {
+            manager.scan()
+        }
     }
 
     // MARK: - Section Header
@@ -1522,7 +1986,7 @@ struct MenuContent: View {
     private func sectionHeaderWithTime(_ title: String, showScanInfo: Bool) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 12.5, weight: .semibold))
                 .foregroundStyle(.secondary)
 
             Spacer()
@@ -1587,18 +2051,22 @@ struct MenuContent: View {
         Button(action: {
             handlePersonalHotspotTap(hotspot)
         }) {
-            HStack(spacing: 8) {
-                Image(systemName: "link.circle.fill")
-                    .font(.system(size: 14))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 20)
+            HStack(spacing: 10) {
+                ZStack {
+                    Circle()
+                        .fill(AppPalette.accentBackground.opacity(colorScheme == .dark ? 0.30 : 0.18))
+                        .frame(width: 34, height: 34)
+                    Image(systemName: "personalhotspot")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(AppPalette.accent)
+                }
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(hotspot.ssid)
-                        .font(.system(size: 12))
+                        .font(.system(size: 13.5, weight: .semibold))
                         .lineLimit(1)
 
-                    Text(hotspot.isAvailableNow ? "Available now" : "Saved hotspot")
+                    Text(hotspotSubtitle(hotspot))
                         .font(.system(size: 9))
                         .foregroundStyle(.secondary)
                 }
@@ -1610,9 +2078,27 @@ struct MenuContent: View {
                         .controlSize(.mini)
                         .scaleEffect(0.7)
                 } else if hotspot.isAvailableNow {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(.tertiary)
+                    HStack(spacing: 6) {
+                        if #available(macOS 13.0, *), let signal = hotspotSignalVariableValue(hotspot) {
+                            Image(systemName: "wifi", variableValue: signal)
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Image(systemName: "wifi")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if let band = hotspot.matchedNetwork?.band.displayName {
+                            Text(band.replacingOccurrences(of: ".0", with: ""))
+                                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.tertiary)
+                    }
                 } else {
                     Text("Nearby")
                         .font(.system(size: 9))
@@ -1620,14 +2106,72 @@ struct MenuContent: View {
                 }
             }
             .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.vertical, 5)
             .background(Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .clipShape(RoundedRectangle(cornerRadius: 7))
         }
         .buttonStyle(.plain)
     }
 
+    private func hotspotSubtitle(_ hotspot: WiFiManager.PersonalHotspot) -> String {
+        if hotspot.isAvailableNow {
+            if let matched = hotspot.matchedNetwork {
+                return "Available now · \(matched.signalQuality) signal"
+            }
+            return "Available now"
+        }
+        return "Saved hotspot"
+    }
+
+    private func hotspotSignalVariableValue(_ hotspot: WiFiManager.PersonalHotspot) -> Double? {
+        guard let bars = hotspot.matchedNetwork?.signalBars else { return nil }
+        switch bars {
+        case 4: return 1.0
+        case 3: return 0.75
+        case 2: return 0.55
+        case 1: return 0.35
+        default: return 0.15
+        }
+    }
+
     // MARK: - Status View
+
+    @ViewBuilder
+    private var locationPermissionPrimaryView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "location.slash.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(AppPalette.accent)
+
+                Text("Location Access Needed")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.primary)
+            }
+
+            Text("MacWiFi needs Location Services to discover nearby Wi-Fi networks. Turn it on to scan, diagnose, and show accurate connection details.")
+                .font(.system(size: 10.5, weight: .medium))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button("Open Privacy & Security…") {
+                openLocationServicesSettings()
+            }
+            .font(.system(size: 11, weight: .semibold))
+            .buttonStyle(.plain)
+            .foregroundStyle(AppPalette.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(AppPalette.borderSoft.opacity(0.84), lineWidth: 1)
+        )
+        .padding(.horizontal, 8)
+        .padding(.vertical, 8)
+    }
 
     @ViewBuilder
     private var statusView: some View {
@@ -1647,11 +2191,39 @@ struct MenuContent: View {
         }
 
         if let error = manager.error {
-            Text(error)
-                .font(.system(size: 10))
-                .foregroundStyle(.red)
+            if isLocationServicesError {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Location access is required to show nearby Wi-Fi networks.")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.primary)
+
+                    Button("Open Privacy & Security…") {
+                        openLocationServicesSettings()
+                    }
+                    .font(.system(size: 10, weight: .semibold))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppPalette.accent)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .padding(.vertical, 8)
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(AppPalette.borderSoft.opacity(0.8), lineWidth: 1)
+                )
+                .padding(.horizontal, 8)
+            } else {
+                Text(error)
+                    .font(.system(size: 10))
+                    .foregroundStyle(AppPalette.critical)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(AppPalette.criticalBackground.opacity(0.16))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, 8)
+            }
         }
     }
 
@@ -1678,6 +2250,8 @@ struct MenuContent: View {
         if network.security.requiresPassword && !network.isKnown {
             selectedNetwork = network
             password = ""
+            passwordPromptError = nil
+            isSubmittingPassword = false
             showPasswordPrompt = true
         } else {
             connectToNetwork(network, password: nil)
@@ -1686,21 +2260,64 @@ struct MenuContent: View {
 
     private func connectWithPassword() {
         guard let network = selectedNetwork else { return }
-        connectToNetwork(network, password: password)
-        showPasswordPrompt = false
+        passwordPromptError = nil
+        isSubmittingPassword = true
+
+        connectToNetwork(network, password: password) { result in
+            isSubmittingPassword = false
+            switch result {
+            case .success:
+                resetPasswordPrompt()
+            case .failure:
+                passwordPromptError = manager.error ?? "Unable to join this network. Check the password and try again."
+            }
+        }
     }
 
-    private func connectToNetwork(_ network: Network, password: String?) {
+    private var isLocationServicesError: Bool {
+        (manager.error ?? "").localizedCaseInsensitiveContains("location services")
+    }
+
+    private func openLocationServicesSettings() {
+        let candidates = [
+            "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices",
+            "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocationServices",
+            "x-apple.systempreferences:com.apple.preference.security"
+        ]
+
+        for candidate in candidates {
+            guard let url = URL(string: candidate) else { continue }
+            if NSWorkspace.shared.open(url) {
+                return
+            }
+        }
+    }
+
+    private func resetPasswordPrompt() {
+        showPasswordPrompt = false
+        selectedNetwork = nil
+        password = ""
+        passwordPromptError = nil
+        isSubmittingPassword = false
+    }
+
+    private func connectToNetwork(
+        _ network: Network,
+        password: String?,
+        completion: ((Result<Void, Error>) -> Void)? = nil
+    ) {
         // Immediate UI feedback
         manager.connectingToSSID = network.ssid
         manager.connectionState = .findingNetwork
         manager.error = nil
 
-        Task {
+        Task { @MainActor in
             do {
                 try await manager.connect(to: network, password: password)
+                completion?(.success(()))
             } catch {
                 manager.error = error.localizedDescription
+                completion?(.failure(error))
             }
         }
     }

@@ -25,11 +25,6 @@ private class WiFiEventDelegate: NSObject, CWEventDelegate {
     func ssidDidChangeForWiFiInterface(withName interfaceName: String) {
         Task { @MainActor in
             manager?.refreshStatus()
-            // Reset speed test when network changes
-            manager?.qualityMonitor.stop()
-            if manager?.currentNetwork != nil {
-                manager?.qualityMonitor.start()
-            }
         }
     }
 
@@ -85,6 +80,7 @@ final class WiFiManager {
     private let locationDelegate = LocationDelegate()
     private let wifiEventDelegate = WiFiEventDelegate()
     private let scanCacheTTL: TimeInterval = 5 * 60
+    private let autoRetestMaxAgeSeconds: TimeInterval = 120
 
     enum ConnectionState: Equatable {
         case idle
@@ -161,6 +157,8 @@ final class WiFiManager {
             return
         }
 
+        let wasPoweredOn = isPoweredOn
+        let previousSSID = currentNetwork?.ssid
         isPoweredOn = iface.powerOn()
 
         if isPoweredOn, let ssid = iface.ssid() {
@@ -178,6 +176,50 @@ final class WiFiManager {
             transmitRateMbps = nil
             currentNetwork = nil
         }
+
+        // Keep states in sync with system-level Wi-Fi transitions.
+        if !isPoweredOn {
+            qualityMonitor.stop()
+            isScanning = false
+            networks = []
+            personalHotspots = []
+            connectingToSSID = nil
+            connectionState = .idle
+            error = nil
+            return
+        }
+
+        if currentNetwork == nil {
+            qualityMonitor.stop()
+            if !connectionState.isConnecting {
+                connectingToSSID = nil
+                if case .failed = connectionState {
+                    // Keep explicit connection failure visible until next user action.
+                } else {
+                    connectionState = .idle
+                }
+            }
+        } else if previousSSID != currentNetwork?.ssid || !wasPoweredOn {
+            if !connectionState.isConnecting {
+                connectionState = .connected
+            }
+        }
+
+        if shouldAutoStartQualityTest(previousSSID: previousSSID, wasPoweredOn: wasPoweredOn) {
+            qualityMonitor.start()
+        }
+    }
+
+    private func shouldAutoStartQualityTest(previousSSID: String?, wasPoweredOn: Bool) -> Bool {
+        guard isPoweredOn, let currentSSID = currentNetwork?.ssid else { return false }
+        guard !qualityMonitor.isRunning else { return false }
+        guard !connectionState.isConnecting else { return false }
+
+        if previousSSID != currentSSID { return true }
+        if !wasPoweredOn { return true }
+        guard let lastTestTime = qualityMonitor.lastTestTime else { return true }
+
+        return Date().timeIntervalSince(lastTestTime) > autoRetestMaxAgeSeconds
     }
 
     // MARK: - Scanning
@@ -240,21 +282,14 @@ final class WiFiManager {
                 // Sort by signal strength (strongest first)
                 scannedNetworks.sort { $0.rssi > $1.rssi }
 
-                // Deduplicate by SSID (keep strongest signal)
-                // For hidden networks: keep a small set and avoid showing very weak entries.
+                let hadOnlyHiddenResults = !scannedNetworks.isEmpty
+                    && scannedNetworks.allSatisfy { $0.isHiddenSSID }
+
+                // Deduplicate visible SSIDs by strongest signal and hide hidden SSIDs from UI.
                 var seen = Set<String>()
-                var hiddenCount = 0
-                let maxHiddenNetworks = 6
-                let minHiddenRSSI = -85
 
                 scannedNetworks = scannedNetworks.filter { network in
-                    if network.ssid == "Hidden Network" || network.ssid.isEmpty {
-                        guard hiddenCount < maxHiddenNetworks && network.rssi >= minHiddenRSSI else {
-                            return false
-                        }
-                        hiddenCount += 1
-                        return true
-                    }
+                    guard !network.isHiddenSSID else { return false }
                     let key = network.ssid.lowercased()
                     guard !seen.contains(key) else { return false }
                     seen.insert(key)
@@ -267,11 +302,10 @@ final class WiFiManager {
                 )
 
                 await MainActor.run {
-                    let hiddenOnly = !finalNetworks.isEmpty && finalNetworks.allSatisfy { $0.ssid == "Hidden Network" }
                     self.networks = finalNetworks
                     self.personalHotspots = finalHotspots
                     self.isScanning = false
-                    if hiddenOnly && !self.locationAuthorized {
+                    if hadOnlyHiddenResults && !self.locationAuthorized {
                         self.error = "Location Services required"
                     } else {
                         self.error = nil
@@ -438,8 +472,15 @@ final class WiFiManager {
 
     func disconnect() {
         interface?.disassociate()
+        qualityMonitor.stop()
+        connectingToSSID = nil
+        connectionState = .idle
         currentNetwork = nil
         refreshStatus()
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(450))
+            self.refreshStatus()
+        }
     }
 
     // MARK: - Power
@@ -447,11 +488,7 @@ final class WiFiManager {
     func setPower(_ on: Bool) {
         do {
             try interface?.setPower(on)
-            isPoweredOn = on
-            if !on {
-                currentNetwork = nil
-                networks = []
-            }
+            refreshStatus()
         } catch {
             self.error = "Failed to toggle WiFi: \(error.localizedDescription)"
         }

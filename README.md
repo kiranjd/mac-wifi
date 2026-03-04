@@ -23,9 +23,21 @@ https://github.com/user-attachments/assets/7b97475f-a63f-44f0-ba97-9844473b3c7d
 ## Build and Run (Local)
 
 ```bash
-./scripts/build_local.sh
-./scripts/build-and-run.sh
+./scripts/build_macwifi.sh debug
 ```
+
+Release flow (build, optional sign, install to `/Applications`, launch):
+
+```bash
+./scripts/build_macwifi.sh release
+```
+
+Useful release options:
+
+- `--no-install` (launch local app bundle instead of installing to `/Applications`)
+- `--local` (skip release signing for local testing)
+- `AUTO_SIGN_RELEASE=0` (disable release auto-sign)
+- `RELEASE_SIGN_IDENTITY="Developer ID Application: ..."` (force identity)
 
 ## Tests
 

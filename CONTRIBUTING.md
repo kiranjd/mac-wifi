@@ -20,7 +20,13 @@ Thanks for contributing to MacWiFi.
 3. Run from terminal:
 
 ```bash
-./scripts/build-and-run.sh
+./scripts/build_macwifi.sh debug
+```
+
+Release build/install/launch:
+
+```bash
+./scripts/build_macwifi.sh release
 ```
 
 ## Run Checks

@@ -49,6 +49,9 @@ final class NetworkQualityMonitor {
     var liveUploadMbps: Double = 0
     var graphScaleMbps: Double = 25
     var speedHistory: [(dl: Double, ul: Double)] = []  // For graph
+    let visualUpdateIntervalSeconds: TimeInterval = 0.5
+    private let liveSamplingIntervalMilliseconds: Int = 250
+    private let backgroundTrafficPollIntervalMilliseconds: Int = 250
     private let maxHistoryPoints = 36
 
     // Freshness and ambient usage heuristics
@@ -720,7 +723,7 @@ final class NetworkQualityMonitor {
             if trafficMbps <= thresholdMbps {
                 return true
             }
-            try? await Task.sleep(for: .milliseconds(250))
+            try? await Task.sleep(for: .milliseconds(backgroundTrafficPollIntervalMilliseconds))
         }
         return false
     }
@@ -815,7 +818,7 @@ final class NetworkQualityMonitor {
         var lastTime = Date()
 
         while !Task.isCancelled {
-            try? await Task.sleep(for: .milliseconds(250))
+            try? await Task.sleep(for: .milliseconds(liveSamplingIntervalMilliseconds))
 
             // Freeze live values between runs to avoid confusing drops to zero.
             guard isExecutingSpeedRun else {

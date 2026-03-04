@@ -46,6 +46,13 @@ struct Network: Identifiable, Hashable {
         }
     }
 
+    var isHiddenSSID: Bool {
+        let trimmed = ssid.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty { return true }
+        let normalized = trimmed.lowercased()
+        return normalized == "hidden network" || normalized == "<hidden>"
+    }
+
     /// Estimated speed tier based on band and signal
     var speedTier: SpeedTier {
         let baseSpeed: SpeedTier = band == .twoFour ? .slow : (band == .five ? .fast : .veryFast)
@@ -146,6 +153,7 @@ struct Network: Identifiable, Hashable {
     private static func getChannelWidth(_ channel: CWChannel?) -> Int {
         guard let ch = channel else { return 20 }
         switch ch.channelWidth {
+        case .widthUnknown: return 20
         case .width20MHz: return 20
         case .width40MHz: return 40
         case .width80MHz: return 80

@@ -15,10 +15,10 @@ struct ConnectionDiagnosis {
 
         var color: Color {
             switch self {
-            case .excellent, .good: return Color(nsColor: .systemGreen).opacity(0.7)
-            case .fair: return Color(nsColor: .systemYellow).opacity(0.65)
-            case .poor: return Color(nsColor: .systemOrange).opacity(0.65)
-            case .bad: return Color(nsColor: .systemRed).opacity(0.6)
+            case .excellent, .good: return AppPalette.accent
+            case .fair: return AppPalette.accentMedium
+            case .poor: return AppPalette.accentSoft
+            case .bad: return AppPalette.critical
             }
         }
 
@@ -224,11 +224,11 @@ struct ConnectionDiagnosis {
         // Explain based on the specific issue
         switch connectionIssue {
         case .wifiProblem:
-            return "The issue is local: Wi-Fi signal/interference is causing instability."
+            return "The weak spot is between your Mac and router. Wi-Fi signal or interference is causing drops."
         case .ispProblem:
-            return "Your local Wi-Fi looks okay. The slowdown is on the internet side."
+            return "Your local Wi-Fi looks okay. The slowdown is likely on your provider or upstream route."
         case .bothProblems:
-            return "Wi-Fi and internet are both unstable right now."
+            return "Both your Wi-Fi link and internet route are unstable right now."
         case .none:
             break
         }
@@ -236,21 +236,21 @@ struct ConnectionDiagnosis {
         // Fallback explanations based on metrics
         if let internet = internet {
             if internet.packetLossPercent >= 1.5 {
-                return "Packet loss is causing unstable performance."
+                return "Some data is being dropped, so apps may pause or retry."
             }
             if internet.hasBufferbloat {
-                return "Speed drops when the network is busy."
+                return "The connection slows down when the network is busy."
             } else if internet.loadedLatencyP95Ms >= 250 {
-                return "Delays spike when the network is busy."
+                return "Response time spikes when the network is busy."
             } else if internet.rpm < 200 {
-                return "Response time is very slow right now."
+                return "Response time is slow right now."
             } else if internet.downloadMbps < 10 {
-                return "Download speed is low right now."
+                return "Download speed is lower than usual right now."
             }
         }
 
         if let signal = signal, signal.grade < .fair {
-            return "Wi-Fi signal is weak. Move closer to the router."
+            return "Wi-Fi signal is weak. Moving closer to the router should help."
         }
 
         return nil
@@ -336,15 +336,16 @@ struct ConnectionDiagnosis {
             }
         }
 
-        // Requirements: (minMbps, minRPM)
-        var requirements: (mbps: Double, rpm: Int) {
+        // Real-world requirements:
+        // download/upload for throughput, rpm for responsiveness, and app-specific loss tolerance.
+        var requirements: (downloadMbps: Double, uploadMbps: Double, rpm: Int, maxPacketLossPercent: Double?) {
             switch self {
-            case .gaming: return (10, 800)
-            case .videoCalls: return (5, 500)
-            case .fourKStreaming: return (25, 200)
-            case .hdStreaming: return (10, 200)
-            case .browsing: return (3, 100)
-            case .downloads: return (25, 100)
+            case .gaming: return (15, 5, 900, 0.8)
+            case .videoCalls: return (6, 3, 550, 1.2)
+            case .fourKStreaming: return (30, 2, 120, 2.0)
+            case .hdStreaming: return (8, 1.5, 120, 2.5)
+            case .browsing: return (4, 1, 120, 3.0)
+            case .downloads: return (20, 1, 60, nil)
             }
         }
     }
@@ -378,13 +379,22 @@ struct ConnectionDiagnosis {
         }
 
         return Activity.allCases.map { activity in
-            let (minMbps, minRpm) = activity.requirements
+            let requirements = activity.requirements
             let effectiveDownloadMbps = effectiveDownloadMbps(for: activity, internet: internet)
-            let requiredRPM = effectiveRPMRequirement(for: activity, defaultValue: minRpm)
-            let speedOk = effectiveDownloadMbps >= minMbps
-            let latencyOk = internet.rpm >= requiredRPM
+            let effectiveUploadMbps = effectiveUploadMbps(for: activity, internet: internet)
+            let requiredRPM = effectiveRPMRequirement(for: activity, defaultValue: requirements.rpm)
+            let maxPacketLossPercent = requirements.maxPacketLossPercent
+            let maxLoadedLatencyMs = maxLoadedLatencyMs(for: activity)
+            let maxLatencyInflation = maxLatencyInflation(for: activity)
 
-            if speedOk && latencyOk {
+            let downloadOk = effectiveDownloadMbps >= requirements.downloadMbps
+            let uploadOk = effectiveUploadMbps >= requirements.uploadMbps
+            let responsivenessOk = internet.rpm >= requiredRPM
+            let packetLossOk = maxPacketLossPercent.map { internet.packetLossPercent <= $0 } ?? true
+            let loadedLatencyOk = maxLoadedLatencyMs.map { internet.loadedLatencyP95Ms <= $0 } ?? true
+            let inflationOk = maxLatencyInflation.map { internet.latencyInflation <= $0 } ?? true
+
+            if downloadOk && uploadOk && responsivenessOk && packetLossOk && loadedLatencyOk && inflationOk {
                 return ActivityStatus(activity: activity, works: true, reason: nil)
             }
 
@@ -393,18 +403,16 @@ struct ConnectionDiagnosis {
             }
 
             let reason: String
-            if !speedOk && !latencyOk {
-                reason = "too slow & laggy"
-            } else if !latencyOk {
-                if internet.packetLossPercent >= 1.0 {
-                    reason = "packet loss"
-                } else if internet.latencyInflation >= 4 || internet.loadedLatencyP95Ms >= 220 {
-                    reason = "unstable under load"
-                } else {
-                    reason = "too laggy"
-                }
+            if !packetLossOk {
+                reason = "packet loss"
+            } else if !loadedLatencyOk || !inflationOk || !responsivenessOk {
+                reason = "lag spikes"
+            } else if !uploadOk {
+                reason = "upload is limited"
+            } else if !downloadOk {
+                reason = "download is limited"
             } else {
-                reason = "too slow"
+                reason = "inconsistent connection"
             }
 
             return ActivityStatus(activity: activity, works: false, reason: reason)
@@ -420,6 +428,15 @@ struct ConnectionDiagnosis {
         }
     }
 
+    private func effectiveUploadMbps(for activity: Activity, internet: InternetQuality) -> Double {
+        switch activity {
+        case .videoCalls, .fourKStreaming, .hdStreaming:
+            return max(internet.uploadMbps, internet.observedSustainedUploadMbps)
+        default:
+            return internet.uploadMbps
+        }
+    }
+
     private func effectiveRPMRequirement(for activity: Activity, defaultValue: Int) -> Int {
         switch activity {
         case .fourKStreaming, .hdStreaming:
@@ -430,8 +447,40 @@ struct ConnectionDiagnosis {
         }
     }
 
+    private func maxLoadedLatencyMs(for activity: Activity) -> Double? {
+        switch activity {
+        case .gaming:
+            return 220
+        case .videoCalls:
+            return 260
+        case .browsing:
+            return 420
+        case .fourKStreaming, .hdStreaming:
+            return 550
+        case .downloads:
+            return nil
+        }
+    }
+
+    private func maxLatencyInflation(for activity: Activity) -> Double? {
+        switch activity {
+        case .gaming:
+            return 5.5
+        case .videoCalls:
+            return 6.5
+        case .browsing:
+            return 9
+        case .fourKStreaming, .hdStreaming:
+            return 11
+        case .downloads:
+            return nil
+        }
+    }
+
     private func observedTrafficOverridesFailure(for activity: Activity, internet: InternetQuality) -> Bool {
         guard internet.packetLossPercent < 3 else { return false }
+        guard internet.loadedLatencyP95Ms < 500 else { return false }
+        guard internet.latencyInflation < 12 else { return false }
 
         switch activity {
         case .fourKStreaming:
@@ -449,17 +498,17 @@ struct ConnectionDiagnosis {
 
         switch status.activity {
         case .videoCalls:
-            return "Video calls may freeze or sound robotic when the connection jumps."
+            return "Calls may freeze for a moment or audio may sound robotic."
         case .gaming:
-            return "Gaming may lag or skip when response time jumps."
+            return "Game controls may feel delayed during spikes."
         case .fourKStreaming:
-            return "4K streaming may buffer when speed dips."
+            return "4K video may drop quality or buffer during peaks."
         case .hdStreaming:
-            return "HD streaming may buffer occasionally."
+            return "Video may buffer when others use the network."
         case .downloads:
-            return "Large file transfers may be slower than usual."
+            return "Large downloads may take longer than expected."
         case .browsing:
-            return "Some pages may load slowly."
+            return "Web pages may load slowly or hang briefly."
         }
     }
 
