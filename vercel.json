@@ -1,0 +1,17 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.macwifi.live"
+        }
+      ],
+      "destination": "https://macwifi.live/$1",
+      "permanent": true
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}
