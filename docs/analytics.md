@@ -52,3 +52,6 @@ User property:
 - Website GA4 uses the `kiranjd8@gmail.com` MacWiFi property once the production measurement ID is set in `website/main.js`.
 - App GA4 Measurement Protocol uses the production measurement ID and API secret in [AnalyticsConfiguration.swift](/Users/jd/things/mac-wifi/Sources/MacWiFi/Config/AnalyticsConfiguration.swift).
 - Lemon Squeezy checkout carries attribution from both the site and app through `checkout[custom][...]`.
+- On developer machines, app-side GA4 requests are duplicated to `~/Library/Logs/MacWiFi/analytics.log`.
+- Developer mode is enabled by `dev.txt` in either `/Users/jd/things/mac-wifi/dev.txt` or `~/Library/Application Support/MacWiFi/dev.txt`.
+- Add `analytics=off` or `ga4_logs=off` to `dev.txt` to keep developer file logging on while disabling GA4 payload duplication.

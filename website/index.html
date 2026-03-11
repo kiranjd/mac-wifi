@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MacWiFi | Find out if it's your Wi-Fi or your ISP</title>
+    <title>MacWiFi | A small Mac app to check Wi-Fi vs ISP issues</title>
     <meta
       name="description"
-      content="MacWiFi is a native macOS menu bar app that tells you if your internet is good enough right now and whether the problem is your Wi-Fi or your ISP."
+      content="MacWiFi is a small Mac menu bar app that checks whether your connection looks okay and whether the problem is probably your Wi-Fi or your ISP."
     />
     <meta property="og:site_name" content="MacWiFi" />
     <meta property="og:title" content="MacWiFi" />
     <meta
       property="og:description"
-      content="The Wi-Fi diagnosis macOS should have had."
+      content="A small Mac app to check whether the problem is your Wi-Fi or your ISP."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://macwifi.live" />
@@ -30,7 +30,7 @@
     <meta name="twitter:title" content="MacWiFi" />
     <meta
       name="twitter:description"
-      content="The Wi-Fi diagnosis macOS should have had."
+      content="A small Mac app to check whether the problem is your Wi-Fi or your ISP."
     />
     <meta
       name="twitter:image"
@@ -58,9 +58,8 @@
         "name": "MacWiFi",
         "operatingSystem": "macOS",
         "applicationCategory": "UtilitiesApplication",
-        "description": "MacWiFi is a native macOS menu bar app that tells you whether the problem is your Wi-Fi or your ISP.",
+        "description": "MacWiFi is a small Mac menu bar app that checks whether your connection looks okay and whether the problem is probably your Wi-Fi or your ISP.",
         "url": "https://macwifi.live",
-        "downloadUrl": "https://github.com/kiranjd/mac-wifi/releases/latest",
         "offers": {
           "@type": "Offer",
           "price": "9.99",
@@ -114,16 +113,18 @@
           <div class="hero-copy reveal">
             <div class="eyebrow">
               <span class="eyebrow-dot"></span>
-              macOS menu bar utility
+              small macOS utility
             </div>
             <h1>
-              Find out if it’s your <span>Wi-Fi</span>
-              <em>or your ISP</em>
+              A small Mac app to check whether it’s your
+              <span>Wi-Fi</span> <em>or your ISP</em>
             </h1>
             <p class="hero-lead">
-              MacWiFi gives you the practical answer first: is this connection
-              good enough right now for calls, streaming, or just getting work
-              done? Then it tells you where the problem is likely coming from.
+              I built MacWiFi because I wanted a quick answer in the menu bar
+              when the connection felt off. It checks a few things, shows
+              whether calls, streaming, and browsing look okay, and gives a
+              rough guess about whether the issue is local Wi-Fi or farther
+              upstream.
             </p>
 
             <div class="hero-actions">
@@ -132,7 +133,7 @@
                 href="/pricing"
                 data-cta-location="hero"
               >
-                See pricing
+                Pricing
               </a>
               <a class="button button-secondary" href="#demo">Watch Demo</a>
             </div>
@@ -140,15 +141,15 @@
             <div class="hero-meta">
               <div class="meta-card">
                 <strong>$9.99 one-time</strong>
-                <span>Buy once, keep the utility close.</span>
+                <span>No subscription.</span>
               </div>
               <div class="meta-card">
-                <strong>Wi-Fi vs ISP split</strong>
-                <span>Useful when the internet gets weird.</span>
+                <strong>Menu bar app</strong>
+                <span>Quick to open, quick to close.</span>
               </div>
               <div class="meta-card">
-                <strong>Native macOS app</strong>
-                <span>Menu bar, no account, no cloud dashboard.</span>
+                <strong>No account</strong>
+                <span>Install it and use it.</span>
               </div>
             </div>
           </div>
@@ -172,72 +173,38 @@
         </div>
       </section>
 
-      <section class="trust-strip">
-        <div class="container trust-items reveal">
-          <span>Built for calls that suddenly sound bad</span>
-          <span>Shows whether the problem is local or upstream</span>
-          <span>Live download and upload graph</span>
-          <span>Advanced diagnostics when you need them</span>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container story-grid">
-          <div class="section-heading reveal">
-            <p class="kicker">Why it exists</p>
-            <h2>The problem was never “what’s my speed?”</h2>
-            <p>
-              The annoying version of bad internet is when everything looks
-              fine, but your call still stutters and you still have no idea what
-              to blame. MacWiFi is built around that moment.
-            </p>
-          </div>
-
-          <div class="story-panel reveal reveal-delay">
-            <p>
-              It doesn’t start with raw networking trivia. It starts with the
-              question people actually ask:
-            </p>
-            <blockquote>
-              Is this connection good enough right now, and if not, is the weak
-              spot my Wi-Fi or the internet itself?
-            </blockquote>
-          </div>
-        </div>
-      </section>
-
       <section id="features" class="section">
         <div class="container">
           <div class="section-heading narrow reveal">
-            <p class="kicker">Core features</p>
-            <h2>Enough signal to act on, not enough clutter to hate using it</h2>
+            <p class="kicker">What It Shows</p>
+            <h2>The useful parts, without too much ceremony</h2>
           </div>
 
           <div class="feature-grid">
             <article class="feature-card reveal">
               <span class="feature-index">01</span>
-              <h3>Outcome-first readiness</h3>
+              <h3>Readiness</h3>
               <p>
-                See whether calls, streaming, and browsing are likely to hold up
-                before you join another meeting and hope for the best.
+                A simple read on whether calls, streaming, and browsing look
+                okay right now.
               </p>
             </article>
 
             <article class="feature-card reveal reveal-delay">
               <span class="feature-index">02</span>
-              <h3>Wi-Fi vs ISP clarity</h3>
+              <h3>Wi-Fi vs ISP guess</h3>
               <p>
-                Router latency, packet loss, DNS timing, and public path checks
-                help MacWiFi make a practical call about where the issue lives.
+                A rough split between local Wi-Fi trouble and issues farther out
+                on the internet path.
               </p>
             </article>
 
             <article class="feature-card reveal reveal-delay-2">
               <span class="feature-index">03</span>
-              <h3>Lives in the menu bar</h3>
+              <h3>Extra detail if you want it</h3>
               <p>
-                Quick scan, quick answer, quick escape. It stays lightweight and
-                close at hand instead of feeling like a heavyweight network tool.
+                Signal info, radio details, DNS timing, and a live graph are
+                there if you want more context.
               </p>
             </article>
           </div>
@@ -247,16 +214,16 @@
       <section class="section">
         <div class="container screenshot-layout">
           <div class="screenshot-copy reveal">
-            <p class="kicker">Inside the app</p>
-            <h2>Starts simple, gets deeper only when you need it</h2>
+            <p class="kicker">Screenshots</p>
+            <h2>What it looks like</h2>
             <p>
-              The top layer tells you what matters now. The lower layers explain
-              why, with enough detail to make a smarter next move.
+              The top layer stays simple. Lower sections show more detail if
+              you care about what is actually going on.
             </p>
             <ul class="detail-list">
-              <li>Current Wi-Fi info and live signal context</li>
-              <li>Advanced radio details like band, width, and PHY rate</li>
-              <li>DNS response and internet path diagnostics</li>
+              <li>Main status and current Wi-Fi info</li>
+              <li>Radio details like band, width, and PHY rate</li>
+              <li>DNS response and path checks</li>
             </ul>
           </div>
 
@@ -292,17 +259,15 @@
         <div class="container demo-shell reveal">
           <div class="demo-copy">
             <p class="kicker">Demo</p>
-            <h2>See the app in motion</h2>
+            <h2>A short demo</h2>
             <p>
-              The app is small on purpose. The menu bar icon opens a focused
-              panel with the live graph, diagnosis, activity readiness, and the
-              advanced split between local Wi-Fi issues and internet-side issues.
+              If you want to see the flow before buying it, this shows the menu
+              bar panel, the main status view, and the deeper diagnostics.
             </p>
             <div class="demo-points">
               <span>macOS 14+</span>
               <span>$9.99 one-time</span>
               <span>Native Swift app</span>
-              <span>GitHub available</span>
             </div>
           </div>
           <div class="demo-video-wrap">
@@ -318,39 +283,6 @@
         </div>
       </section>
 
-      <section class="section">
-        <div class="container principles-grid">
-          <div class="principles-copy reveal">
-            <p class="kicker">Why it feels different</p>
-            <h2>Designed for people who need a decision, not a certification</h2>
-          </div>
-
-          <article class="principle reveal">
-            <h3>Quick answer first</h3>
-            <p>
-              The app leads with practical confidence, not an intimidating wall
-              of metrics.
-            </p>
-          </article>
-
-          <article class="principle reveal reveal-delay">
-            <h3>Blame with receipts</h3>
-            <p>
-              If it points at Wi-Fi or at your ISP, it does that using multiple
-              checks instead of a single shaky metric.
-            </p>
-          </article>
-
-          <article class="principle reveal reveal-delay-2">
-            <h3>Small enough to keep</h3>
-            <p>
-              It belongs in the menu bar, ready for the moment your connection
-              starts acting suspicious.
-            </p>
-          </article>
-        </div>
-      </section>
-
       <section id="faq" class="section">
         <div class="container faq-shell">
           <div class="section-heading narrow reveal">
@@ -362,26 +294,23 @@
             <details class="faq-item reveal">
               <summary>What does MacWiFi actually test?</summary>
               <p>
-                It combines throughput, responsiveness, router and public ping
-                checks, packet loss, latency behavior, and DNS response timing
-                to judge whether your connection is holding up.
+                It checks things like throughput, latency, packet loss, router
+                response, and DNS timing, then rolls that into a simple status.
               </p>
             </details>
 
             <details class="faq-item reveal reveal-delay">
               <summary>Is this a speed test app?</summary>
               <p>
-                Not really. Speed is part of the picture, but the main goal is
-                to tell you whether real tasks are likely to work and where the
-                problem is likely happening.
+                Not really. Speed is part of it, but the point is to answer the
+                more ordinary question of whether the connection seems usable.
               </p>
             </details>
 
             <details class="faq-item reveal reveal-delay-2">
               <summary>Do I need an account?</summary>
               <p>
-                No. It’s a native macOS app with a lightweight utility feel. You
-                download it and use it.
+                No. You buy it once, activate it, and use it locally on your Mac.
               </p>
             </details>
 
@@ -393,79 +322,6 @@
                 hidden.
               </p>
             </details>
-          </div>
-        </div>
-      </section>
-
-      <section class="section resources-section">
-        <div class="container">
-          <div class="section-heading narrow reveal">
-            <p class="kicker">Resources</p>
-            <h2>Useful guides for Mac Wi-Fi problems</h2>
-            <p>
-              Written around the practical troubleshooting question: is the weak
-              spot your local Wi-Fi, the internet path beyond it, or both?
-            </p>
-          </div>
-
-          <div class="resource-grid">
-            <article class="resource-card reveal">
-              <p class="resource-type">Guide</p>
-              <h3>Best Wi-Fi Analyzer for Mac</h3>
-              <p>
-                A practical comparison of the main Mac network tools and which
-                job each one actually does well.
-              </p>
-              <a href="/blog/best-wifi-analyzer-for-mac">Read the guide</a>
-            </article>
-
-            <article class="resource-card reveal reveal-delay">
-              <p class="resource-type">Troubleshooting</p>
-              <h3>How to Tell if Wi-Fi or ISP Is the Problem</h3>
-              <p>
-                A faster way to separate local wireless trouble from
-                internet-side instability.
-              </p>
-              <a href="/blog/how-to-tell-if-wifi-or-isp-is-the-problem">Read the guide</a>
-            </article>
-
-            <article class="resource-card reveal reveal-delay-2">
-              <p class="resource-type">Troubleshooting</p>
-              <h3>How to Check Packet Loss on Mac</h3>
-              <p>
-                What packet loss means, how to test it, and how to figure out
-                where it starts.
-              </p>
-              <a href="/blog/how-to-check-packet-loss-on-mac">Read the guide</a>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section final-cta-section">
-        <div class="container final-cta reveal">
-          <p class="kicker">MacWiFi</p>
-          <h2>The Wi-Fi diagnosis macOS should have had.</h2>
-          <p>
-            One-time purchase. Native app. Practical answers when your internet
-            starts acting up.
-          </p>
-          <div class="hero-actions">
-            <a
-              class="button"
-              href="/pricing"
-              data-cta-location="final_cta"
-            >
-              See pricing
-            </a>
-            <a
-              class="button button-secondary"
-              href="https://github.com/kiranjd/mac-wifi"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View on GitHub
-            </a>
           </div>
         </div>
       </section>
@@ -482,9 +338,6 @@
           <a href="/blog">Blog</a>
           <a href="/help/activate-license">Activate license</a>
           <a href="mailto:support@macwifi.live">Support</a>
-          <a href="https://github.com/kiranjd/mac-wifi" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://github.com/kiranjd/mac-wifi/releases/latest" target="_blank" rel="noreferrer">Latest release</a>
-          <a href="https://www.producthunt.com/products/macwifi?launch=macwifi" target="_blank" rel="noreferrer">Product Hunt</a>
         </div>
       </div>
     </footer>

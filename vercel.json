@@ -14,62 +14,24 @@
       "permanent": true
     }
   ],
-  "rewrites": [
+  "headers": [
     {
-      "source": "/",
-      "destination": "/website"
-    },
-    {
-      "source": "/assets/:path*",
-      "destination": "/website/assets/:path*"
-    },
-    {
-      "source": "/styles.css",
-      "destination": "/website/styles.css"
-    },
-    {
-      "source": "/main.js",
-      "destination": "/website/main.js"
-    },
-    {
-      "source": "/blog.css",
-      "destination": "/website/blog.css"
-    },
-    {
-      "source": "/content.css",
-      "destination": "/website/content.css"
-    },
-    {
-      "source": "/blog",
-      "destination": "/website/blog"
-    },
-    {
-      "source": "/blog/:slug",
-      "destination": "/website/blog/:slug"
-    },
-    {
-      "source": "/pricing",
-      "destination": "/website/pricing"
-    },
-    {
-      "source": "/help/activate-license",
-      "destination": "/website/help/activate-license"
-    },
-    {
-      "source": "/help/getting-started",
-      "destination": "/website/help/getting-started"
-    },
-    {
-      "source": "/download",
-      "destination": "/website/download"
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=3600"
+        }
+      ]
     },
     {
       "source": "/robots.txt",
-      "destination": "/website/robots.txt"
-    },
-    {
-      "source": "/sitemap.xml",
-      "destination": "/website/sitemap.xml"
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=3600"
+        }
+      ]
     }
   ],
   "cleanUrls": true,

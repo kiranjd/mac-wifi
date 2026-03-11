@@ -130,7 +130,8 @@ final class LemonSqueezyLicenseManager: ObservableObject {
 
         saveState(nextState)
         state = nextState
-        print("MacWiFi license activated.")
+        LicenseActivationFeedbackController.shared.presentSuccess()
+        AppLogger.shared.info("License activated", category: .license)
     }
 
     func validate(forceRemote: Bool = false) async {
@@ -153,14 +154,23 @@ final class LemonSqueezyLicenseManager: ObservableObject {
 
             saveState(validated)
             state = validated
+            AppLogger.shared.debug("License validated", category: .license, metadata: ["force_remote": forceRemote.description])
         } catch let error as LicenseError {
-            print("MacWiFi license validate failed: \(error.localizedDescription)")
+            AppLogger.shared.warning(
+                "License validation failed",
+                category: .license,
+                metadata: ["error": error.localizedDescription]
+            )
             if Self.isTerminal(error) {
                 clearState()
             }
             errorMessage = error.localizedDescription
         } catch {
-            print("MacWiFi license validate failed: \(error.localizedDescription)")
+            AppLogger.shared.warning(
+                "License validation failed",
+                category: .license,
+                metadata: ["error": error.localizedDescription]
+            )
             errorMessage = error.localizedDescription
         }
     }
@@ -187,14 +197,23 @@ final class LemonSqueezyLicenseManager: ObservableObject {
                 return ()
             }
         } catch let error as LicenseError {
-            print("MacWiFi license deactivate failed: \(error.localizedDescription)")
+            AppLogger.shared.warning(
+                "License deactivation failed",
+                category: .license,
+                metadata: ["error": error.localizedDescription]
+            )
             throw error
         } catch {
-            print("MacWiFi license deactivate failed: \(error.localizedDescription)")
+            AppLogger.shared.warning(
+                "License deactivation failed",
+                category: .license,
+                metadata: ["error": error.localizedDescription]
+            )
             throw error
         }
 
         clearState()
+        AppLogger.shared.info("License deactivated", category: .license)
     }
 
     private func sendLicenseRequest<T>(
@@ -207,7 +226,7 @@ final class LemonSqueezyLicenseManager: ObservableObject {
             let direct = try await performRequest(path: path, payload: payload, baseURL: LemonSqueezyConfiguration.apiBaseURL)
             return try decode(direct.0, direct.1)
         } catch let error as LicenseError where allowFallback && LemonSqueezyConfiguration.isRelayFallbackEnabled && Self.shouldFallback(for: error) {
-            print("MacWiFi license falling back to relay for \(path).")
+            AppLogger.shared.info("Falling back to relay license endpoint", category: .license, metadata: ["path": path])
             let fallback = try await performRequest(path: path, payload: payload, baseURL: LemonSqueezyConfiguration.relayBaseURL)
             return try decode(fallback.0, fallback.1)
         } catch {

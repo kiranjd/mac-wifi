@@ -69,6 +69,11 @@ By default, it uses fixed identities and skips keychain identity discovery to re
 
 - App not visible:
   - `MacWiFi` is a menu bar app; check the menu bar icon.
+- Developer logs:
+  - Create `dev.txt` in either `/Users/jd/things/mac-wifi/dev.txt` or `~/Library/Application Support/MacWiFi/dev.txt`.
+  - With that marker present, the app writes readable logs to `~/Library/Logs/MacWiFi/app.log`.
+  - GA4 request/response duplication goes to `~/Library/Logs/MacWiFi/analytics.log`.
+  - Add `analytics=off` to `dev.txt` if you want developer logs but do not want GA4 payload duplication.
 - Permission issues:
   - `MacWiFi` needs Location access to read SSID names (Apple requirement for Wi-Fi scans).
   - Open `System Settings > Privacy & Security > Location Services` and allow `MacWiFi`.

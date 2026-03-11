@@ -20,15 +20,27 @@ final class AppAnalytics {
 
     func trackInstallIfNeeded() {
         queue.async {
-            guard !self.defaults.bool(forKey: Keys.installPingSent) else { return }
-            guard !AnalyticsConfiguration.ga4MeasurementId.isEmpty,
-                  !AnalyticsConfiguration.ga4MeasurementAPISecret.isEmpty else { return }
+            guard !self.defaults.bool(forKey: Keys.installPingSent) else {
+                AppLogger.shared.debug("Skipping install analytics ping", category: .analytics, metadata: ["reason": "already_sent"])
+                return
+            }
+            guard self.hasMeasurementConfiguration else {
+                AppLogger.shared.debug("Skipping install analytics ping", category: .analytics, metadata: ["reason": "missing_configuration"])
+                return
+            }
 
             let installId = AppInstallIdentity.installID
             let payload = self.payload(
                 installId: installId,
                 eventName: "app_install_anonymous",
                 parameters: self.baseParameters()
+            )
+            AppLogger.shared.analytics(
+                "Prepared analytics event",
+                metadata: [
+                    "event": "app_install_anonymous",
+                    "payload": self.renderPayload(payload),
+                ]
             )
 
             Task.detached(priority: .utility) {
@@ -37,10 +49,34 @@ final class AppAnalytics {
                     let (_, response) = try await self.session.data(for: request)
                     guard let httpResponse = response as? HTTPURLResponse,
                           (200...299).contains(httpResponse.statusCode) else {
+                        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                        AppLogger.shared.warning(
+                            "Analytics event failed",
+                            category: .analytics,
+                            metadata: [
+                                "event": "app_install_anonymous",
+                                "status": String(statusCode),
+                            ]
+                        )
                         return
                     }
+                    AppLogger.shared.analytics(
+                        "Analytics event delivered",
+                        metadata: [
+                            "event": "app_install_anonymous",
+                            "status": String(httpResponse.statusCode),
+                        ]
+                    )
                     self.defaults.set(true, forKey: Keys.installPingSent)
                 } catch {
+                    AppLogger.shared.warning(
+                        "Analytics event failed",
+                        category: .analytics,
+                        metadata: [
+                            "event": "app_install_anonymous",
+                            "error": error.localizedDescription,
+                        ]
+                    )
                     return
                 }
             }
@@ -49,8 +85,10 @@ final class AppAnalytics {
 
     func trackEvent(_ name: String, parameters: [String: Any] = [:]) {
         queue.async {
-            guard !AnalyticsConfiguration.ga4MeasurementId.isEmpty,
-                  !AnalyticsConfiguration.ga4MeasurementAPISecret.isEmpty else { return }
+            guard self.hasMeasurementConfiguration else {
+                AppLogger.shared.debug("Skipping analytics event", category: .analytics, metadata: ["event": name, "reason": "missing_configuration"])
+                return
+            }
 
             let installId = AppInstallIdentity.installID
             var merged = self.baseParameters()
@@ -62,13 +100,51 @@ final class AppAnalytics {
                 eventName: name,
                 parameters: merged
             )
+            AppLogger.shared.analytics(
+                "Prepared analytics event",
+                metadata: [
+                    "event": name,
+                    "payload": self.renderPayload(payload),
+                ]
+            )
 
             Task.detached(priority: .utility) {
                 guard let request = self.makeRequest(payload: payload) else { return }
-                _ = try? await self.session.data(for: request)
+                do {
+                    let (_, response) = try await self.session.data(for: request)
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                    if (200...299).contains(statusCode) {
+                        AppLogger.shared.analytics(
+                            "Analytics event delivered",
+                            metadata: [
+                                "event": name,
+                                "status": String(statusCode),
+                            ]
+                        )
+                    } else {
+                        AppLogger.shared.warning(
+                            "Analytics event failed",
+                            category: .analytics,
+                            metadata: [
+                                "event": name,
+                                "status": String(statusCode),
+                            ]
+                        )
+                    }
+                } catch {
+                    AppLogger.shared.warning(
+                        "Analytics event failed",
+                        category: .analytics,
+                        metadata: [
+                            "event": name,
+                            "error": error.localizedDescription,
+                        ]
+                    )
+                }
             }
         }
     }
+
     private func makeRequest(payload: [String: Any]) -> URLRequest? {
         guard var components = URLComponents(string: "https://www.google-analytics.com/mp/collect") else {
             return nil
@@ -120,5 +196,19 @@ final class AppAnalytics {
         }
         params["os_version"] = ProcessInfo.processInfo.operatingSystemVersionString
         return params
+    }
+
+    private var hasMeasurementConfiguration: Bool {
+        !AnalyticsConfiguration.ga4MeasurementId.isEmpty
+            && !AnalyticsConfiguration.ga4MeasurementAPISecret.isEmpty
+    }
+
+    private func renderPayload(_ payload: [String: Any]) -> String {
+        guard JSONSerialization.isValidJSONObject(payload),
+              let data = try? JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys]),
+              let json = String(data: data, encoding: .utf8) else {
+            return "unserializable"
+        }
+        return json
     }
 }

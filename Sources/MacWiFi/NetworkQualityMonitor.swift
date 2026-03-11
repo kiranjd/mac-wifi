@@ -365,6 +365,7 @@ final class NetworkQualityMonitor {
         liveDownloadMbps = 0
         liveUploadMbps = 0
         graphScaleMbps = 25
+        AppLogger.shared.info("Starting network quality test", category: .quality)
 
         testTask = Task {
             // Start throughput/reliability test immediately for fast UI feedback.
@@ -406,6 +407,7 @@ final class NetworkQualityMonitor {
         testTask?.cancel()
         testTask = nil
         testStartTime = nil
+        AppLogger.shared.debug("Stopped network quality test", category: .quality)
     }
 
     // MARK: - Speed Test using networkQuality
@@ -485,9 +487,20 @@ final class NetworkQualityMonitor {
             appendReliabilitySample()
             error = nil
             testPhaseText = "Reliability test complete."
+            AppLogger.shared.info(
+                "Network quality test complete",
+                category: .quality,
+                metadata: [
+                    "download_mbps": formatMetric(downloadMbps),
+                    "upload_mbps": formatMetric(uploadMbps),
+                    "responsiveness": String(responsiveness),
+                    "successful_runs": String(successfulRuns),
+                ]
+            )
         } else {
             error = "Speed test failed: unable to collect results"
             testPhaseText = "Unable to complete reliability test."
+            AppLogger.shared.warning("Network quality test failed", category: .quality)
         }
 
         liveDownloadMbps = 0
@@ -1113,6 +1126,10 @@ private func coefficientOfVariation(_ values: [Double]) -> Double {
 private func average(_ values: Double...) -> Double {
     guard !values.isEmpty else { return 0 }
     return values.reduce(0, +) / Double(values.count)
+}
+
+private func formatMetric(_ value: Double) -> String {
+    String(format: "%.2f", value)
 }
 
 private func clamp(_ value: Double, min: Double, max: Double) -> Double {

@@ -129,7 +129,11 @@ final class WiFiManager {
             try client.startMonitoringEvent(with: .powerDidChange)
             client.delegate = wifiEventDelegate
         } catch {
-            print("Failed to start WiFi monitoring: \(error)")
+            AppLogger.shared.error(
+                "Failed to start Wi-Fi monitoring",
+                category: .wifi,
+                metadata: ["error": error.localizedDescription]
+            )
         }
 
         requestLocationAccess()
@@ -154,6 +158,7 @@ final class WiFiManager {
     func refreshStatus() {
         guard let iface = interface else {
             error = "No WiFi interface found"
+            AppLogger.shared.error("No Wi-Fi interface found", category: .wifi)
             return
         }
 
@@ -206,11 +211,17 @@ final class WiFiManager {
         }
 
         if shouldAutoStartQualityTest(previousSSID: previousSSID, wasPoweredOn: wasPoweredOn) {
+            AppLogger.shared.info(
+                "Starting automatic quality test",
+                category: .quality,
+                metadata: ["ssid": currentNetwork?.ssid ?? "unknown"]
+            )
             qualityMonitor.start()
         }
     }
 
     private func shouldAutoStartQualityTest(previousSSID: String?, wasPoweredOn: Bool) -> Bool {
+        guard LemonSqueezyLicenseManager.shared.isLicensed else { return false }
         guard isPoweredOn, let currentSSID = currentNetwork?.ssid else { return false }
         guard !qualityMonitor.isRunning else { return false }
         guard !connectionState.isConnecting else { return false }
@@ -225,13 +236,22 @@ final class WiFiManager {
     // MARK: - Scanning
 
     func scan(force: Bool = false) {
+        guard LemonSqueezyLicenseManager.shared.isLicensed else {
+            qualityMonitor.stop()
+            error = "Activate MacWiFi to scan nearby networks."
+            AppLogger.shared.debug("Skipping Wi-Fi scan because app is unlicensed", category: .wifi)
+            return
+        }
+
         guard let iface = interface else {
             error = "No WiFi interface"
+            AppLogger.shared.error("Unable to scan without a Wi-Fi interface", category: .wifi)
             return
         }
 
         guard isPoweredOn else {
             error = "WiFi is off"
+            AppLogger.shared.debug("Skipping Wi-Fi scan because power is off", category: .wifi)
             return
         }
 
@@ -240,6 +260,7 @@ final class WiFiManager {
            Date().timeIntervalSince(lastScanTime) < scanCacheTTL,
            (!networks.isEmpty || !personalHotspots.isEmpty) {
             error = nil
+            AppLogger.shared.debug("Reusing cached Wi-Fi scan results", category: .wifi)
             return
         }
 
@@ -247,6 +268,7 @@ final class WiFiManager {
 
         isScanning = true
         error = nil
+        AppLogger.shared.debug("Starting Wi-Fi scan", category: .wifi, metadata: ["force": force.description])
         let interfaceName = iface.interfaceName ?? "en0"
         let knownFromCoreWLAN = getKnownNetworkSSIDsFromCoreWLAN()
         let preferredKnown = getPreferredNetworkSSIDs(interfaceName: interfaceName)
@@ -311,6 +333,14 @@ final class WiFiManager {
                         self.error = nil
                     }
                     self.lastScanTime = Date()
+                    AppLogger.shared.debug(
+                        "Wi-Fi scan complete",
+                        category: .wifi,
+                        metadata: [
+                            "networks": String(finalNetworks.count),
+                            "hotspots": String(finalHotspots.count),
+                        ]
+                    )
                 }
             } catch let err as NSError {
                 await MainActor.run {
@@ -325,6 +355,11 @@ final class WiFiManager {
                     }
                     self.personalHotspots = []
                     self.isScanning = false
+                    AppLogger.shared.warning(
+                        "Wi-Fi scan failed",
+                        category: .wifi,
+                        metadata: ["error": self.error ?? err.localizedDescription]
+                    )
                 }
             }
         }
@@ -404,13 +439,28 @@ final class WiFiManager {
     // MARK: - Connect
 
     func connect(to network: Network, password: String? = nil) async throws {
+        guard LemonSqueezyLicenseManager.shared.isLicensed else {
+            connectionState = .failed("License required")
+            AppLogger.shared.debug("Blocking Wi-Fi connect because app is unlicensed", category: .wifi)
+            throw WiFiError.licenseRequired
+        }
+
         guard let iface = interface else {
             connectionState = .failed("No WiFi interface")
+            AppLogger.shared.error("Cannot connect without a Wi-Fi interface", category: .wifi)
             throw WiFiError.noInterface
         }
 
         connectingToSSID = network.ssid
         error = nil
+        AppLogger.shared.info(
+            "Connecting to network",
+            category: .wifi,
+            metadata: [
+                "ssid": network.ssid,
+                "password_supplied": (password != nil).description,
+            ]
+        )
 
         // Step 1: Find network
         connectionState = .findingNetwork
@@ -420,12 +470,14 @@ final class WiFiManager {
         } catch {
             connectionState = .failed("Network not found")
             connectingToSSID = nil
+            AppLogger.shared.warning("Target network not found during connect", category: .wifi, metadata: ["ssid": network.ssid])
             throw WiFiError.networkNotFound
         }
 
         guard let cwNetwork = cwNetworks.first else {
             connectionState = .failed("Network not found")
             connectingToSSID = nil
+            AppLogger.shared.warning("Target network not found during connect", category: .wifi, metadata: ["ssid": network.ssid])
             throw WiFiError.networkNotFound
         }
 
@@ -450,6 +502,14 @@ final class WiFiManager {
             }
             connectionState = .failed(reason)
             connectingToSSID = nil
+            AppLogger.shared.warning(
+                "Wi-Fi association failed",
+                category: .wifi,
+                metadata: [
+                    "ssid": network.ssid,
+                    "reason": reason,
+                ]
+            )
             throw WiFiError.connectionFailed(reason)
         }
 
@@ -461,6 +521,7 @@ final class WiFiManager {
 
         connectionState = .connected
         refreshStatus()
+        AppLogger.shared.info("Wi-Fi connection established", category: .wifi, metadata: ["ssid": network.ssid])
 
         // Reset after brief success display
         try? await Task.sleep(for: .seconds(1))
@@ -471,6 +532,7 @@ final class WiFiManager {
     // MARK: - Disconnect
 
     func disconnect() {
+        AppLogger.shared.info("Disconnecting from Wi-Fi", category: .wifi, metadata: ["ssid": currentNetwork?.ssid ?? "unknown"])
         interface?.disassociate()
         qualityMonitor.stop()
         connectingToSSID = nil
@@ -489,8 +551,14 @@ final class WiFiManager {
         do {
             try interface?.setPower(on)
             refreshStatus()
+            AppLogger.shared.info("Changed Wi-Fi power state", category: .wifi, metadata: ["powered_on": on.description])
         } catch {
             self.error = "Failed to toggle WiFi: \(error.localizedDescription)"
+            AppLogger.shared.warning(
+                "Failed to toggle Wi-Fi power",
+                category: .wifi,
+                metadata: ["error": error.localizedDescription]
+            )
         }
     }
 
@@ -517,12 +585,14 @@ extension Network {
 // MARK: - Errors
 
 enum WiFiError: LocalizedError {
+    case licenseRequired
     case noInterface
     case networkNotFound
     case connectionFailed(String)
 
     var errorDescription: String? {
         switch self {
+        case .licenseRequired: return "Activate MacWiFi before using network controls"
         case .noInterface: return "No WiFi interface found"
         case .networkNotFound: return "Network not found"
         case .connectionFailed(let msg): return "Connection failed: \(msg)"

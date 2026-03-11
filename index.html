@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MacWiFi | Know what your internet can actually do right now</title>
+    <meta
+      name="description"
+      content="MacWiFi is a native macOS menu bar app that translates network health into plain answers about calls, streaming, browsing, and whether the problem is your Wi-Fi or farther upstream."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MacWiFi" />
+    <meta property="og:title" content="MacWiFi | Know what your internet can actually do right now" />
+    <meta
+      property="og:description"
+      content="MacWiFi turns signal, jitter, loss, and DNS timing into plain answers about whether your current connection is actually usable."
+    />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta property="og:image:alt" content="MacWiFi preview showing the app on macOS." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MacWiFi | Know what your internet can actually do right now" />
+    <meta
+      name="twitter:description"
+      content="MacWiFi turns signal, jitter, loss, and DNS timing into plain answers about whether your current connection is actually usable."
+    />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:image:alt" content="MacWiFi preview showing the app on macOS." />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#f0ece2" />
+    <link rel="canonical" href="https://macwifi.live/" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module">
+      if (import.meta.env.PROD) {
+        const measurementId = import.meta.env.VITE_PUBLIC_GA4_ID || 'G-0DWSJTXQ65'
+        if (measurementId && measurementId !== 'undefined') {
+          const script = document.createElement('script')
+          script.async = true
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+          document.head.appendChild(script)
+
+          window.dataLayer = window.dataLayer || []
+          function gtag() {
+            window.dataLayer.push(arguments)
+          }
+          window.gtag = window.gtag || gtag
+          gtag('js', new Date())
+          gtag('config', measurementId, { anonymize_ip: true, send_page_view: false })
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
