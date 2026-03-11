@@ -17,7 +17,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/website/index.html"
+      "destination": "/website"
     },
     {
       "source": "/assets/:path*",
@@ -41,23 +41,23 @@
     },
     {
       "source": "/blog",
-      "destination": "/website/blog/index.html"
+      "destination": "/website/blog"
     },
     {
       "source": "/blog/:slug",
-      "destination": "/website/blog/:slug.html"
+      "destination": "/website/blog/:slug"
     },
     {
       "source": "/help/activate-license",
-      "destination": "/website/help/activate-license.html"
+      "destination": "/website/help/activate-license"
     },
     {
       "source": "/help/getting-started",
-      "destination": "/website/help/getting-started.html"
+      "destination": "/website/help/getting-started"
     },
     {
       "source": "/download",
-      "destination": "/website/download/index.html"
+      "destination": "/website/download"
     },
     {
       "source": "/robots.txt",
