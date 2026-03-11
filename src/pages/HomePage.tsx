@@ -16,9 +16,9 @@ import { SeoHead } from '../seo/SeoHead'
 import { makeMeta } from '../seo/siteMeta'
 
 const homeMeta = makeMeta({
-  title: 'MacWiFi | The Wi-Fi monitor macOS should have had',
+  title: 'MacWiFi | Diagnose unstable internet on Mac before the next call',
   description:
-    'MacWiFi is a native macOS Wi-Fi monitor that translates connection health into plain answers about what your current internet can actually handle and where the trouble probably is.',
+    'MacWiFi is a native macOS menu bar app for unstable internet on Mac. Check call readiness, separate Wi-Fi-side trouble from ISP-side trouble, and see why a connection feels bad.',
   canonicalPath: '/',
 })
 
@@ -29,7 +29,7 @@ const softwareSchema = {
   operatingSystem: 'macOS',
   applicationCategory: 'UtilitiesApplication',
   description:
-    'MacWiFi translates connection health into plain answers about what your current internet can actually handle and whether the problem is on your Wi-Fi side or farther upstream.',
+    'MacWiFi translates unstable internet on Mac into plain answers about call readiness, usable connection quality, and whether the problem is on your Wi-Fi side or farther upstream.',
   offers: {
     '@type': 'Offer',
     price: '9.99',
@@ -76,10 +76,10 @@ const faqSchema = {
     },
     {
       '@type': 'Question',
-      name: 'Does MacWiFi sort networks by signal strength?',
+      name: 'Can it help when my Mac says connected to Wi-Fi but the internet still feels broken?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'That is one of the practical improvements we are building toward, because the default macOS Wi-Fi menu often makes nearby networks harder to scan than they should be.',
+        text: 'Yes. One of the main jobs is separating local Wi-Fi trouble from DNS trouble and upstream internet trouble when the Wi-Fi icon still looks normal.',
       },
     },
     {
@@ -100,9 +100,9 @@ const practicalUses = [
     copy: 'MacWiFi turns the current connection into a plain readiness read so you can decide before the call starts going sideways.',
   },
   {
-    eyebrow: 'When every nearby network looks sketchy',
-    title: 'Compare Wi-Fi options and pick the one most likely to hold up.',
-    copy: 'It helps you stop guessing from bars alone when hotel, Airbnb, or coworking Wi-Fi all look equally questionable.',
+    eyebrow: 'When the icon says connected but work still hangs',
+    title: 'Separate shaky Wi-Fi from DNS trouble and upstream outages.',
+    copy: 'It helps you stop treating every failure like vague Wi-Fi drama when the real weak spot is sometimes past your router.',
   },
   {
     eyebrow: 'When home internet becomes everybody’s problem',
@@ -121,8 +121,8 @@ const builtInPainPoints = [
     copy: 'The default read does not tell you enough about stability, dropouts, or whether video will hold up.',
   },
   {
-    title: 'Picking the right network is still guesswork',
-    copy: 'Nearby networks are still awkward to compare when all you want is the one most likely to behave.',
+    title: 'The icon cannot tell you where the path breaks',
+    copy: 'macOS still leaves you guessing whether the weak spot is local Wi-Fi, DNS, or the internet path after your router.',
   },
 ]
 
@@ -140,10 +140,10 @@ const productSections = [
     alt: 'MacWiFi advanced information screenshot with deeper diagnostics.',
   },
   {
-    title: 'See the strongest nearby network first.',
-    copy: 'Instead of making you scan a messy menu, MacWiFi can help you surface the nearest and strongest network first, which is often the only thing you wanted from the menu bar in the first place.',
-    image: '/assets/wi-fi.png',
-    alt: 'MacWiFi screenshot showing nearby networks inside the app.',
+    title: 'Catch the cases where Wi-Fi looks fine but the internet is not.',
+    copy: 'DNS timing, packet loss, and path checks make the annoying “connected but useless” state much easier to understand in normal English.',
+    image: '/assets/dns-response.png',
+    alt: 'MacWiFi screenshot showing DNS response and connection path diagnostics.',
   },
 ]
 
@@ -178,10 +178,11 @@ export default function HomePage() {
         <section className={section}>
           <div className={`${shell} grid items-center gap-8 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(380px,520px)] lg:gap-16`}>
             <div className="max-w-2xl">
-              <h1 className={pageTitle}>Know whether your internet can handle the next call.</h1>
+              <h1 className={pageTitle}>Know whether your Mac internet can handle the next call.</h1>
               <p className={`${lead} mt-6 max-w-xl`}>
-                MacWiFi checks the connection you are on and tells you whether it is good enough
-                for calls, video, and normal work, and where the problem likely is.
+                MacWiFi checks unstable internet on Mac in plain English. It tells you whether the
+                current connection is good enough for calls and normal work, and whether the
+                problem is likely your Wi-Fi or something upstream.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <CheckoutButton className={`${primaryButton} w-full sm:w-auto`}>Buy for {PRICE}</CheckoutButton>
@@ -341,8 +342,8 @@ export default function HomePage() {
                 See whether the current internet is actually usable.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-                These are the product states that matter: readiness, deeper issue source, and the
-                nearby network you are most likely to trust.
+                These are the product states that matter: call readiness, deeper issue source, and
+                the reasons a connection can still feel broken even when Wi-Fi says connected.
               </p>
             </div>
 
@@ -420,11 +421,11 @@ export default function HomePage() {
 
             <article className={`${card} p-5 sm:p-7`}>
               <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
-                Can it help me pick between nearby networks?
+                Can it help when my Mac says connected to Wi-Fi but pages still do not load?
               </h3>
               <p className="mt-4 text-base leading-7 text-slate-700">
-                Yes. One practical use is comparing nearby Wi-Fi options instead of guessing from
-                a crowded list and hoping the top one is the best one.
+                Yes. It helps separate local Wi-Fi trouble from DNS trouble and broader
+                internet-path trouble, which is usually the real question in that moment.
               </p>
             </article>
 

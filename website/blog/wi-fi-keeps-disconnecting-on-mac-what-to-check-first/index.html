@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wi-Fi Keeps Disconnecting on Mac: What to Check First | MacWiFi</title>
+    <meta
+      name="description"
+      content="Wi-Fi keeps disconnecting on your Mac? Use a practical first-pass checklist to separate weak local Wi-Fi, roaming issues, DNS weirdness, and upstream trouble."
+    />
+    <meta property="og:site_name" content="MacWiFi" />
+    <meta property="og:title" content="Wi-Fi Keeps Disconnecting on Mac: What to Check First" />
+    <meta
+      property="og:description"
+      content="A practical Mac checklist for repeated Wi-Fi dropouts, reconnects, and unstable work sessions."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://macwifi.live/blog/wi-fi-keeps-disconnecting-on-mac-what-to-check-first" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Wi-Fi Keeps Disconnecting on Mac: What to Check First" />
+    <meta
+      name="twitter:description"
+      content="A practical Mac checklist for repeated Wi-Fi dropouts, reconnects, and unstable work sessions."
+    />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://macwifi.live/blog/wi-fi-keeps-disconnecting-on-mac-what-to-check-first" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Wi-Fi Keeps Disconnecting on Mac: What to Check First",
+        "datePublished": "2026-03-11",
+        "dateModified": "2026-03-11",
+        "author": {
+          "@type": "Person",
+          "name": "Kiran Jd"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "MacWiFi",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://macwifi.live/assets/icon.png"
+          }
+        },
+        "url": "https://macwifi.live/blog/wi-fi-keeps-disconnecting-on-mac-what-to-check-first"
+      }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DWSJTXQ65"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = window.gtag || gtag;
+      window.gtag("js", new Date());
+      window.gtag("config", "G-0DWSJTXQ65", { anonymize_ip: true, send_page_view: false });
+      window.__macwifiGAConfigured = true;
+    </script>
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="ambient ambient-c"></div>
+
+    <header class="site-header simple-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="MacWiFi home">
+          <img src="/assets/icon.png" alt="" />
+          <span>MacWiFi</span>
+        </a>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+          <a href="/blog/">Blog</a>
+          <a href="/help/activate-license">Activate</a>
+        </nav>
+        <a class="button button-small" href="/pricing" data-cta-location="article_disconnects_header">See pricing</a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container article-layout">
+        <article class="article-shell reveal">
+          <p class="article-meta">March 11, 2026 · Troubleshooting</p>
+          <h1>Wi-Fi keeps disconnecting on Mac: what to check first</h1>
+          <p class="article-lead">
+            The annoying version of this problem is not a total outage. It is the
+            drop, reconnect, pretend-everything-is-fine cycle that wrecks calls,
+            uploads, and concentration. The fix depends on whether the break is
+            local Wi-Fi, network switching, or something farther upstream.
+          </p>
+
+          <div class="article-body">
+            <h2>Quick answer</h2>
+            <p>
+              Start by checking whether the Mac is losing the local wireless link,
+              staying on Wi-Fi while internet access dies, or jumping between bad
+              networks. Those are different failures and they waste time when treated
+              as one generic “Wi-Fi problem.”
+            </p>
+
+            <h2>What the symptom usually means</h2>
+            <ul>
+              <li>The local Wi-Fi signal is weak or unstable in that spot.</li>
+              <li>Your Mac is roaming between SSIDs or bands badly.</li>
+              <li>The router stays reachable, but DNS or the public path keeps failing.</li>
+              <li>Loaded latency spikes during calls, sync, or large uploads make it feel like a disconnect.</li>
+            </ul>
+
+            <h2>What to check first</h2>
+            <ol>
+              <li>Notice whether the Wi-Fi icon itself drops or whether only the internet dies.</li>
+              <li>See if the issue happens only in one room, which usually points to local wireless weakness.</li>
+              <li>Check if another device on the same network is fine or equally miserable.</li>
+              <li>Watch whether the failure shows up during uploads, backups, or cloud sync.</li>
+              <li>Try one alternate network once. A hotspot is often the fastest sanity check.</li>
+            </ol>
+
+            <h2>When it is probably local Wi-Fi</h2>
+            <p>
+              If the signal is weak, the disconnects happen in one area, or a better
+              nearby network solves it immediately, the weak spot is local. In that
+              case the fix is usually position, band, SSID choice, or router placement,
+              not another random Mac restart.
+            </p>
+
+            <h2>When it is probably not the Wi-Fi radio</h2>
+            <p>
+              If the Mac stays associated to the router but pages hang, calls freeze,
+              or DNS lookups stall, the problem may be after the wireless hop. This is
+              why “Wi-Fi keeps disconnecting” is often shorthand for “the internet keeps
+              becoming unusable.”
+            </p>
+
+            <blockquote>
+              The useful question is not just “did Wi-Fi drop?” It is “which part of the path became unreliable?”
+            </blockquote>
+
+            <h2>What to do next</h2>
+            <ul>
+              <li>If the local link is weak, move, switch band, or choose a better SSID.</li>
+              <li>If the local link is fine but the public side keeps failing, stop blaming the room and check the router or ISP.</li>
+              <li>If failures line up with uploads, pause background sync and watch loaded latency instead of idle speed.</li>
+            </ul>
+
+            <h2>How MacWiFi helps</h2>
+            <p>
+              MacWiFi separates the local Wi-Fi side from the public internet side, so
+              you can see whether the dropout is truly wireless, more like DNS trouble,
+              or really an upstream reliability problem that only feels like Wi-Fi.
+            </p>
+          </div>
+        </article>
+
+        <aside class="article-aside reveal reveal-delay">
+          <h3>More from MacWiFi</h3>
+          <div class="aside-list">
+            <a href="/blog/connected-to-wifi-but-no-internet-on-mac">
+              Connected to Wi-Fi but No Internet on Mac
+              <span>When the icon looks fine but work still stops.</span>
+            </a>
+            <a href="/blog/how-to-tell-if-wifi-or-isp-is-the-problem">
+              How to Tell if Wi-Fi or ISP Is the Problem
+              <span>Use a cleaner split instead of guessing.</span>
+            </a>
+            <a href="/pricing">
+              MacWiFi pricing
+              <span>See the menu bar app built for this diagnosis loop.</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <a class="footer-brand" href="/">MacWiFi</a>
+          <p>Native macOS diagnostics for normal people.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/blog/">Blog</a>
+          <a href="mailto:support@macwifi.live">Support</a>
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/main.js" defer></script>
+  </body>
+</html>

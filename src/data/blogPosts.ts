@@ -6,9 +6,24 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: 'connected-to-wifi-but-no-internet-on-mac',
+    title: 'Connected to Wi-Fi but No Internet on Mac',
+    description: 'Why the Wi-Fi icon can still look fine while the connection is effectively unusable.',
+  },
+  {
+    slug: 'wi-fi-keeps-disconnecting-on-mac-what-to-check-first',
+    title: 'Wi-Fi Keeps Disconnecting on Mac: What to Check First',
+    description: 'A practical first-pass checklist for when the connection drops, returns, and wastes half the morning.',
+  },
+  {
     slug: 'how-to-check-if-your-internet-is-good-enough-for-a-video-call-on-mac',
     title: 'How to Check if Your Internet Is Good Enough for a Video Call on Mac',
     description: 'A practical guide for remote workers who want to know if a connection is actually ready for Zoom, Meet, or Teams.',
+  },
+  {
+    slug: 'zoom-says-your-internet-is-unstable-on-mac',
+    title: 'Zoom Says Your Internet Is Unstable on Mac',
+    description: 'What that warning usually means and how to separate Wi-Fi trouble from upstream trouble before the call gets worse.',
   },
   {
     slug: 'how-to-pick-the-best-wifi-network-on-mac',
@@ -36,6 +51,16 @@ export const blogPosts: BlogPost[] = [
     description: 'Packet loss matters more than most speed tests admit. Here is how to check it and what it means.',
   },
   {
+    slug: 'how-to-use-networkquality-on-mac',
+    title: 'How to Use networkQuality on Mac',
+    description: 'What Apple’s built-in networkQuality test tells you, what it misses, and how to read it without pretending one number explains everything.',
+  },
+  {
+    slug: 'how-to-use-wireless-diagnostics-on-mac',
+    title: 'How to Use Wireless Diagnostics on Mac',
+    description: 'A plain-English guide to Apple’s hidden Wi-Fi troubleshooting tool and when it helps.',
+  },
+  {
     slug: 'how-to-improve-zoom-call-quality-on-mac',
     title: 'How to Improve Zoom Call Quality on Mac',
     description: 'The checks that actually matter when calls get unstable or start breaking up.',
@@ -44,11 +69,6 @@ export const blogPosts: BlogPost[] = [
     slug: 'whyfi-alternative-for-mac',
     title: 'WhyFi Alternative for Mac',
     description: 'A plain comparison for people who want a lighter menu bar tool focused on current usability.',
-  },
-  {
-    slug: 'connected-to-wifi-but-no-internet-on-mac',
-    title: 'Connected to Wi-Fi but No Internet on Mac',
-    description: 'Why the Wi-Fi icon can still look fine while the connection is effectively unusable.',
   },
   {
     slug: 'how-to-check-jitter-on-mac',

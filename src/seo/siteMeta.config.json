@@ -1,8 +1,8 @@
 {
   "siteBaseUrl": "https://macwifi.live",
   "canonicalPath": "/",
-  "title": "MacWiFi | Know what your internet can actually do right now",
-  "description": "MacWiFi is a native macOS menu bar app that translates network health into plain answers about calls, streaming, browsing, and whether the problem is your Wi-Fi or farther upstream.",
+  "title": "MacWiFi | Diagnose unstable internet on Mac before the next call",
+  "description": "MacWiFi is a native macOS menu bar app for unstable internet on Mac. Check call readiness, separate Wi-Fi-side trouble from ISP-side trouble, and see why a connection feels bad.",
   "socialImage": "https://macwifi.live/assets/social-card.png",
   "socialAlt": "MacWiFi preview showing the app on macOS.",
   "twitterCard": "summary_large_image"

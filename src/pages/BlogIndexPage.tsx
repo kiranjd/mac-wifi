@@ -4,9 +4,9 @@ import { blogPosts } from '../data/blogPosts'
 import { card, eyebrow, lead, section, sectionTitle, shell } from '../lib/ui'
 
 const blogMeta = makeMeta({
-  title: 'MacWiFi Blog | Connection quality on macOS',
+  title: 'MacWiFi Blog | Unstable internet on Mac, explained plainly',
   description:
-    'Guides about Wi-Fi stability, packet loss, jitter, macOS troubleshooting, and how to tell whether the problem is your network or your ISP.',
+    'Practical Mac guides for unstable internet, call readiness, packet loss, jitter, and how to tell whether the problem is your Wi-Fi or your ISP.',
   canonicalPath: '/blog',
 })
 
@@ -19,10 +19,11 @@ export default function BlogIndexPage() {
         <div className={shell}>
           <div className="max-w-3xl">
             <p className={eyebrow}>Blog</p>
-            <h1 className={sectionTitle}>Connection quality, explained plainly.</h1>
+            <h1 className={sectionTitle}>Unstable internet on Mac, explained plainly.</h1>
             <p className={`${lead} mt-5 max-w-2xl`}>
-              These are practical guides about unstable internet on macOS, what different signals
-              mean, and how to decide whether the problem is local Wi-Fi or something beyond it.
+              These are practical guides about Mac connection problems that affect real work:
+              video calls, flaky Wi-Fi, DNS weirdness, packet loss, jitter, and the split between
+              local trouble and upstream trouble.
             </p>
           </div>
 
