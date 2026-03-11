@@ -34,9 +34,9 @@ export default function App() {
   useEffect(() => initLemonOverlay('/download'), [])
 
   return (
-    <div className="app-shell">
+    <div className="min-h-screen bg-[#ece8de] text-slate-950">
       <RouteEffects />
-      <SiteHeader ctaLabel="Pricing" ctaHref="/pricing" />
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />

@@ -1,4 +1,17 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import CheckoutButton from '../components/CheckoutButton'
+import { PRICE } from '../config/commerce'
+import {
+  card,
+  eyebrow,
+  lead,
+  pageTitle,
+  primaryButton,
+  section,
+  sectionTitle,
+  shell,
+  subtleCard,
+} from '../lib/ui'
 import { SeoHead } from '../seo/SeoHead'
 import { makeMeta } from '../seo/siteMeta'
 
@@ -82,68 +95,78 @@ const faqSchema = {
 
 const practicalUses = [
   {
-    eyebrow: 'Remote calls',
-    title: 'Before a client call or interview',
-    copy: 'Open MacWiFi and get a plain read on whether this connection is ready for Zoom, Meet, or Teams before you join and hope for the best.',
-    href: '/blog/how-to-check-if-your-internet-is-good-enough-for-a-video-call-on-mac',
-    linkLabel: 'Read the call-readiness guide',
+    eyebrow: 'Before a call that matters',
+    title: 'Check whether this connection is safe for Zoom, Meet, or Teams before you join.',
+    copy: 'MacWiFi turns the current connection into a plain readiness read so you can decide before the call starts going sideways.',
   },
   {
-    eyebrow: 'Travel / coworking',
-    title: 'When there are five SSIDs and no obvious good one',
-    copy: 'Use it to decide which network is actually worth trying when hotel, Airbnb, or coworking Wi-Fi all look equally suspicious.',
-    href: '/blog/how-to-pick-the-best-wifi-network-on-mac',
-    linkLabel: 'Read the network-picking guide',
+    eyebrow: 'When every nearby network looks sketchy',
+    title: 'Compare Wi-Fi options and pick the one most likely to hold up.',
+    copy: 'It helps you stop guessing from bars alone when hotel, Airbnb, or coworking Wi-Fi all look equally questionable.',
   },
   {
-    eyebrow: 'House IT',
-    title: 'When everyone says “the Wi-Fi is broken”',
-    copy: 'It helps you figure out whether to move closer, switch bands, restart the router, or stop blaming the router and call the ISP.',
-    href: '/blog/should-you-restart-your-router-or-call-your-isp-on-mac',
-    linkLabel: 'Read the troubleshooting guide',
+    eyebrow: 'When home internet becomes everybody’s problem',
+    title: 'See whether the issue is inside your home network or farther upstream.',
+    copy: 'Use it to decide whether to move, switch, restart the router, or stop blaming the router and call the ISP.',
   },
 ]
 
 const builtInPainPoints = [
   {
-    title: 'Bars do not tell you if a call will survive',
-    copy: 'macOS shows signal bars. That is not the same as call quality, jitter, packet loss, or whether pages will hang.',
+    title: 'Connected is not the same as usable',
+    copy: 'The menu bar can say you are online while calls still break up and pages still hang.',
   },
   {
-    title: 'The useful diagnostics are buried',
-    copy: 'The built-in tools are hidden behind option-clicks and Wireless Diagnostics, which is more than most people want for a quick answer.',
+    title: 'Call-quality problems stay hidden',
+    copy: 'The default read does not tell you enough about stability, dropouts, or whether video will hold up.',
   },
   {
-    title: 'Choosing a network is still awkward',
-    copy: 'The default Wi-Fi menu does not really help you pick the best nearby network for what you are about to do.',
+    title: 'Picking the right network is still guesswork',
+    copy: 'Nearby networks are still awkward to compare when all you want is the one most likely to behave.',
   },
 ]
 
 const productSections = [
   {
-    eyebrow: 'Main read',
     title: 'See whether the current internet is actually usable.',
     copy: 'Instead of leaving you with signal bars and vague instincts, MacWiFi shows whether the connection is stable enough for calls, streaming, and normal browsing right now.',
     image: '/assets/wi-fi.png',
     alt: 'MacWiFi main status screenshot showing connection readiness.',
   },
   {
-    eyebrow: 'Advanced info',
     title: 'Get the details when you actually need them.',
     copy: 'If something feels wrong, you can open the deeper diagnostics and see the connection path, local network details, and the kind of instability that is causing the problem.',
     image: '/assets/advanced-info.png',
     alt: 'MacWiFi advanced information screenshot with deeper diagnostics.',
   },
   {
-    eyebrow: 'DNS and response',
-    title: 'Spot the kind of lag that makes a connection feel bad.',
-    copy: 'It helps surface slow DNS or unstable response timing, which is often the reason internet feels unreliable even when the usual Wi-Fi icon looks fine.',
-    image: '/assets/dns-response.png',
-    alt: 'MacWiFi DNS response screenshot.',
+    title: 'See the strongest nearby network first.',
+    copy: 'Instead of making you scan a messy menu, MacWiFi can help you surface the nearest and strongest network first, which is often the only thing you wanted from the menu bar in the first place.',
+    image: '/assets/wi-fi.png',
+    alt: 'MacWiFi screenshot showing nearby networks inside the app.',
   },
 ]
 
 export default function HomePage() {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [heroMuted, setHeroMuted] = useState(true)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = heroMuted
+    void video.play().catch(() => {})
+  }, [heroMuted])
+
+  const toggleHeroMuted = () => {
+    const nextMuted = !heroMuted
+    setHeroMuted(nextMuted)
+    const video = videoRef.current
+    if (!video) return
+    video.muted = nextMuted
+    void video.play().catch(() => {})
+  }
+
   return (
     <>
       <SeoHead meta={homeMeta}>
@@ -152,160 +175,204 @@ export default function HomePage() {
       </SeoHead>
 
       <main>
-        <section className="hero-section section-pad">
-          <div className="shell hero-grid">
-            <div className="hero-copy">
-              <h1>The Wi-Fi monitor macOS should have had.</h1>
-              <p className="hero-lead">
-                MacWiFi tells you whether the current connection is actually usable, what it can
-                handle, and where the problem probably is.
+        <section className={section}>
+          <div className={`${shell} grid items-center gap-8 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(380px,520px)] lg:gap-16`}>
+            <div className="max-w-2xl">
+              <h1 className={pageTitle}>Know whether your internet can handle the next call.</h1>
+              <p className={`${lead} mt-6 max-w-xl`}>
+                MacWiFi checks the connection you are on and tells you whether it is good enough
+                for calls, video, and normal work, and where the problem likely is.
               </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <CheckoutButton className={`${primaryButton} w-full sm:w-auto`}>Buy for {PRICE}</CheckoutButton>
+                <a
+                  className="inline-flex w-full items-center justify-center rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 text-[0.9rem] font-semibold text-slate-900 transition hover:bg-white sm:w-auto sm:text-[0.96rem]"
+                  href="#walkthrough"
+                >
+                  Watch 30-second demo
+                </a>
+              </div>
 
-              <div className="hero-facts">
-                <div>
-                  <strong>$9.99 once</strong>
-                  <span>No subscription</span>
-                </div>
-                <div>
-                  <strong>Native menu bar app</strong>
-                  <span>Open, check, move on</span>
-                </div>
-                <div>
-                  <strong>No account</strong>
-                  <span>Install it and use it</span>
-                </div>
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-9 sm:grid-cols-4">
+                {[
+                  ['One-time purchase', `${PRICE} once`],
+                  ['Native app', 'Menu bar, not a dashboard'],
+                  ['No account', 'Install it and use it'],
+                  ['Diagnosis', 'Wi-Fi side or ISP side'],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className={`${card} min-h-0 p-4 sm:p-5`}
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm sm:tracking-[0.2em]">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-[0.98rem] font-semibold leading-5 tracking-[-0.04em] text-slate-950 sm:text-lg">
+                      {value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="hero-visual">
-              <div className="hero-card hero-card-top">
-                <span>Ready for</span>
-                <strong>Calls, streaming, browsing</strong>
-              </div>
-              <video
-                className="hero-video"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                poster="/assets/wi-fi.png"
-                aria-label="MacWiFi app demo video"
-              >
-                <source src="/assets/macwifi-hero.mp4" type="video/mp4" />
-              </video>
-              <div className="hero-card hero-card-bottom">
-                <span>Likely issue</span>
-                <strong>Wi-Fi side or internet side</strong>
+            <div className="relative">
+              <div className="absolute inset-x-10 top-6 h-20 rounded-full bg-emerald-300/20 blur-3xl sm:inset-x-12 sm:top-8 sm:h-24" />
+              <div className="relative mx-auto w-full max-w-[420px] rounded-[26px] border border-slate-900/8 bg-[#0b1118] p-3 shadow-[0_44px_110px_-48px_rgba(15,23,42,0.72)] sm:max-w-[560px] sm:rounded-[36px] sm:p-4">
+                <video
+                  ref={videoRef}
+                  className="block w-full rounded-[18px] object-contain sm:rounded-[26px]"
+                  autoPlay
+                  loop
+                  muted={heroMuted}
+                  playsInline
+                  preload="auto"
+                  poster="/assets/wi-fi.png"
+                  aria-label="MacWiFi app demo video"
+                >
+                  <source src="/assets/macwifi-hero.mp4" type="video/mp4" />
+                </video>
+                <div className="pointer-events-none absolute inset-x-5 bottom-4 flex items-end justify-end sm:inset-x-7 sm:bottom-6">
+                  <button
+                    className="pointer-events-auto rounded-full bg-slate-950/88 px-3 py-1.5 text-xs font-semibold text-white shadow-[0_20px_40px_-18px_rgba(15,23,42,0.82)] transition hover:bg-slate-950 sm:px-4 sm:py-2 sm:text-sm"
+                    type="button"
+                    onClick={toggleHeroMuted}
+                  >
+                    {heroMuted ? 'Unmute' : 'Mute'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="section-pad">
-          <div className="shell">
-            <div className="intro-block">
-              <p className="section-label">Practical uses</p>
-              <h2>Where people actually use this.</h2>
-              <p>
-                The app makes the most sense in moments where the built-in Wi-Fi meter stops being
-                useful and you need a decision instead of another vague signal icon.
-              </p>
+        <section id="answers" className={section}>
+          <div className={shell}>
+            <div className="max-w-3xl">
+              <p className={eyebrow}>Three answers in one glance</p>
+              <h2 className={sectionTitle}>The part that matters most.</h2>
             </div>
 
-            <div className="persona-grid">
+            <div className="mt-8 grid gap-4 lg:mt-10 lg:grid-cols-3">
+              <article className={`${card} p-5 sm:p-7`}>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0f766e]">Calls</p>
+                <h3 className="mt-4 text-[1.5rem] font-semibold leading-[1.04] tracking-[-0.05em] text-slate-950">
+                  Can I trust this for a meeting?
+                </h3>
+                <p className="mt-4 text-base leading-7 text-slate-700">
+                  MacWiFi turns latency, jitter, and loss into a simple read on call readiness.
+                </p>
+              </article>
+
+              <article className={`${card} p-5 sm:p-7`}>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0f766e]">Streaming</p>
+                <h3 className="mt-4 text-[1.5rem] font-semibold leading-[1.04] tracking-[-0.05em] text-slate-950">
+                  Is this internet just slow, or actually unstable?
+                </h3>
+                <p className="mt-4 text-base leading-7 text-slate-700">
+                  It focuses on whether the connection feels usable, not just whether one test
+                  spiked high.
+                </p>
+              </article>
+
+              <article className={`${card} p-5 sm:p-7`}>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0f766e]">Diagnosis</p>
+                <h3 className="mt-4 text-[1.5rem] font-semibold leading-[1.04] tracking-[-0.05em] text-slate-950">
+                  Is the mess inside my home network or past it?
+                </h3>
+                <p className="mt-4 text-base leading-7 text-slate-700">
+                  It helps split local Wi-Fi trouble from upstream internet trouble so you know
+                  where to look.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className={section}>
+          <div className={shell}>
+            <div className="max-w-3xl">
+              <p className={eyebrow}>Where people use this</p>
+              <h2 className={sectionTitle}>Stressful moments, clearer answers.</h2>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:mt-10 lg:grid-cols-3">
               {practicalUses.map((use) => (
-                <article key={use.title} className="persona-card">
-                  <p className="question-kicker">{use.eyebrow}</p>
-                  <h3>{use.title}</h3>
-                  <p>{use.copy}</p>
-                  <Link className="use-case-link" to={use.href}>
-                    {use.linkLabel}
-                  </Link>
+                <article key={use.title} className={`${card} p-5 sm:p-7`}>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0f766e]">
+                    {use.eyebrow}
+                  </p>
+                  <h3 className="mt-4 text-[1.55rem] font-semibold leading-[1.04] tracking-[-0.05em] text-slate-950">
+                    {use.title}
+                  </h3>
+                  <p className="mt-4 text-base leading-7 text-slate-700">{use.copy}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section-pad section-pad-tight">
-          <div className="shell">
-            <div className="intro-block">
-              <p className="section-label">Why people outgrow the built-in Wi-Fi view</p>
-              <h2>The default macOS menu still leaves a few important gaps.</h2>
-              <p>
-                That gap is the reason MacWiFi exists. The built-in menu shows whether you are
-                connected. It does not do a great job of telling you whether the connection is
-                actually usable.
-              </p>
+        <section className={`${section} bg-[#e6e0d3]/64`}>
+          <div className={shell}>
+            <div className="max-w-3xl">
+              <p className={eyebrow}>Why macOS isn’t enough</p>
+              <h2 className={sectionTitle}>Signal bars don’t tell you enough.</h2>
             </div>
 
-            <div className="pain-grid">
+            <div className="mt-8 grid gap-4 lg:mt-10 lg:grid-cols-3">
               {builtInPainPoints.map((pain) => (
-                <article key={pain.title} className="pain-card">
-                  <h3>{pain.title}</h3>
-                  <p>{pain.copy}</p>
+                <article key={pain.title} className={`${subtleCard} p-5 sm:p-7`}>
+                  <h3 className="text-[1.45rem] font-semibold leading-[1.04] tracking-[-0.05em] text-slate-950">
+                    {pain.title}
+                  </h3>
+                  <p className="mt-4 text-base leading-7 text-slate-700">{pain.copy}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section-pad">
-          <div className="shell">
-            <div className="intro-block">
-              <p className="section-label">What it translates</p>
-              <h2>Three things you usually want to know.</h2>
-              <p>
-                You open it when the connection feels off and you want to know whether you can trust
-                it, what it can handle, and where the trouble probably is.
+        <section id="walkthrough" className={`${section} bg-[#07131b] text-white`}>
+          <div className={shell}>
+            <div className="max-w-3xl">
+              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300 sm:text-xs">
+                Product walkthrough
+              </p>
+              <h2 className="text-[2.15rem] leading-[0.94] tracking-[-0.06em] text-white sm:text-5xl lg:text-[4rem]">
+                See whether the current internet is actually usable.
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+                These are the product states that matter: readiness, deeper issue source, and the
+                nearby network you are most likely to trust.
               </p>
             </div>
 
-            <div className="question-grid">
-              <article className="question-card">
-                <p className="question-kicker">Calls</p>
-                <h3>Can I trust this for a meeting?</h3>
-                <p>MacWiFi turns latency, jitter, and loss into a simple read on call readiness.</p>
-              </article>
-
-              <article className="question-card">
-                <p className="question-kicker">Streaming</p>
-                <h3>Is this internet just slow, or actually unstable?</h3>
-                <p>It focuses on whether the connection feels usable, not just whether one test spiked high.</p>
-              </article>
-
-              <article className="question-card">
-                <p className="question-kicker">Diagnosis</p>
-                <h3>Is the mess inside my home network or past it?</h3>
-                <p>It helps split local Wi-Fi trouble from upstream internet trouble so you know where to look.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section className="section-pad product-gallery-section">
-          <div className="shell">
-            <div className="intro-block intro-block-tight">
-              <p className="section-label">Inside the app</p>
-              <h2>What the app shows, without much ceremony.</h2>
-            </div>
-
-            <div className="zigzag-list">
+            <div className="mt-10 space-y-12 sm:mt-12 sm:space-y-14">
               {productSections.map((section, index) => (
                 <article
                   key={section.title}
-                  className={`zigzag-row ${index % 2 === 1 ? 'zigzag-row-reverse' : ''}`}
+                  className={`grid items-center gap-5 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:gap-16 ${
+                    index % 2 === 1 ? 'lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)]' : ''
+                  }`}
                 >
-                  <div className="zigzag-copy">
-                    <p className="question-kicker">{section.eyebrow}</p>
-                    <h3>{section.title}</h3>
-                    <p>{section.copy}</p>
+                  <div className={`${index % 2 === 1 ? 'lg:order-2 lg:justify-self-end' : ''} max-w-xl`}>
+                    <h3 className="text-[2rem] font-semibold leading-[0.98] tracking-[-0.06em] text-white sm:text-[3rem]">
+                      {section.title}
+                    </h3>
+                    <p className="mt-4 text-[1rem] leading-7 text-slate-300 sm:mt-5 sm:text-lg sm:leading-8">{section.copy}</p>
                   </div>
 
-                  <figure className="gallery-card zigzag-media">
-                    <figcaption>{section.eyebrow}</figcaption>
-                    <img src={section.image} alt={section.alt} />
+                  <figure
+                    className={`${
+                      index % 2 === 1 ? 'lg:order-1 lg:justify-self-start' : 'lg:justify-self-end'
+                    }`}
+                  >
+                    <div className="rounded-[24px] border border-white/10 bg-white/5 p-3 shadow-[0_34px_90px_-50px_rgba(0,0,0,0.8)] backdrop-blur sm:rounded-[32px] sm:p-4">
+                      <img
+                        className="mx-auto block w-full max-w-[320px] rounded-[18px] sm:max-w-[380px] sm:rounded-[24px]"
+                        src={section.image}
+                        alt={section.alt}
+                      />
+                    </div>
                   </figure>
                 </article>
               ))}
@@ -313,69 +380,64 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="section-pad">
-          <div className="shell faq-grid">
-            <div className="intro-block intro-block-tight">
-              <p className="section-label">FAQ</p>
-              <h2>Common questions.</h2>
+        <section id="faq" className={`${section} scroll-mt-28`}>
+          <div className={`${shell} grid gap-4 lg:grid-cols-3`}>
+            <div className="max-w-lg lg:pr-6">
+              <p className={eyebrow}>FAQ</p>
+              <h2 className={sectionTitle}>Common questions.</h2>
             </div>
 
-            <article className="faq-card">
-              <h3>What does it actually test?</h3>
-              <p>
+            <article className={`${card} p-5 sm:p-7`}>
+              <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
+                What does it actually test?
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
                 It looks at local Wi-Fi health and the wider internet path, then summarizes what
                 the connection feels capable of right now.
               </p>
             </article>
 
-            <article className="faq-card">
-              <h3>Is this a speed test?</h3>
-              <p>
+            <article className={`${card} p-5 sm:p-7`}>
+              <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
+                Is this a speed test?
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
                 Not really. The point is not to chase one big number. It is to tell you whether
                 the connection is likely to behave well for the thing you are about to do.
               </p>
             </article>
 
-            <article className="faq-card">
-              <h3>Why is the built-in Mac Wi-Fi meter not enough?</h3>
-              <p>
+            <article className={`${card} p-5 sm:p-7`}>
+              <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
+                Why is the built-in Mac Wi-Fi meter not enough?
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
                 Signal bars tell you only part of the story. They do not tell you much about
                 jitter, packet loss, flaky DNS, or whether the connection will hold up during a
                 call.
               </p>
             </article>
 
-            <article className="faq-card">
-              <h3>Can it help me pick between nearby networks?</h3>
-              <p>
+            <article className={`${card} p-5 sm:p-7`}>
+              <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
+                Can it help me pick between nearby networks?
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
                 Yes. One practical use is comparing nearby Wi-Fi options instead of guessing from
                 a crowded list and hoping the top one is the best one.
               </p>
             </article>
 
-            <article className="faq-card">
-              <h3>Will it help me figure out whether to blame Wi-Fi or my ISP?</h3>
-              <p>
+            <article className={`${card} p-5 sm:p-7`}>
+              <h3 className="text-[1.45rem] font-semibold leading-[1.05] tracking-[-0.04em] text-slate-950">
+                Will it help me figure out whether to blame Wi-Fi or my ISP?
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
                 That is one of the main reasons it exists. It helps separate local Wi-Fi trouble
                 from broader internet trouble so you know what to change first.
               </p>
             </article>
 
-            <article className="faq-card">
-              <h3>Why does macOS ask for location permission?</h3>
-              <p>
-                That is how macOS exposes Wi-Fi details to apps. MacWiFi uses it for local radio
-                and network information.
-              </p>
-            </article>
-
-            <article className="faq-card">
-              <h3>How do I buy it?</h3>
-              <p>
-                It is a one-time purchase. The checkout email includes the download path, and
-                licensing will stay simple.
-              </p>
-            </article>
           </div>
         </section>
       </main>

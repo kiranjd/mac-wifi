@@ -6,6 +6,7 @@ declare global {
       Refresh?: () => void
       Setup?: (config: { eventHandler: (event: { event: string }) => void }) => void
       Url?: {
+        Open?: (url: string) => void
         Close?: () => void
       }
     }
@@ -13,11 +14,12 @@ declare global {
   }
 }
 
-export const initLemonOverlay = (successPath = '/download') => {
-  if (typeof window === 'undefined') return () => {}
+const loadLemonOverlay = (successPath = '/download') => {
+  if (typeof window === 'undefined') return Promise.resolve(() => {})
 
   const markReady = () => {
     window.createLemonSqueezy?.()
+    window.LemonSqueezy?.Refresh?.()
 
     window.LemonSqueezy?.Setup?.({
       eventHandler: (event) => {
@@ -33,7 +35,7 @@ export const initLemonOverlay = (successPath = '/download') => {
 
   if (window.LemonSqueezy) {
     markReady()
-    return () => {}
+    return Promise.resolve(() => {})
   }
 
   const handleLoad = (event?: Event) => {
@@ -41,28 +43,60 @@ export const initLemonOverlay = (successPath = '/download') => {
     if (target) {
       target.dataset.codexLemonLoaded = 'true'
     }
-    markReady()
-  }
+      markReady()
+    }
 
   const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${LEMON_SCRIPT_URL}"]`)
 
   if (existingScript) {
     if (window.LemonSqueezy || existingScript.dataset.codexLemonLoaded === 'true') {
       markReady()
-      return () => {}
+      return Promise.resolve(() => {})
     }
 
-    existingScript.addEventListener('load', handleLoad)
-    return () => existingScript.removeEventListener('load', handleLoad)
+    return new Promise<() => void>((resolve) => {
+      const onLoad = (event?: Event) => {
+        handleLoad(event)
+        resolve(() => existingScript.removeEventListener('load', onLoad))
+      }
+
+      existingScript.addEventListener('load', onLoad)
+    })
   }
 
   const script = document.createElement('script')
-  script.src = LEMON_SCRIPT_URL
-  script.defer = true
-  script.addEventListener('load', handleLoad)
-  document.body.appendChild(script)
+  return new Promise<() => void>((resolve) => {
+    const onLoad = (event?: Event) => {
+      handleLoad(event)
+      resolve(() => script.removeEventListener('load', onLoad))
+    }
 
-  return () => {
-    script.removeEventListener('load', handleLoad)
+    script.src = LEMON_SCRIPT_URL
+    script.defer = true
+    script.addEventListener('load', onLoad)
+    document.body.appendChild(script)
+  })
+}
+
+export const initLemonOverlay = (successPath = '/download') => {
+  if (typeof window === 'undefined') return () => {}
+  let cleanup: (() => void) | undefined
+  void loadLemonOverlay(successPath).then((dispose) => {
+    cleanup = dispose
+  })
+  return () => cleanup?.()
+}
+
+export const openLemonCheckout = async (href: string, successPath = '/download') => {
+  if (typeof window === 'undefined') return false
+
+  await loadLemonOverlay(successPath)
+  const open = window.LemonSqueezy?.Url?.Open
+
+  if (typeof open === 'function') {
+    open(href)
+    return true
   }
+
+  return false
 }
