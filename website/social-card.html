@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MacWiFi Social Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f5f0e6;
+        --ink: #17202a;
+        --soft: #58616f;
+        --teal: #127c76;
+        --cyan: #1197b2;
+        --coral: #f47d59;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        font-family: "Manrope", sans-serif;
+        background:
+          radial-gradient(circle at 8% 18%, rgba(17, 151, 178, 0.22), transparent 28%),
+          radial-gradient(circle at 90% 14%, rgba(244, 125, 89, 0.2), transparent 24%),
+          linear-gradient(160deg, #f8f4ec 0%, #efe5d8 100%);
+        color: var(--ink);
+      }
+
+      .frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 42px;
+      }
+
+      .panel {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1.02fr 0.98fr;
+        gap: 28px;
+        width: 100%;
+        height: 100%;
+        padding: 34px 34px 54px;
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 30px 90px rgba(19, 27, 35, 0.12);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        color: var(--soft);
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--coral), var(--cyan));
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 26px;
+        font-weight: 800;
+        font-size: 26px;
+        letter-spacing: -0.05em;
+      }
+
+      .brand img {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 540px;
+        font-size: 68px;
+        line-height: 0.92;
+        letter-spacing: -0.08em;
+      }
+
+      h1 em,
+      h1 span {
+        font-family: "Instrument Serif", serif;
+        font-weight: 400;
+      }
+
+      h1 em {
+        display: block;
+        color: var(--teal);
+        font-style: italic;
+      }
+
+      .lede {
+        max-width: 520px;
+        margin: 18px 0 24px;
+        color: var(--soft);
+        font-size: 21px;
+        line-height: 1.32;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .chip {
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(23, 32, 42, 0.08);
+        color: var(--ink);
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .mock {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mock::before {
+        content: "";
+        position: absolute;
+        inset: 36px 22px 18px 22px;
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at top left, rgba(17, 151, 178, 0.2), transparent 30%),
+          radial-gradient(circle at bottom right, rgba(244, 125, 89, 0.16), transparent 30%),
+          rgba(17, 25, 34, 0.07);
+        filter: blur(18px);
+      }
+
+      .shot {
+        position: relative;
+        width: 100%;
+        padding: 14px;
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(255, 255, 255, 0.86);
+        box-shadow: 0 24px 60px rgba(19, 27, 35, 0.14);
+      }
+
+      .shot img {
+        width: 100%;
+        border-radius: 20px;
+      }
+
+      .badge {
+        position: absolute;
+        padding: 12px 15px;
+        border-radius: 18px;
+        background: rgba(17, 25, 34, 0.9);
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        box-shadow: 0 20px 44px rgba(17, 25, 34, 0.2);
+      }
+
+      .badge small {
+        display: block;
+        margin-bottom: 4px;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+      }
+
+      .badge-top {
+        top: 4px;
+        left: -8px;
+      }
+
+      .badge-bottom {
+        right: -8px;
+        bottom: 10px;
+      }
+
+      .url {
+        position: absolute;
+        left: 42px;
+        right: 42px;
+        bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--soft);
+        font-size: 17px;
+      }
+
+      .url strong {
+        color: var(--ink);
+        letter-spacing: -0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="panel">
+        <section>
+          <div class="brand">
+            <img src="./assets/icon.png" alt="" />
+            <span>MacWiFi</span>
+          </div>
+          <div class="eyebrow">
+            <span class="dot"></span>
+            macOS menu bar utility
+          </div>
+          <h1>
+            Find out if it’s your <span>Wi-Fi</span>
+            <em>or your ISP</em>
+          </h1>
+          <p class="lede">
+            Practical internet diagnosis for Mac. See if calls, streaming, and
+            browsing are likely to hold up right now.
+          </p>
+          <div class="chips">
+            <span class="chip">$9.99 one-time</span>
+            <span class="chip">Plain-English diagnosis</span>
+            <span class="chip">Wi-Fi vs ISP clarity</span>
+          </div>
+        </section>
+
+        <section class="mock">
+          <div class="shot">
+            <div class="badge badge-top">
+              <small>Readiness</small>
+              Calls / Streaming / Browsing
+            </div>
+            <div class="badge badge-bottom">
+              <small>Diagnosis</small>
+              Local Wi-Fi or internet side
+            </div>
+            <img src="./assets/wi-fi.png" alt="" />
+          </div>
+        </section>
+      </div>
+
+      <div class="url">
+        <span>The Wi-Fi diagnosis macOS should have had.</span>
+        <strong>macwifi.live</strong>
+      </div>
+    </div>
+  </body>
+</html>
