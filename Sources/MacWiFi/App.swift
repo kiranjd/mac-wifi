@@ -18,10 +18,11 @@ struct VisualEffectBackground: NSViewRepresentable {
 @main
 struct MacWiFiApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    private let licenseManager = LemonSqueezyLicenseManager.shared
 
     var body: some Scene {
         Settings {
-            EmptyView()
+            SettingsView(licenseManager: licenseManager)
         }
     }
 }
@@ -31,12 +32,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private var observationTask: Task<Void, Never>?
+    private let licenseManager = LemonSqueezyLicenseManager.shared
+    private let settingsWindowCoordinator = SettingsWindowCoordinator()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
         setupPopover()
         startObservingQuality()
         WiFiManager.shared.refreshStatus()
+        AppAnalytics.shared.trackInstallIfNeeded()
+        Task {
+            await licenseManager.validate(forceRemote: false)
+        }
     }
 
     private func setupStatusItem() {
@@ -46,6 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             updateMenuBarIcon()
             button.action = #selector(togglePopover)
             button.target = self
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
     }
 
@@ -159,6 +167,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     @objc private func togglePopover() {
+        if shouldShowStatusMenu(for: NSApp.currentEvent) {
+            showStatusMenu()
+            return
+        }
+
         if popover.isShown {
             popover.performClose(nil)
         } else {
@@ -180,5 +193,76 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         if WiFiManager.shared.isPoweredOn {
             WiFiManager.shared.scan()
         }
+    }
+
+    private func shouldShowStatusMenu(for event: NSEvent?) -> Bool {
+        guard let event else { return false }
+        return event.type == .rightMouseUp || event.modifierFlags.contains(.control)
+    }
+
+    private func showStatusMenu() {
+        popover.performClose(nil)
+
+        let menu = NSMenu()
+        menu.addItem(withTitle: "License & Settings…", action: #selector(openSettingsWindow), keyEquivalent: ",")
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "Quit MacWiFi", action: #selector(quitApp), keyEquivalent: "q")
+        menu.items.forEach { $0.target = self }
+
+        statusItem.menu = menu
+        statusItem.button?.performClick(nil)
+        statusItem.menu = nil
+    }
+
+    @objc private func openSettingsWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        if !NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil) {
+            settingsWindowCoordinator.show(licenseManager: licenseManager)
+        }
+    }
+
+    @objc private func quitApp() {
+        NSApp.terminate(nil)
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let url = urls.first else { return }
+        guard url.scheme?.lowercased() == "macwifi" else { return }
+        guard url.host?.lowercased() == "activate" else { return }
+
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        guard let key = components?.queryItems?.first(where: { $0.name == "key" })?.value,
+              !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+
+        Task {
+            do {
+                try await licenseManager.activate(licenseKey: key)
+                await MainActor.run {
+                    openSettingsWindow()
+                    showActivationAlert(title: "License Activated", message: "MacWiFi is now licensed on this Mac.")
+                }
+            } catch let error as LemonSqueezyLicenseManager.LicenseError {
+                await MainActor.run {
+                    openSettingsWindow()
+                    showActivationAlert(title: "Activation Failed", message: error.errorDescription ?? "MacWiFi could not activate this license.")
+                }
+            } catch {
+                await MainActor.run {
+                    openSettingsWindow()
+                    showActivationAlert(title: "Activation Failed", message: "MacWiFi could not activate this license.")
+                }
+            }
+        }
+    }
+
+    private func showActivationAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 }

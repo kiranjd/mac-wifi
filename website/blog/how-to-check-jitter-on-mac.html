@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Check Jitter on Mac | MacWiFi</title>
+    <meta
+      name="description"
+      content="Learn how to check jitter on a Mac, why jitter matters for calls and streaming, and how to tell if it starts on your Wi-Fi or farther upstream."
+    />
+    <meta property="og:site_name" content="MacWiFi" />
+    <meta property="og:title" content="How to Check Jitter on Mac" />
+    <meta
+      property="og:description"
+      content="A practical Mac guide to jitter, call quality, and unstable latency."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://macwifi.live/blog/how-to-check-jitter-on-mac" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Check Jitter on Mac" />
+    <meta
+      name="twitter:description"
+      content="A practical Mac guide to jitter, call quality, and unstable latency."
+    />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://macwifi.live/blog/how-to-check-jitter-on-mac" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "How to Check Jitter on Mac",
+        "datePublished": "2026-03-11",
+        "dateModified": "2026-03-11",
+        "author": {
+          "@type": "Person",
+          "name": "Kiran Jd"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "MacWiFi",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://macwifi.live/assets/icon.png"
+          }
+        },
+        "url": "https://macwifi.live/blog/how-to-check-jitter-on-mac"
+      }
+    </script>
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="ambient ambient-c"></div>
+
+    <header class="site-header simple-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="MacWiFi home">
+          <img src="/assets/icon.png" alt="" />
+          <span>MacWiFi</span>
+        </a>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+          <a href="/blog/">Blog</a>
+          <a href="/help/activate-license">Activate</a>
+        </nav>
+        <a
+          class="button button-small"
+          href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
+          target="_blank"
+          rel="noreferrer"
+          data-cta-location="article_jitter_header"
+        >
+          Buy for $9.99
+        </a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container article-layout">
+        <article class="article-shell reveal">
+          <p class="article-meta">March 11, 2026 · Calls</p>
+          <h1>How to Check Jitter on Mac</h1>
+          <p class="article-lead">
+            Jitter is what makes a connection feel unstable even when average
+            latency looks normal. For calls, it matters because voice traffic
+            hates inconsistency more than it hates slightly slower but steady
+            latency.
+          </p>
+
+          <div class="article-body">
+            <h2>What jitter actually is</h2>
+            <p>
+              Jitter is variation between latency measurements over time. If
+              one packet arrives in 12 ms, the next in 70 ms, and the next in
+              18 ms, that inconsistency is the real problem.
+            </p>
+
+            <h2>Why it matters on a Mac</h2>
+            <ul>
+              <li>Zoom and Meet calls sound robotic or clipped.</li>
+              <li>Game inputs feel delayed in bursts.</li>
+              <li>Streams buffer unpredictably even when bandwidth seems okay.</li>
+            </ul>
+
+            <h2>How to think about it</h2>
+            <p>
+              Stable latency is usually more useful than a lower average
+              latency that jumps around constantly. This is why a speed test
+              can look perfectly respectable while real-time apps still feel
+              bad.
+            </p>
+
+            <h2>Where jitter can start</h2>
+            <ol>
+              <li>Your local Wi-Fi path, especially with weak signal or interference.</li>
+              <li>Your router under load when something else is uploading hard.</li>
+              <li>The ISP or public path after your router.</li>
+            </ol>
+
+            <h2>How to test it usefully</h2>
+            <p>
+              The useful version of a jitter test is not one number in
+              isolation. It is comparing the router side and the public side.
+              If jitter starts locally, fix the Wi-Fi path first. If local
+              numbers stay steady and public numbers swing, the weak spot is
+              upstream.
+            </p>
+
+            <h2>Common causes</h2>
+            <ul>
+              <li>Weak signal strength or unstable roaming.</li>
+              <li>Congested 2.4 GHz networks.</li>
+              <li>Loaded latency from cloud backups, sync, or video uploads.</li>
+              <li>ISP-side congestion that only appears at busy times.</li>
+            </ul>
+
+            <blockquote>
+              Jitter is the difference between “technically online” and “actually usable for a live call.”
+            </blockquote>
+
+            <h2>What to do when you find it</h2>
+            <ul>
+              <li>If the router side is noisy, improve the local Wi-Fi path first.</li>
+              <li>If the public side is noisy but local checks stay clean, keep evidence for your ISP.</li>
+              <li>If spikes happen only during uploads, look for bufferbloat and background sync.</li>
+            </ul>
+
+            <h2>How MacWiFi helps</h2>
+            <p>
+              MacWiFi watches latency consistency, packet loss, and readiness
+              for calls instead of treating bandwidth as the whole story. That
+              makes it easier to see whether the jitter is starting on your
+              Mac’s Wi-Fi side or farther out on the internet path.
+            </p>
+          </div>
+        </article>
+
+        <aside class="article-aside reveal reveal-delay">
+          <h3>More from MacWiFi</h3>
+          <div class="aside-list">
+            <a href="/blog/how-to-improve-zoom-call-quality-on-mac">
+              How to Improve Zoom Call Quality on Mac
+              <span>Jitter is one of the main reasons calls fall apart.</span>
+            </a>
+            <a href="/blog/how-to-check-packet-loss-on-mac">
+              How to Check Packet Loss on Mac
+              <span>Packet loss and jitter often travel together.</span>
+            </a>
+            <a href="/help/activate-license">
+              Activate MacWiFi
+              <span>Use it when the connection starts feeling suspicious.</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>MacWiFi</strong>
+          <p>Native macOS diagnostics for normal people.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/blog/">Blog</a>
+          <a href="mailto:support@macwifi.live">Support</a>
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/main.js" defer></script>
+  </body>
+</html>

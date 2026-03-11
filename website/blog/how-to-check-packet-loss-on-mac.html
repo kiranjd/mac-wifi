@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Check Packet Loss on Mac</title>
+    <meta
+      name="description"
+      content="A practical guide to checking packet loss on Mac with Terminal, router pings, public pings, and menu bar diagnostics."
+    />
+    <link rel="canonical" href="https://macwifi.live/blog/how-to-check-packet-loss-on-mac" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to Check Packet Loss on Mac" />
+    <meta property="og:description" content="A practical guide to checking packet loss on Mac with Terminal, router pings, public pings, and menu bar diagnostics." />
+    <meta property="og:url" content="https://macwifi.live/blog/how-to-check-packet-loss-on-mac" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Check Packet Loss on Mac" />
+    <meta name="twitter:description" content="A practical guide to checking packet loss on Mac with Terminal, router pings, public pings, and menu bar diagnostics." />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/content.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <a class="brand" href="/"><img src="/assets/icon.png" alt="" /><span>MacWiFi</span></a>
+        <nav class="nav"><a href="/">Home</a><a href="/blog">Blog</a><a href="/help/activate-license">Activate License</a></nav>
+        <a class="button" href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477">Buy for $9.99</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="shell article-layout">
+        <article class="article-card">
+          <h1>How to Check Packet Loss on Mac</h1>
+          <p class="article-meta">Published March 11, 2026 · Guide · Troubleshooting</p>
+          <div class="article-body">
+            <p>
+              Packet loss is what makes video calls sound robotic, streams buffer in short bursts, and remote desktop sessions feel unstable even when the raw speed number looks okay. On Mac, the trick is not just to measure packet loss once. It is to measure <em>where</em> it happens.
+            </p>
+
+            <h2>Quick method</h2>
+            <p>
+              The fastest packet-loss workflow on Mac is:
+            </p>
+            <ol>
+              <li>Ping your router.</li>
+              <li>Ping a public IP like <code>1.1.1.1</code>.</li>
+              <li>Compare the two.</li>
+            </ol>
+            <p>
+              If the router ping shows loss, your local Wi-Fi is the first suspect. If the router ping is clean but public pings show loss, the problem is more likely upstream.
+            </p>
+
+            <h2>Check packet loss with Terminal</h2>
+            <h3>1. Find your router address</h3>
+            <p>Run:</p>
+            <blockquote><code>route -n get default | grep gateway</code></blockquote>
+            <p>That usually returns your router IP.</p>
+
+            <h3>2. Ping the router</h3>
+            <blockquote><code>ping -c 40 192.168.1.1</code></blockquote>
+            <p>
+              Replace the address with your gateway. If this already shows packet loss, the weak spot is likely local: signal strength, interference, distance, or router behavior.
+            </p>
+
+            <h3>3. Ping a public IP</h3>
+            <blockquote><code>ping -c 40 1.1.1.1</code></blockquote>
+            <p>
+              If router loss is zero but public loss appears here, the issue is more likely on the internet path rather than inside your home or office network.
+            </p>
+
+            <h2>Why packet loss alone is not enough</h2>
+            <p>
+              The most frustrating cases are not steady catastrophic loss. They are small bursts paired with latency jumps. That is why a simple ping test can still miss a bad call experience. You usually want packet loss plus:
+            </p>
+            <ul>
+              <li>loaded latency,</li>
+              <li>jitter,</li>
+              <li>router-vs-public-path comparison,</li>
+              <li>some quick plain-language interpretation.</li>
+            </ul>
+
+            <h2>When a menu bar tool is better than Terminal</h2>
+            <p>
+              Terminal is useful when you already know what you are checking. A menu bar utility is better when you want repeatable answers quickly, especially before a meeting. MacWiFi checks packet loss to both the router and the public internet path, then pairs that with latency and throughput signals so the result is easier to act on.
+            </p>
+
+            <h2>What to do after you find loss</h2>
+            <ul>
+              <li><strong>Loss to the router:</strong> move closer, switch bands, reduce interference, or try another access point.</li>
+              <li><strong>Loss only to the public path:</strong> try another network, test later, or prepare evidence for your ISP.</li>
+              <li><strong>Loss in both places:</strong> start locally, then retest the public path after stabilizing Wi-Fi.</li>
+            </ul>
+
+            <div class="cta-box">
+              <strong>Want packet-loss checks without living in Terminal?</strong>
+              <p>MacWiFi keeps router loss and internet-path loss side by side in the menu bar.</p>
+              <a class="button" href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477">Buy MacWiFi for $9.99</a>
+            </div>
+          </div>
+        </article>
+        <aside class="sidebar">
+          <section class="list-card">
+            <h2>Also read</h2>
+            <ul>
+              <li><a href="/blog/is-it-your-wifi-or-your-isp">Is It Your Wi-Fi or Your ISP?</a></li>
+              <li><a href="/blog/best-wifi-analyzer-for-mac">Best Wi-Fi Analyzer for Mac</a></li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><div class="shell">MacWiFi troubleshooting guides for real-world connection problems.</div></footer>
+  </body>
+</html>

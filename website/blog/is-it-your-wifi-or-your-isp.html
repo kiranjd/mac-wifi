@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Is It Your Wi-Fi or Your ISP?</title>
+    <meta
+      name="description"
+      content="A Mac troubleshooting guide to figure out whether unstable calls and buffering come from your Wi-Fi or your ISP."
+    />
+    <link rel="canonical" href="https://macwifi.live/blog/is-it-your-wifi-or-your-isp" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Is It Your Wi-Fi or Your ISP?" />
+    <meta property="og:description" content="A Mac troubleshooting guide to figure out whether unstable calls and buffering come from your Wi-Fi or your ISP." />
+    <meta property="og:url" content="https://macwifi.live/blog/is-it-your-wifi-or-your-isp" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Is It Your Wi-Fi or Your ISP?" />
+    <meta name="twitter:description" content="A Mac troubleshooting guide to figure out whether unstable calls and buffering come from your Wi-Fi or your ISP." />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/content.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <a class="brand" href="/"><img src="/assets/icon.png" alt="" /><span>MacWiFi</span></a>
+        <nav class="nav"><a href="/">Home</a><a href="/blog">Blog</a><a href="/help/activate-license">Activate License</a></nav>
+        <a class="button" href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477">Buy for $9.99</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="shell article-layout">
+        <article class="article-card">
+          <h1>Is It Your Wi-Fi or Your ISP?</h1>
+          <p class="article-meta">Published March 11, 2026 · Remote work guide · Troubleshooting</p>
+          <div class="article-body">
+            <p>
+              The bad version of internet problems is not total outage. It is partial failure: your speed test looks respectable, but calls still sound bad, streams hiccup, and the blame stays fuzzy. On Mac, the fastest answer comes from splitting the problem into <strong>local Wi-Fi</strong> and <strong>internet path</strong>.
+            </p>
+
+            <h2>Short answer</h2>
+            <p>
+              If your router ping is unstable, the first suspect is local Wi-Fi. If your router ping is clean but public path checks are unstable, the first suspect is your ISP or an upstream network issue.
+            </p>
+
+            <h2>A simple Mac workflow</h2>
+            <h3>1. Check whether the issue follows the network</h3>
+            <p>
+              If switching to your phone hotspot instantly fixes the problem, that is already a strong clue that the issue is not your Mac app stack. It is the current network path.
+            </p>
+
+            <h3>2. Compare local and public latency</h3>
+            <p>
+              Run a router ping and a public ping. Large spikes or packet loss to the router point toward Wi-Fi. Clean router results plus bad public results point upstream.
+            </p>
+
+            <h3>3. Don’t over-trust speed tests</h3>
+            <p>
+              A speed test tells you one narrow thing: how fast a transfer looked in that moment. It does not reliably answer whether your call will stay smooth under jitter, packet loss, or loaded-latency spikes.
+            </p>
+
+            <h2>What local Wi-Fi problems usually look like</h2>
+            <ul>
+              <li>Problems get better as you move closer to the router.</li>
+              <li>One access point is bad while another in the same home is fine.</li>
+              <li>Router pings show inconsistent latency or dropped packets.</li>
+              <li>Busy apartments or hotels make the issue worse at certain times.</li>
+            </ul>
+
+            <h2>What ISP or upstream problems usually look like</h2>
+            <ul>
+              <li>Router pings stay clean.</li>
+              <li>Public pings, DNS lookups, or loaded-latency checks become unstable.</li>
+              <li>Multiple devices on the same network feel bad in the same window.</li>
+              <li>The pattern shows up most during neighborhood peak hours.</li>
+            </ul>
+
+            <h2>Why MacWiFi focuses on the split</h2>
+            <p>
+              Most tools either show raw radio information or generic bandwidth dashboards. MacWiFi exists for the decision in between: should you move, switch networks, restart something local, or stop wasting time and blame the upstream path?
+            </p>
+
+            <div class="cta-box">
+              <strong>Need the answer before the next call starts?</strong>
+              <p>MacWiFi keeps local and upstream diagnostics close in the menu bar so you do not need to assemble the answer manually each time.</p>
+              <a class="button" href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477">Buy MacWiFi for $9.99</a>
+            </div>
+          </div>
+        </article>
+        <aside class="sidebar">
+          <section class="list-card">
+            <h2>Related guides</h2>
+            <ul>
+              <li><a href="/blog/how-to-check-packet-loss-on-mac">How to Check Packet Loss on Mac</a></li>
+              <li><a href="/blog/macwifi-vs-whyfi">MacWiFi vs WhyFi</a></li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><div class="shell">MacWiFi guides for figuring out where the problem really lives.</div></footer>
+  </body>
+</html>

@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
   "redirects": [
     {
       "source": "/(.*)",
@@ -10,6 +12,60 @@
       ],
       "destination": "https://macwifi.live/$1",
       "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/website/index.html"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/website/assets/:path*"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/website/styles.css"
+    },
+    {
+      "source": "/main.js",
+      "destination": "/website/main.js"
+    },
+    {
+      "source": "/blog.css",
+      "destination": "/website/blog.css"
+    },
+    {
+      "source": "/content.css",
+      "destination": "/website/content.css"
+    },
+    {
+      "source": "/blog",
+      "destination": "/website/blog/index.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/website/blog/:slug.html"
+    },
+    {
+      "source": "/help/activate-license",
+      "destination": "/website/help/activate-license.html"
+    },
+    {
+      "source": "/help/getting-started",
+      "destination": "/website/help/getting-started.html"
+    },
+    {
+      "source": "/download",
+      "destination": "/website/download/index.html"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/website/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/website/sitemap.xml"
     }
   ],
   "cleanUrls": true,

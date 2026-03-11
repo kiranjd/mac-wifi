@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Tell if Wi-Fi or ISP Is the Problem on a Mac | MacWiFi</title>
+    <meta
+      name="description"
+      content="A practical way to tell whether your Mac’s internet issues come from local Wi-Fi, the internet path beyond your router, or both."
+    />
+    <meta property="og:site_name" content="MacWiFi" />
+    <meta property="og:title" content="How to Tell if Wi-Fi or ISP Is the Problem on a Mac" />
+    <meta
+      property="og:description"
+      content="A practical way to separate local Wi-Fi trouble from internet-side instability on a Mac."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://macwifi.live/blog/how-to-tell-if-wifi-or-isp-is-the-problem" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Tell if Wi-Fi or ISP Is the Problem on a Mac" />
+    <meta
+      name="twitter:description"
+      content="A practical way to separate local Wi-Fi trouble from internet-side instability on a Mac."
+    />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://macwifi.live/blog/how-to-tell-if-wifi-or-isp-is-the-problem" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="ambient ambient-c"></div>
+
+    <header class="site-header simple-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="MacWiFi home">
+          <img src="/assets/icon.png" alt="" />
+          <span>MacWiFi</span>
+        </a>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+          <a href="/blog/">Blog</a>
+          <a href="/help/activate-license">Activate</a>
+        </nav>
+        <a
+          class="button button-small"
+          href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
+          target="_blank"
+          rel="noreferrer"
+          data-cta-location="article_wifi_vs_isp_header"
+        >
+          Buy for $9.99
+        </a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container article-layout">
+        <article class="article-shell reveal">
+          <p class="article-meta">March 11, 2026 · Troubleshooting</p>
+          <h1>How to Tell if Wi-Fi or ISP Is the Problem on a Mac</h1>
+          <p class="article-lead">
+            When the internet feels bad, people usually blame the nearest thing
+            they can see, which is their Wi-Fi. That guess is often wrong. The
+            useful split is simpler: <strong>is the weakness happening before your router, after your router, or on both sides?</strong>
+          </p>
+
+          <div class="article-body">
+            <h2>What “Wi-Fi problem” means</h2>
+            <p>
+              A Wi-Fi-side issue is local. It usually shows up as weak signal,
+              interference, noisy bands, unstable router latency, or a device
+              that is barely hanging onto the network.
+            </p>
+            <p>
+              If your router ping is unstable, but the wider internet only looks
+              bad because of that local instability, the first thing to fix is
+              your wireless side.
+            </p>
+
+            <h2>What “ISP problem” means</h2>
+            <p>
+              An ISP-side issue starts after your router. That can mean public
+              ping spikes, packet loss to the outside internet, loaded latency
+              inflation, or DNS responses that suddenly get slow even though
+              local Wi-Fi looks fine.
+            </p>
+            <p>
+              In those cases, moving closer to the router often changes nothing.
+            </p>
+
+            <h2>Symptoms that usually point to local Wi-Fi</h2>
+            <ul>
+              <li>The problem improves when you move closer to the router.</li>
+              <li>Only one room or one part of the house feels bad.</li>
+              <li>Router ping looks inconsistent or jumps around under light load.</li>
+              <li>Another network, like a hotspot, feels immediately better on the same Mac.</li>
+            </ul>
+
+            <h2>Symptoms that usually point to ISP or internet-path trouble</h2>
+            <ul>
+              <li>Signal strength looks fine but calls still fall apart.</li>
+              <li>Router latency is stable, but public ping or packet loss is not.</li>
+              <li>Everything on the network feels bad at the same time.</li>
+              <li>The issue tracks time of day more than your physical position in the room.</li>
+            </ul>
+
+            <h2>Why speed tests confuse this</h2>
+            <p>
+              A single download number is not a diagnosis. You can have plenty
+              of throughput and still have bad packet loss, ugly jitter, or
+              terrible loaded latency. Those are exactly the kinds of problems
+              that make video calls miserable.
+            </p>
+
+            <h2>A better way to test on a Mac</h2>
+            <ol>
+              <li>Check whether router latency is stable.</li>
+              <li>Check public ping separately.</li>
+              <li>Compare packet loss locally versus to the outside internet.</li>
+              <li>Look at DNS response time.</li>
+              <li>Judge the result against a real activity like a call, not just raw speed.</li>
+            </ol>
+
+            <blockquote>
+              If router latency and local signal look good while the public path
+              still behaves badly, you are probably chasing the wrong thing by
+              rebooting access points over and over.
+            </blockquote>
+
+            <h2>What MacWiFi does differently</h2>
+            <p>
+              MacWiFi combines router checks, public path checks, DNS timing,
+              throughput, and practical activity scoring. Instead of just
+              showing numbers, it tries to answer the two questions people
+              actually care about:
+            </p>
+            <ul>
+              <li>Is this connection good enough right now?</li>
+              <li>Is the weak spot likely my Wi-Fi or the internet after it?</li>
+            </ul>
+
+            <h2>What to do next</h2>
+            <ul>
+              <li>If it looks like local Wi-Fi: change location, switch band, or test another SSID first.</li>
+              <li>If it looks like ISP trouble: save diagnostics, try a hotspot, and use the result as evidence.</li>
+              <li>If it looks like both: solve the local Wi-Fi weakness first, then retest.</li>
+            </ul>
+          </div>
+        </article>
+
+        <aside class="article-aside reveal reveal-delay">
+          <h3>More from MacWiFi</h3>
+          <div class="aside-list">
+            <a href="/blog/how-to-check-packet-loss-on-mac">How to Check Packet Loss on Mac
+              <span>Packet loss is often the missing piece.</span>
+            </a>
+            <a href="/blog/best-wifi-analyzer-for-mac">Best Wi-Fi Analyzer for Mac
+              <span>Choose the tool that matches the job.</span>
+            </a>
+            <a href="/help/activate-license">Activate MacWiFi
+              <span>Already bought it? This is the fastest path.</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>MacWiFi</strong>
+          <p>Native macOS diagnostics for normal people.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/blog/">Blog</a>
+          <a href="mailto:support@macwifi.live">Support</a>
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/main.js" defer></script>
+  </body>
+</html>

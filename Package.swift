@@ -15,7 +15,8 @@ let package = Package(
             name: "MacWiFi",
             linkerSettings: [
                 .linkedFramework("CoreWLAN"),
-                .linkedFramework("CoreLocation")
+                .linkedFramework("CoreLocation"),
+                .linkedFramework("Security")
             ]
         )
     ]

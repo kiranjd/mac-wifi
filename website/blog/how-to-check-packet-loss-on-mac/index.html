@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Check Packet Loss on Mac | MacWiFi</title>
+    <meta
+      name="description"
+      content="Learn how to check packet loss on a Mac, what the numbers mean, and how to tell whether it starts on local Wi-Fi or farther upstream."
+    />
+    <meta property="og:site_name" content="MacWiFi" />
+    <meta property="og:title" content="How to Check Packet Loss on Mac" />
+    <meta
+      property="og:description"
+      content="Learn how to check packet loss on a Mac, what it means, and how to tell where it starts."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://macwifi.live/blog/how-to-check-packet-loss-on-mac" />
+    <meta property="og:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Check Packet Loss on Mac" />
+    <meta
+      name="twitter:description"
+      content="Learn how to check packet loss on a Mac, what it means, and how to tell where it starts."
+    />
+    <meta name="twitter:image" content="https://macwifi.live/assets/social-card.png" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://macwifi.live/blog/how-to-check-packet-loss-on-mac" />
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="ambient ambient-c"></div>
+
+    <header class="site-header simple-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="MacWiFi home">
+          <img src="/assets/icon.png" alt="" />
+          <span>MacWiFi</span>
+        </a>
+        <nav class="header-nav">
+          <a href="/">Home</a>
+          <a href="/blog/">Blog</a>
+          <a href="/help/activate-license">Activate</a>
+        </nav>
+        <a
+          class="button button-small"
+          href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
+          target="_blank"
+          rel="noreferrer"
+          data-cta-location="article_packet_loss_header"
+        >
+          Buy for $9.99
+        </a>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container article-layout">
+        <article class="article-shell reveal">
+          <p class="article-meta">March 11, 2026 · Troubleshooting</p>
+          <h1>How to Check Packet Loss on Mac</h1>
+          <p class="article-lead">
+            Packet loss is one of the clearest reasons a connection feels bad
+            even when a speed test looks fine. It makes calls sound robotic,
+            games feel inconsistent, and streaming sessions randomly wobble.
+          </p>
+
+          <div class="article-body">
+            <h2>What packet loss actually is</h2>
+            <p>
+              Packet loss means some of the data sent across the network never
+              reaches the destination cleanly. When a small amount happens once
+              in a while, you may never notice it. When it happens repeatedly,
+              real-time tasks are usually the first to show it.
+            </p>
+
+            <h2>What packet loss feels like in real life</h2>
+            <ul>
+              <li>Video calls with clipped words or robotic audio</li>
+              <li>Short freezes in online games</li>
+              <li>Web pages that half-load and then suddenly recover</li>
+              <li>Streams that keep dropping quality even though download speed looks decent</li>
+            </ul>
+
+            <h2>The important split</h2>
+            <p>
+              The first useful question is not “do I have packet loss?” but
+              “where does the packet loss start?”
+            </p>
+            <ul>
+              <li><strong>Loss to the router</strong> usually points to local Wi-Fi trouble.</li>
+              <li><strong>Loss to the public internet</strong> with clean router results usually points upstream.</li>
+              <li><strong>Loss on both</strong> suggests the local connection is weak enough to contaminate everything else.</li>
+            </ul>
+
+            <h2>How to check it on a Mac</h2>
+            <ol>
+              <li>Test your path to the router or gateway.</li>
+              <li>Test a stable public target separately.</li>
+              <li>Compare the two results instead of looking at one in isolation.</li>
+              <li>Retest under light load and then under active load if the problem is intermittent.</li>
+            </ol>
+
+            <h2>What counts as “bad” packet loss?</h2>
+            <p>
+              For ordinary browsing, tiny brief loss can go unnoticed. For
+              calls, gaming, and live collaboration, even a small amount becomes
+              noticeable faster than most people expect. The point is not to
+              obsess over a magic threshold. The point is to match the result to
+              the activity that is failing.
+            </p>
+
+            <h2>Why speed tests miss it</h2>
+            <p>
+              Throughput is only one part of connection quality. You can have
+              enough bandwidth and still have enough packet loss to make a call
+              miserable. That is why “my speed looks fine” is such a common dead
+              end.
+            </p>
+
+            <blockquote>
+              If the router path is clean but the public path is not, stop
+              arguing with the access point and start looking beyond the house.
+            </blockquote>
+
+            <h2>How MacWiFi helps</h2>
+            <p>
+              MacWiFi includes packet-loss checks both to the router side and to
+              the wider internet. That matters because packet loss without
+              context is only half a diagnosis. The useful part is knowing where
+              the break likely starts.
+            </p>
+
+            <h2>What to do with the result</h2>
+            <ul>
+              <li>If the loss is local: move, change band, or test another SSID.</li>
+              <li>If the loss is upstream: save the diagnostics and compare against a hotspot.</li>
+              <li>If it only appears under load: look at loaded latency and bandwidth hogs too.</li>
+            </ul>
+          </div>
+        </article>
+
+        <aside class="article-aside reveal reveal-delay">
+          <h3>More from MacWiFi</h3>
+          <div class="aside-list">
+            <a href="/blog/how-to-tell-if-wifi-or-isp-is-the-problem">How to Tell if Wi-Fi or ISP Is the Problem
+              <span>Separate local trouble from upstream trouble faster.</span>
+            </a>
+            <a href="/blog/best-wifi-analyzer-for-mac">Best Wi-Fi Analyzer for Mac
+              <span>Choose the tool that matches the job.</span>
+            </a>
+            <a href="/help/activate-license">Activate MacWiFi
+              <span>Already bought it? This is the fastest path.</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>MacWiFi</strong>
+          <p>Native macOS diagnostics for normal people.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/blog/">Blog</a>
+          <a href="mailto:support@macwifi.live">Support</a>
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/main.js" defer></script>
+  </body>
+</html>
