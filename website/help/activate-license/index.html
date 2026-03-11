@@ -28,6 +28,15 @@
     <link rel="canonical" href="https://macwifi.live/help/activate-license" />
     <link rel="icon" type="image/png" href="/assets/icon.png" />
     <link rel="stylesheet" href="/styles.css" />
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DWSJTXQ65"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = window.gtag || gtag;
+      window.gtag("js", new Date());
+      window.gtag("config", "G-0DWSJTXQ65", { anonymize_ip: true, send_page_view: false });
+      window.__macwifiGAConfigured = true;
+    </script>
   </head>
   <body>
     <div class="ambient ambient-a"></div>
@@ -36,7 +45,7 @@
 
     <header class="site-header simple-header" data-header>
       <div class="container header-inner">
-        <a class="brand" href="/" aria-label="MacWiFi home">
+        <a class="brand" href="/pricing" aria-label="MacWiFi pricing">
           <img src="/assets/icon.png" alt="" />
           <span>MacWiFi</span>
         </a>
@@ -98,7 +107,7 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <div>
-          <strong>MacWiFi</strong>
+          <a class="footer-brand" href="/pricing">MacWiFi</a>
           <p>Native macOS diagnostics for normal people.</p>
         </div>
         <div class="footer-links">

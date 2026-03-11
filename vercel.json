@@ -48,6 +48,10 @@
       "destination": "/website/blog/:slug"
     },
     {
+      "source": "/pricing",
+      "destination": "/website/pricing"
+    },
+    {
       "source": "/help/activate-license",
       "destination": "/website/help/activate-license"
     },

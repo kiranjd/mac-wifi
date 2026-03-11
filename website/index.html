@@ -60,10 +60,25 @@
         "applicationCategory": "UtilitiesApplication",
         "description": "MacWiFi is a native macOS menu bar app that tells you whether the problem is your Wi-Fi or your ISP.",
         "url": "https://macwifi.live",
-        "downloadUrl": "https://github.com/kiranjd/mac-wifi/releases/latest"
+        "downloadUrl": "https://github.com/kiranjd/mac-wifi/releases/latest",
+        "offers": {
+          "@type": "Offer",
+          "price": "9.99",
+          "priceCurrency": "USD",
+          "url": "https://macwifi.live/pricing"
+        }
       }
     </script>
     <link rel="stylesheet" href="./styles.css" />
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DWSJTXQ65"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = window.gtag || gtag;
+      window.gtag("js", new Date());
+      window.gtag("config", "G-0DWSJTXQ65", { anonymize_ip: true, send_page_view: false });
+      window.__macwifiGAConfigured = true;
+    </script>
   </head>
   <body>
     <div class="ambient ambient-a"></div>
@@ -72,11 +87,12 @@
 
     <header class="site-header" data-header>
       <div class="container header-inner">
-        <a class="brand" href="#top" aria-label="MacWiFi home">
+        <a class="brand" href="/pricing" aria-label="MacWiFi pricing">
           <img src="./assets/icon.png" alt="" />
           <span>MacWiFi</span>
         </a>
         <nav class="header-nav">
+          <a href="/pricing">Pricing</a>
           <a href="#features">Features</a>
           <a href="#demo">Demo</a>
           <a href="/blog">Blog</a>
@@ -84,12 +100,10 @@
         </nav>
         <a
           class="button button-small"
-          href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
-          target="_blank"
-          rel="noreferrer"
+          href="/pricing"
           data-cta-location="header"
         >
-          Buy for $9.99
+          See pricing
         </a>
       </div>
     </header>
@@ -115,12 +129,10 @@
             <div class="hero-actions">
               <a
                 class="button"
-                href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
-                target="_blank"
-                rel="noreferrer"
+                href="/pricing"
                 data-cta-location="hero"
               >
-                Buy for $9.99
+                See pricing
               </a>
               <a class="button button-secondary" href="#demo">Watch Demo</a>
             </div>
@@ -441,12 +453,10 @@
           <div class="hero-actions">
             <a
               class="button"
-              href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
-              target="_blank"
-              rel="noreferrer"
+              href="/pricing"
               data-cta-location="final_cta"
             >
-              Buy MacWiFi for $9.99
+              See pricing
             </a>
             <a
               class="button button-secondary"
@@ -464,10 +474,11 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <div>
-          <strong>MacWiFi</strong>
+          <a class="footer-brand" href="/pricing">MacWiFi</a>
           <p>Native macOS diagnostics for normal people.</p>
         </div>
         <div class="footer-links">
+          <a href="/pricing">Pricing</a>
           <a href="/blog">Blog</a>
           <a href="/help/activate-license">Activate license</a>
           <a href="mailto:support@macwifi.live">Support</a>

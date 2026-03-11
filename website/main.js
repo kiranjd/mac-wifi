@@ -101,17 +101,8 @@ const decorateCheckoutLinks = (gaClientId = "") => {
   }
 };
 
-const loadGA4 = async () => {
-  if (!SITE_CONFIG.gaMeasurementId) return;
-
-  await new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${SITE_CONFIG.gaMeasurementId}`;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  }).catch(() => undefined);
+const ensureGA4Bootstrap = async () => {
+  if (!SITE_CONFIG.gaMeasurementId) return false;
 
   window.dataLayer = window.dataLayer || [];
   window.gtag =
@@ -120,10 +111,36 @@ const loadGA4 = async () => {
       window.dataLayer.push(arguments);
     };
 
-  window.gtag("js", new Date());
-  window.gtag("config", SITE_CONFIG.gaMeasurementId, {
-    anonymize_ip: true,
-  });
+  if (!window.__macwifiGAConfigured) {
+    const hasScript = document.querySelector(
+      `script[src="https://www.googletagmanager.com/gtag/js?id=${SITE_CONFIG.gaMeasurementId}"]`,
+    );
+
+    if (!hasScript) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${SITE_CONFIG.gaMeasurementId}`;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      }).catch(() => undefined);
+    }
+
+    window.gtag("js", new Date());
+    window.gtag("config", SITE_CONFIG.gaMeasurementId, {
+      anonymize_ip: true,
+      send_page_view: false,
+    });
+    window.__macwifiGAConfigured = true;
+  }
+
+  return typeof window.gtag === "function";
+};
+
+const loadGA4 = async () => {
+  const ready = await ensureGA4Bootstrap();
+  if (!ready) return;
 
   trackEvent("page_view", {
     page_title: document.title,

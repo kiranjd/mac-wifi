@@ -50,6 +50,15 @@
         "url": "https://macwifi.live/blog/how-to-check-jitter-on-mac"
       }
     </script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DWSJTXQ65"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = window.gtag || gtag;
+      window.gtag("js", new Date());
+      window.gtag("config", "G-0DWSJTXQ65", { anonymize_ip: true, send_page_view: false });
+      window.__macwifiGAConfigured = true;
+    </script>
   </head>
   <body>
     <div class="ambient ambient-a"></div>
@@ -58,7 +67,7 @@
 
     <header class="site-header simple-header" data-header>
       <div class="container header-inner">
-        <a class="brand" href="/" aria-label="MacWiFi home">
+        <a class="brand" href="/pricing" aria-label="MacWiFi pricing">
           <img src="/assets/icon.png" alt="" />
           <span>MacWiFi</span>
         </a>
@@ -69,13 +78,9 @@
         </nav>
         <a
           class="button button-small"
-          href="https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477"
-          target="_blank"
-          rel="noreferrer"
+          href="/pricing"
           data-cta-location="article_jitter_header"
-        >
-          Buy for $9.99
-        </a>
+        >See pricing</a>
       </div>
     </header>
 
@@ -182,7 +187,7 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <div>
-          <strong>MacWiFi</strong>
+          <a class="footer-brand" href="/pricing">MacWiFi</a>
           <p>Native macOS diagnostics for normal people.</p>
         </div>
         <div class="footer-links">
