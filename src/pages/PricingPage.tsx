@@ -1,6 +1,6 @@
 import CheckoutButton from '../components/CheckoutButton'
 import { PRICE } from '../config/commerce'
-import { pageTitle, section, shell, lead } from '../lib/ui'
+import { lead, pageTitle, primaryButton, section, shell } from '../lib/ui'
 import { SeoHead } from '../seo/SeoHead'
 import { makeMeta } from '../seo/siteMeta'
 
@@ -15,28 +15,42 @@ export default function PricingPage() {
     <>
       <SeoHead meta={pricingMeta} />
 
-      <main className="min-h-screen">
+      <main className="min-h-screen bg-black text-white">
         <section className={section}>
           <div className={shell}>
             <h1 className={pageTitle}>ONE <br /> PURCHASE.</h1>
-            <div className="mt-24 grid gap-24 lg:grid-cols-2">
+            <div className="mt-24 grid gap-24 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
               <div>
                 <p className={lead}>
-                  No monthly fees. No data tracking. No bullshit. Just the best network tool for macOS, yours forever.
+                  No monthly fee. No data collection. No forced upsell. Buy MacWiFi once and keep
+                  the full network diagnostic tool on your Mac.
                 </p>
-                <div className="mt-12 space-y-4 font-display font-black uppercase tracking-widest text-black/40">
-                  <p>→ Native Swift Binary</p>
-                  <p>→ Apple Silicon Native</p>
-                  <p>→ Zero Cloud Dependency</p>
+                <div className="mt-16 space-y-6">
+                  {[
+                    'Native Swift binary',
+                    'Apple Silicon and Intel support',
+                    'Zero cloud dependency',
+                    'Secure LemonSqueezy checkout',
+                  ].map((spec) => (
+                    <div
+                      key={spec}
+                      className="flex items-center gap-5 font-display text-sm font-black uppercase tracking-[0.28em] text-white/42"
+                    >
+                      <div className="h-px w-12 bg-accent/65" />
+                      {spec}
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="bg-black p-12 lg:p-24 flex flex-col items-center justify-center text-center">
-                <span className="text-white text-9xl font-black tracking-tighter mb-12">{PRICE}</span>
-                <CheckoutButton className="w-full bg-white text-black py-8 text-2xl font-black uppercase tracking-tighter hover:line-through transition-all">
-                  GET LIFETIME ACCESS
+              <div className="border border-white/10 bg-white/[0.04] p-12 text-center lg:p-24">
+                <span className="mb-12 block text-[8rem] font-black leading-none tracking-tighter text-white lg:text-[10rem]">
+                  {PRICE}
+                </span>
+                <CheckoutButton className={`${primaryButton} w-full justify-center py-10 text-3xl`}>
+                  Get lifetime access
                 </CheckoutButton>
-                <p className="mt-8 text-white/40 font-mono text-xs uppercase tracking-widest">
-                  Secure via LemonSqueezy
+                <p className="mt-8 font-display text-[11px] font-black uppercase tracking-[0.28em] text-white/38">
+                  Secure checkout via LemonSqueezy
                 </p>
               </div>
             </div>

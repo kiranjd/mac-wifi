@@ -34,7 +34,7 @@ export default function App() {
   useEffect(() => initLemonOverlay('/download/'), [])
 
   return (
-    <div className="min-h-screen bg-surface text-black font-body selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-surface text-white font-body selection:bg-accent selection:text-black">
       <RouteEffects />
       <SiteHeader />
       <Routes>

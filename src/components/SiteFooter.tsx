@@ -2,34 +2,43 @@ import { Link } from 'react-router-dom'
 import { shell } from '../lib/ui'
 
 export default function SiteFooter() {
-  const year = new Date().getFullYear()
-
   return (
-    <footer className="bg-white border-t border-black py-32">
+    <footer className="border-t border-white/10 bg-black py-40 text-white">
       <div className={shell}>
-        <div className="grid gap-24 lg:grid-cols-2 items-start">
+        <div className="grid items-start gap-24 lg:grid-cols-2">
           <div>
-            <h2 className="text-6xl font-black uppercase tracking-tighter mb-12">MACWIFI.</h2>
-            <p className="text-xl font-medium tracking-tight text-black/40 uppercase">
+            <div className="mb-10 flex items-center gap-6">
+              <div className="h-20 w-20 border border-white/12 bg-white p-1">
+                <img
+                  className="h-full w-full object-contain grayscale"
+                  src="/assets/icon.png"
+                  alt="MacWiFi"
+                />
+              </div>
+              <h2 className="text-7xl font-black uppercase tracking-tighter">MACWIFI.</h2>
+            </div>
+            <p className="max-w-xl text-xl font-medium uppercase leading-tight tracking-tight text-white/60">
               The only tool you need for network truth. <br />
-              Made for remote professionals.
+              Built for remote work that cannot break.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-12 uppercase font-black tracking-tighter">
-            <nav className="flex flex-col gap-4">
-              <Link className="hover:line-through" to="/">Home</Link>
-              <Link className="hover:line-through" to="/pricing/">Pricing</Link>
-              <Link className="hover:line-through" to="/download/">Download</Link>
+          <div className="grid grid-cols-2 gap-18 text-xl font-black uppercase tracking-tighter">
+            <nav className="flex flex-col gap-6">
+              <Link className="strikethrough-hover w-fit" to="/">Home</Link>
+              <Link className="strikethrough-hover w-fit" to="/pricing/">Pricing</Link>
+              <Link className="strikethrough-hover w-fit" to="/download/">Download</Link>
             </nav>
-            <nav className="flex flex-col gap-4">
-              <Link className="hover:line-through" to="/help/activate-license/">Help</Link>
-              <a className="hover:line-through" href="mailto:support@macwifi.live">Support</a>
+            <nav className="flex flex-col gap-6">
+              <Link className="strikethrough-hover w-fit" to="/help/activate-license/">Help</Link>
+              <a className="strikethrough-hover w-fit" href="mailto:support@macwifi.live">Support</a>
             </nav>
           </div>
         </div>
-        <div className="mt-32 pt-12 border-t border-black font-black uppercase tracking-tighter text-black/20 text-xs">
-          <p>© {year} MACWIFI. ALL RIGHTS RESERVED.</p>
+
+        <div className="mt-32 flex flex-col items-center justify-between gap-8 border-t border-white/10 pt-10 text-xs font-black uppercase tracking-tighter text-white/30 sm:flex-row">
+          <p>© {new Date().getFullYear()} MACWIFI. ALL RIGHTS RESERVED.</p>
+          <p>support@macwifi.live</p>
         </div>
       </div>
     </footer>

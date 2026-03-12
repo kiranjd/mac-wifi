@@ -4,7 +4,7 @@ import { navLink, shell } from '../lib/ui'
 const navItems = [
   { href: '/#answers', label: 'Truth' },
   { href: '/#walkthrough', label: 'How' },
-  { href: '/pricing', label: 'Buy' },
+  { href: '/pricing/', label: 'Buy' },
   { href: '/#faq', label: '?' },
 ]
 
@@ -13,14 +13,23 @@ export default function SiteHeader() {
   const isHome = location.pathname === '/'
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-black bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/8 bg-black/88 backdrop-blur-xl">
       <div className={`${shell} flex h-32 items-center justify-between`}>
         <Link
-          className="text-4xl font-black uppercase tracking-tighter text-black transition-transform hover:scale-105 active:scale-95"
+          className="flex items-center gap-6"
           to="/"
           aria-label="MacWiFi home"
         >
-          MacWiFi.
+          <div className="h-16 w-16 overflow-hidden border border-white/15 bg-white/6 p-1">
+            <img
+              className="h-full w-full object-contain grayscale"
+              src="/assets/icon.png"
+              alt="MacWiFi"
+            />
+          </div>
+          <span className="text-4xl font-black uppercase tracking-tighter text-white">
+            MacWiFi.
+          </span>
         </Link>
 
         <nav
@@ -45,7 +54,10 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center">
-          <Link to="/pricing" className="bg-black px-12 py-4 font-display font-black uppercase tracking-tighter text-white transition-all hover:invert">
+          <Link
+            to="/pricing/"
+            className="border border-white/12 bg-white px-12 py-4 font-display font-black uppercase tracking-tighter text-black transition-colors hover:bg-accent"
+          >
             Get License
           </Link>
         </div>
