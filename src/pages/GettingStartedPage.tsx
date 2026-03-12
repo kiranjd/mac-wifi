@@ -5,7 +5,7 @@ import { card, eyebrow, lead, section, sectionTitle, shell } from '../lib/ui'
 const pageMeta = makeMeta({
   title: 'MacWiFi Getting Started',
   description: 'How to install MacWiFi and get your first read on the current connection.',
-  canonicalPath: '/help/getting-started',
+  canonicalPath: '/help/getting-started/',
 })
 
 export default function GettingStartedPage() {

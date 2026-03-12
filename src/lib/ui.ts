@@ -1,33 +1,33 @@
 export const shell =
-  'mx-auto w-[min(1180px,calc(100vw-24px))] sm:w-[min(1180px,calc(100vw-48px))]'
+  'mx-auto w-[min(1600px,calc(100vw-40px))] sm:w-[min(1600px,calc(100vw-120px))]'
 
-export const section = 'py-8 sm:py-16 lg:py-24'
+export const section = 'py-32 sm:py-48 lg:py-64'
 
-export const sectionTight = 'py-8 sm:py-12 lg:py-16'
+export const sectionTight = 'py-20 sm:py-32 lg:py-40'
 
 export const eyebrow =
-  'mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#0f766e] sm:text-xs'
+  'mb-8 font-display text-sm font-black uppercase tracking-[0.3em] opacity-40'
 
 export const sectionTitle =
-  'text-[2.15rem] leading-[0.94] tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-[4rem]'
+  'massive-type font-display font-black tracking-tighter text-black uppercase leading-[0.8]'
 
 export const pageTitle =
-  'text-[2.5rem] leading-[0.9] tracking-[-0.07em] text-slate-950 sm:text-6xl lg:text-[5.2rem]'
+  'massive-type font-display font-black tracking-tighter text-black uppercase leading-[0.8]'
 
 export const lead =
-  'text-[1rem] leading-7 text-slate-700 sm:text-xl sm:leading-8'
+  'text-2xl leading-[1.1] text-black sm:text-5xl font-display font-black tracking-tighter max-w-5xl'
 
 export const card =
-  'rounded-[22px] sm:rounded-[28px] border border-slate-900/8 bg-white/74 shadow-[0_30px_90px_-52px_rgba(15,23,42,0.38)] backdrop-blur'
+  'rounded-none border-[2px] border-black bg-white p-12 transition-all hover:bg-black hover:text-white'
 
 export const subtleCard =
-  'rounded-[20px] sm:rounded-[24px] border border-slate-900/8 bg-white/58 shadow-[0_26px_70px_-52px_rgba(15,23,42,0.26)] backdrop-blur'
+  'rounded-none border-b-2 border-black py-16 flex flex-col gap-6 last:border-b-0'
 
 export const navLink =
-  'text-[0.98rem] font-medium text-slate-600 transition hover:text-slate-950'
+  'text-[1.1rem] font-display font-black text-black uppercase tracking-tighter transition strikethrough-hover'
 
 export const primaryButton =
-  'inline-flex items-center justify-center rounded-full bg-[#0f766e] px-5 py-3 text-[0.9rem] sm:text-[0.96rem] font-semibold text-white shadow-[0_22px_44px_-24px_rgba(15,118,110,0.72)] transition hover:bg-[#0b5f59]'
+  'inline-flex items-center justify-center rounded-none bg-black px-16 py-8 text-[1.5rem] font-black uppercase tracking-tighter text-white transition-all hover:invert border-2 border-black active:scale-95'
 
 export const secondaryButton =
-  'inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-white/72 px-5 py-3 text-[0.9rem] sm:text-[0.96rem] font-semibold text-slate-900 transition hover:bg-white'
+  'inline-flex items-center justify-center rounded-none border-2 border-black bg-white px-16 py-8 text-[1.5rem] font-black uppercase tracking-tighter text-black transition-all hover:bg-black hover:text-white active:scale-95'

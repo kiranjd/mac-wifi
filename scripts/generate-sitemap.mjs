@@ -13,18 +13,18 @@ const TODAY = new Date().toISOString().slice(0, 10)
 
 const STATIC_ROUTES = [
   '/',
-  '/pricing',
-  '/blog',
-  '/download',
-  '/help/getting-started',
-  '/help/activate-license',
+  '/pricing/',
+  '/blog/',
+  '/download/',
+  '/help/getting-started/',
+  '/help/activate-license/',
 ]
 
 async function loadBlogRoutes() {
   const entries = await fs.readdir(websiteBlogDir, { withFileTypes: true })
   return entries
     .filter((entry) => entry.isDirectory())
-    .map((entry) => `/blog/${entry.name}`)
+    .map((entry) => `/blog/${entry.name}/`)
     .sort()
 }
 

@@ -31,19 +31,24 @@ function RouteEffects() {
 }
 
 export default function App() {
-  useEffect(() => initLemonOverlay('/download'), [])
+  useEffect(() => initLemonOverlay('/download/'), [])
 
   return (
-    <div className="min-h-screen bg-[#ece8de] text-slate-950">
+    <div className="min-h-screen bg-surface text-black font-body selection:bg-black selection:text-white">
       <RouteEffects />
       <SiteHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/pricing/" element={<PricingPage />} />
         <Route path="/blog" element={<BlogIndexPage />} />
+        <Route path="/blog/" element={<BlogIndexPage />} />
         <Route path="/help/activate-license" element={<ActivateLicensePage />} />
+        <Route path="/help/activate-license/" element={<ActivateLicensePage />} />
         <Route path="/help/getting-started" element={<GettingStartedPage />} />
+        <Route path="/help/getting-started/" element={<GettingStartedPage />} />
         <Route path="/download" element={<DownloadPage />} />
+        <Route path="/download/" element={<DownloadPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
       <SiteFooter />

@@ -7,7 +7,7 @@ const blogMeta = makeMeta({
   title: 'MacWiFi Blog | Unstable internet on Mac, explained plainly',
   description:
     'Practical Mac guides for unstable internet, call readiness, packet loss, jitter, and how to tell whether the problem is your Wi-Fi or your ISP.',
-  canonicalPath: '/blog',
+  canonicalPath: '/blog/',
 })
 
 export default function BlogIndexPage() {
@@ -31,12 +31,12 @@ export default function BlogIndexPage() {
             {blogPosts.map((post) => (
               <article key={post.slug} className={`${card} p-7`}>
                 <h2 className="text-[1.7rem] font-semibold leading-[1.02] tracking-[-0.05em] text-slate-950">
-                  <a href={`/blog/${post.slug}`}>{post.title}</a>
+                  <a href={`/blog/${post.slug}/`}>{post.title}</a>
                 </h2>
                 <p className="mt-4 text-base leading-7 text-slate-700">{post.description}</p>
                 <a
-                  className="mt-6 inline-flex text-sm font-semibold text-[#0f766e] transition hover:text-[#0b5f59]"
-                  href={`/blog/${post.slug}`}
+                  className="mt-6 inline-flex text-sm font-semibold text-emerald-600 transition hover:text-emerald-700"
+                  href={`/blog/${post.slug}/`}
                 >
                   Read article
                 </a>

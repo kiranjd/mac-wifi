@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const loadLemonOverlay = (successPath = '/download') => {
+const loadLemonOverlay = (successPath = '/download/') => {
   if (typeof window === 'undefined') return Promise.resolve(() => {})
 
   const markReady = () => {
@@ -78,7 +78,7 @@ const loadLemonOverlay = (successPath = '/download') => {
   })
 }
 
-export const initLemonOverlay = (successPath = '/download') => {
+export const initLemonOverlay = (successPath = '/download/') => {
   if (typeof window === 'undefined') return () => {}
   let cleanup: (() => void) | undefined
   void loadLemonOverlay(successPath).then((dispose) => {
@@ -87,7 +87,7 @@ export const initLemonOverlay = (successPath = '/download') => {
   return () => cleanup?.()
 }
 
-export const openLemonCheckout = async (href: string, successPath = '/download') => {
+export const openLemonCheckout = async (href: string, successPath = '/download/') => {
   if (typeof window === 'undefined') return false
 
   await loadLemonOverlay(successPath)

@@ -13,7 +13,7 @@ type CheckoutButtonProps = {
 export default function CheckoutButton({
   children,
   className,
-  successPath = '/download',
+  successPath = '/download/',
 }: CheckoutButtonProps) {
   const [checkoutHref, setCheckoutHref] = useState(CHECKOUT_URL)
 

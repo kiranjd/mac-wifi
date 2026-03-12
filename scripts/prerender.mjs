@@ -8,7 +8,7 @@ const rootDir = path.resolve(__dirname, '..')
 const distDir = path.join(rootDir, 'dist')
 const templatePath = path.join(distDir, 'index.html')
 
-const ROUTES = ['/', '/pricing', '/blog', '/help/activate-license', '/help/getting-started', '/download']
+const ROUTES = ['/', '/pricing/', '/blog/', '/help/activate-license/', '/help/getting-started/', '/download/']
 
 function resolveOutputPath(pathname) {
   if (pathname === '/') {

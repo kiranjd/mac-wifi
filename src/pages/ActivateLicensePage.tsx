@@ -5,7 +5,7 @@ import { card, eyebrow, lead, section, sectionTitle, shell } from '../lib/ui'
 const pageMeta = makeMeta({
   title: 'Activate MacWiFi License',
   description: 'How to activate your MacWiFi license after purchase.',
-  canonicalPath: '/help/activate-license',
+  canonicalPath: '/help/activate-license/',
 })
 
 export default function ActivateLicensePage() {
