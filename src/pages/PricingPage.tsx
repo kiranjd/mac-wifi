@@ -22,7 +22,7 @@ const pricingMeta = makeMeta({
   title: 'MacWiFi Pricing | One-time purchase',
   description:
     'MacWiFi is a $9.99 one-time macOS menu bar app that tells you how usable your current internet actually is and whether the problem looks local or upstream.',
-  canonicalPath: '/pricing',
+  canonicalPath: '/pricing/',
 })
 
 const pricingSchema = {
@@ -32,7 +32,7 @@ const pricingSchema = {
   price: '9.99',
   priceCurrency: 'USD',
   availability: 'https://schema.org/InStock',
-  url: 'https://macwifi.live/pricing',
+  url: 'https://macwifi.live/pricing/',
 }
 
 function FeatureIcon({

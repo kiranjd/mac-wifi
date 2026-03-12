@@ -33,10 +33,10 @@ export default function SiteFooter() {
                 <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/">
                   <House className="h-4 w-4" /> Home
                 </Link>
-                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/pricing">
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/pricing/">
                   <Tag className="h-4 w-4" /> Pricing
                 </Link>
-                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/download">
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/download/">
                   Download
                 </Link>
               </nav>
@@ -44,7 +44,7 @@ export default function SiteFooter() {
             <div>
               <p className={`${eyebrow} !mb-6 text-slate-900`}>Support</p>
               <nav className="flex flex-col gap-4">
-                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/help/activate-license">
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/help/activate-license/">
                   <LifeBuoy className="h-4 w-4" /> Help Center
                 </Link>
                 <a className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" href="mailto:support@macwifi.live">
@@ -57,10 +57,9 @@ export default function SiteFooter() {
         
         <div className="mt-24 pt-12 border-t border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-6 text-slate-400 text-sm font-medium font-['DM_Sans']">
           <p>© {new Date().getFullYear()} MacWiFi. All rights reserved.</p>
-          <div className="flex gap-8">
-            <a href="#" className="hover:text-slate-600 transition">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-600 transition">Terms of Service</a>
-          </div>
+          <a href="mailto:support@macwifi.live" className="hover:text-slate-600 transition">
+            support@macwifi.live
+          </a>
         </div>
       </div>
     </footer>

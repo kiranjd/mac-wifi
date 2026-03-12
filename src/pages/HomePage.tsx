@@ -366,9 +366,9 @@ export default function HomePage() {
                   Join 5,000+ remote professionals who trust MacWiFi to keep them connected and confident.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <checkoutButton className="bg-white text-indigo-600 rounded-[22px] px-10 py-6 text-xl font-bold shadow-xl shadow-indigo-950/20 hover:scale-105 active:scale-95 transition">
+                  <CheckoutButton className="inline-flex items-center justify-center rounded-[22px] bg-white px-10 py-6 text-xl font-bold text-indigo-600 shadow-xl shadow-indigo-950/20 transition hover:scale-105 active:scale-95">
                     Get MacWiFi for {PRICE}
-                  </checkoutButton>
+                  </CheckoutButton>
                   <p className="text-indigo-200 text-sm font-medium">One-time purchase • Native macOS app</p>
                 </div>
               </div>
