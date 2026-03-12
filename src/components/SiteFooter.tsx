@@ -1,44 +1,66 @@
+import { House, LifeBuoy, Mail, Tag, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { shell } from '../lib/ui'
+import { eyebrow, shell } from '../lib/ui'
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-black py-40 text-white">
+    <footer className="bg-white border-t border-slate-100 py-24">
       <div className={shell}>
-        <div className="grid items-start gap-24 lg:grid-cols-2">
-          <div>
-            <div className="mb-10 flex items-center gap-6">
-              <div className="h-20 w-20 border border-white/12 bg-white p-1">
-                <img
-                  className="h-full w-full object-contain grayscale"
-                  src="/assets/icon.png"
-                  alt="MacWiFi"
-                />
-              </div>
-              <h2 className="text-7xl font-black uppercase tracking-tighter">MACWIFI.</h2>
-            </div>
-            <p className="max-w-xl text-xl font-medium uppercase leading-tight tracking-tight text-white/60">
-              The only tool you need for network truth. <br />
-              Built for remote work that cannot break.
+        <div className="grid gap-16 lg:grid-cols-[1fr_auto] items-start">
+          <div className="max-w-xl">
+            <Link to="/" className="inline-flex items-center gap-3 mb-8">
+              <img
+                className="h-10 w-10 rounded-[14px]"
+                src="/assets/icon.png"
+                alt="MacWiFi"
+              />
+              <span className="text-2xl font-extrabold tracking-tight text-slate-900 font-['Plus_Jakarta_Sans']">MacWiFi</span>
+            </Link>
+            <p className="text-xl text-slate-500 leading-relaxed font-['DM_Sans'] mb-8">
+              The native macOS tool for remote professionals who need reliable internet for every call.
             </p>
+            <div className="flex items-center gap-2 text-slate-400 font-medium font-['DM_Sans']">
+              <span>Made with</span>
+              <Heart className="h-4 w-4 text-rose-400 fill-rose-400" />
+              <span>for the remote community.</span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-18 text-xl font-black uppercase tracking-tighter">
-            <nav className="flex flex-col gap-6">
-              <Link className="strikethrough-hover w-fit" to="/">Home</Link>
-              <Link className="strikethrough-hover w-fit" to="/pricing/">Pricing</Link>
-              <Link className="strikethrough-hover w-fit" to="/download/">Download</Link>
-            </nav>
-            <nav className="flex flex-col gap-6">
-              <Link className="strikethrough-hover w-fit" to="/help/activate-license/">Help</Link>
-              <a className="strikethrough-hover w-fit" href="mailto:support@macwifi.live">Support</a>
-            </nav>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-12 lg:gap-24">
+            <div>
+              <p className={`${eyebrow} !mb-6 text-slate-900`}>Product</p>
+              <nav className="flex flex-col gap-4">
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/">
+                  <House className="h-4 w-4" /> Home
+                </Link>
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/pricing">
+                  <Tag className="h-4 w-4" /> Pricing
+                </Link>
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/download">
+                  Download
+                </Link>
+              </nav>
+            </div>
+            <div>
+              <p className={`${eyebrow} !mb-6 text-slate-900`}>Support</p>
+              <nav className="flex flex-col gap-4">
+                <Link className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" to="/help/activate-license">
+                  <LifeBuoy className="h-4 w-4" /> Help Center
+                </Link>
+                <a className="text-slate-500 hover:text-indigo-600 font-bold transition font-['Plus_Jakarta_Sans'] flex items-center gap-2" href="mailto:support@macwifi.live">
+                  <Mail className="h-4 w-4" /> Contact
+                </a>
+              </nav>
+            </div>
           </div>
         </div>
-
-        <div className="mt-32 flex flex-col items-center justify-between gap-8 border-t border-white/10 pt-10 text-xs font-black uppercase tracking-tighter text-white/30 sm:flex-row">
-          <p>© {new Date().getFullYear()} MACWIFI. ALL RIGHTS RESERVED.</p>
-          <p>support@macwifi.live</p>
+        
+        <div className="mt-24 pt-12 border-t border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-6 text-slate-400 text-sm font-medium font-['DM_Sans']">
+          <p>© {new Date().getFullYear()} MacWiFi. All rights reserved.</p>
+          <div className="flex gap-8">
+            <a href="#" className="hover:text-slate-600 transition">Privacy Policy</a>
+            <a href="#" className="hover:text-slate-600 transition">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>

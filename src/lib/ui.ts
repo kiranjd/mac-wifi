@@ -1,33 +1,33 @@
 export const shell =
-  'mx-auto w-[min(1600px,calc(100vw-40px))] sm:w-[min(1600px,calc(100vw-120px))]'
+  'mx-auto w-[min(1240px,calc(100vw-32px))] sm:w-[min(1240px,calc(100vw-64px))]'
 
-export const section = 'py-32 sm:py-48 lg:py-64'
+export const section = 'py-12 sm:py-20 lg:py-32'
 
-export const sectionTight = 'py-20 sm:py-32 lg:py-40'
+export const sectionTight = 'py-10 sm:py-16 lg:py-24'
 
 export const eyebrow =
-  'mb-8 font-display text-sm font-black uppercase tracking-[0.28em] text-white/45'
+  'mb-4 text-[13px] font-bold uppercase tracking-[0.15em] text-indigo-600 sm:text-sm font-["Plus_Jakarta_Sans"]'
 
 export const sectionTitle =
-  'massive-type font-display font-black tracking-tighter text-white uppercase leading-[0.8]'
+  'text-[2.5rem] leading-[1.1] font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-[4.5rem] font-["Plus_Jakarta_Sans"]'
 
 export const pageTitle =
-  'massive-type font-display font-black tracking-tighter text-white uppercase leading-[0.8]'
+  'text-[2.8rem] leading-[1.05] font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-[5.5rem] font-["Plus_Jakarta_Sans"]'
 
 export const lead =
-  'max-w-5xl text-2xl font-display font-black leading-[1.08] tracking-tighter text-white/72 sm:text-5xl'
+  'text-[1.1rem] leading-relaxed text-slate-600 sm:text-xl sm:leading-relaxed font-["DM_Sans"]'
 
 export const card =
-  'border border-white/10 bg-white p-12 text-black transition-colors hover:border-white/20'
+  'rounded-[32px] sm:rounded-[40px] border border-slate-200 bg-white shadow-[0_40px_100px_-40px_rgba(30,41,59,0.12)] transition-all hover:shadow-[0_45px_110px_-40px_rgba(30,41,59,0.18)]'
 
 export const subtleCard =
-  'rounded-none border-b border-white/5 py-16 flex flex-col gap-6 last:border-b-0'
+  'rounded-[28px] sm:rounded-[36px] border border-slate-100 bg-slate-50 shadow-[0_20px_60px_-40px_rgba(30,41,59,0.08)]'
 
 export const navLink =
-  'strikethrough-hover text-[1.1rem] font-display font-black uppercase tracking-tighter text-white/76 transition-colors hover:text-white'
+  'text-[1rem] font-semibold text-slate-500 transition hover:text-indigo-600 font-["Plus_Jakarta_Sans"]'
 
 export const primaryButton =
-  'inline-flex items-center justify-center border border-white/12 bg-white px-16 py-8 text-[1.5rem] font-black uppercase tracking-tighter text-black transition-colors hover:bg-accent active:scale-95'
+  'inline-flex items-center justify-center rounded-[20px] bg-indigo-600 px-6 py-4 text-[1rem] sm:text-[1.05rem] font-bold text-white shadow-[0_20px_40px_-15px_rgba(79,70,229,0.4)] transition hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98]'
 
 export const secondaryButton =
-  'inline-flex items-center justify-center border border-white/20 bg-transparent px-16 py-8 text-[1.5rem] font-black uppercase tracking-tighter text-white transition-colors hover:bg-white/6 hover:text-white active:scale-95'
+  'inline-flex items-center justify-center rounded-[20px] border-2 border-slate-200 bg-white px-6 py-4 text-[1rem] sm:text-[1.05rem] font-bold text-slate-900 transition hover:bg-slate-50 hover:border-slate-300 hover:scale-[1.02] active:scale-[0.98]'
