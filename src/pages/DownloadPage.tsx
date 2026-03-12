@@ -1,3 +1,4 @@
+import { CreditCard, Download, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SeoHead } from '../seo/SeoHead'
 import { makeMeta } from '../seo/siteMeta'
@@ -25,12 +26,34 @@ export default function DownloadPage() {
           </div>
 
           <div className={`${card} p-7`}>
+            <div className="mb-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[12px] border border-slate-900/8 bg-white/70 p-4">
+                <Download className="h-[18px] w-[18px] text-[#0f766e]" strokeWidth={2} />
+                <strong className="mt-3 block text-sm font-semibold tracking-[-0.03em] text-slate-950">
+                  Already bought it?
+                </strong>
+                <p className="mt-1.5 text-sm leading-6 text-slate-600">
+                  Open the purchase email and use the download link there.
+                </p>
+              </div>
+              <div className="rounded-[12px] border border-slate-900/8 bg-white/70 p-4">
+                <CreditCard className="h-[18px] w-[18px] text-[#0f766e]" strokeWidth={2} />
+                <strong className="mt-3 block text-sm font-semibold tracking-[-0.03em] text-slate-950">
+                  Need to buy first?
+                </strong>
+                <p className="mt-1.5 text-sm leading-6 text-slate-600">
+                  Start on the MacWiFi page and finish checkout there.
+                </p>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-3">
-              <Link className={primaryButton} to="/pricing">
-                See pricing
+              <Link className={`${primaryButton} gap-2`} to="/pricing">
+                <CreditCard className="h-[18px] w-[18px]" strokeWidth={2} />
+                <span>See MacWiFi</span>
               </Link>
-              <a className={secondaryButton} href="mailto:support@macwifi.live">
-                Contact support
+              <a className={`${secondaryButton} gap-2`} href="mailto:support@macwifi.live">
+                <Mail className="h-[18px] w-[18px]" strokeWidth={1.9} />
+                <span>Contact support</span>
               </a>
             </div>
           </div>

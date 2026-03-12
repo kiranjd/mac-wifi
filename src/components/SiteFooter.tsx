@@ -1,3 +1,4 @@
+import { House, LifeBuoy, Mail, ShoppingCart, Tag } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CheckoutButton from './CheckoutButton'
 import { eyebrow, primaryButton, secondaryButton, shell } from '../lib/ui'
@@ -16,37 +17,45 @@ export default function SiteFooter() {
             the problem likely is.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <CheckoutButton className={primaryButton}>Buy for $9.99</CheckoutButton>
-            <Link className={secondaryButton} to="/help/activate-license">
-              FAQ / help
+            <CheckoutButton className={`${primaryButton} gap-2`}>
+              <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2} />
+              <span>Buy for $9.99</span>
+            </CheckoutButton>
+            <Link className={`${secondaryButton} gap-2`} to="/help/activate-license">
+              <LifeBuoy className="h-[18px] w-[18px]" strokeWidth={1.9} />
+              <span>FAQ / help</span>
             </Link>
           </div>
         </div>
 
         <nav className="flex flex-wrap gap-3 lg:max-w-sm lg:justify-end" aria-label="Footer">
           <Link
-            className="rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
+            className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
             to="/"
           >
-            Home
+            <House className="h-4 w-4" strokeWidth={1.9} />
+            <span>Home</span>
           </Link>
           <Link
-            className="rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
+            className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
             to="/pricing"
           >
-            Pricing
+            <Tag className="h-4 w-4" strokeWidth={1.9} />
+            <span>Pricing</span>
           </Link>
           <Link
-            className="rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
+            className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
             to="/help/activate-license"
           >
-            Help
+            <LifeBuoy className="h-4 w-4" strokeWidth={1.9} />
+            <span>Help</span>
           </Link>
           <a
-            className="rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
+            className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/14"
             href="mailto:support@macwifi.live"
           >
-            Support
+            <Mail className="h-4 w-4" strokeWidth={1.9} />
+            <span>Support</span>
           </a>
         </nav>
       </div>

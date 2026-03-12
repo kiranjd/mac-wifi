@@ -233,7 +233,7 @@ const BLOG_REFERENCES = {
   whyfiSite: {
     label: "WhyFi",
     href: "https://whyfi.network/",
-    note: "Official product site and positioning.",
+    note: "Official product site and feature overview.",
   },
   peakHourSite: {
     label: "PeakHour",
@@ -402,7 +402,7 @@ const BLOG_ENHANCEMENTS = {
     kicker: "Blame split",
     title: "The cleanest diagnosis loop on Mac",
     summary:
-      "This guide is strongest when it helps you stop bouncing between random restarts and vague blame. The useful split is local Wi-Fi behavior versus the public path after the router.",
+      "This guide is most helpful when it stops random restarts and vague blame. The key split is local Wi-Fi behavior versus the public path after the router.",
     badges: ["Local first", "Then public path", "Change one thing at a time"],
     mediaImage: "/assets/advanced-info.png",
     mediaAlt: "MacWiFi advanced information screenshot.",
@@ -460,7 +460,7 @@ const BLOG_ENHANCEMENTS = {
     kicker: "Disconnect map",
     title: "Not every dropout is the same failure",
     summary:
-      "The useful question is whether the Mac is losing the wireless association entirely, staying connected while internet access dies, or bouncing between bad network choices under pressure.",
+      "The first question is whether the Mac is losing the wireless association entirely, staying connected while internet access dies, or bouncing between bad network choices under pressure.",
     badges: ["Association drops", "Path drops", "Roaming mistakes"],
     mediaImage: "/assets/wi-fi.png",
     mediaAlt: "MacWiFi main status screenshot.",
@@ -699,7 +699,7 @@ const BLOG_ENHANCEMENTS = {
       {
         eyebrow: "Good comparison habit",
         title: "Open the official product pages",
-        body: "The positioning language usually tells you quickly which category the tool thinks it belongs in.",
+        body: "The official product pages usually tell you quickly which job the tool is built to do.",
       },
     ],
     sources: [
@@ -710,11 +710,11 @@ const BLOG_ENHANCEMENTS = {
     ],
   },
   "best-internet-monitor-for-mac-menu-bar": {
-    kicker: "Buyer-intent frame",
-    title: "Decide whether you want a dashboard or a diagnosis helper",
+    kicker: "Menu bar tradeoffs",
+    title: "Pick the tool that answers the right question first",
     summary:
       "Menu bar network tools feel similar until you ask what answer you actually want. Some are built to monitor everything. Some are built to help you make one decision fast.",
-    badges: ["Dashboard vs diagnosis", "History vs quick answers", "Buy for the job"],
+    badges: ["Dashboard vs diagnosis", "History vs quick answers", "Menu bar fit"],
     mediaImage: "/assets/wi-fi.png",
     mediaAlt: "MacWiFi main menu bar screenshot.",
     mediaCaption:
@@ -738,7 +738,7 @@ const BLOG_ENHANCEMENTS = {
     ],
     cards: [
       {
-        eyebrow: "Good purchase question",
+        eyebrow: "Start here",
         title: "What answer do you want first?",
         body: "If the first answer you want is network-specific blame, broad dashboard tools can feel busier than they are helpful.",
       },
@@ -756,15 +756,15 @@ const BLOG_ENHANCEMENTS = {
     sources: [BLOG_REFERENCES.peakHourSite, BLOG_REFERENCES.iStatMenusSite, BLOG_REFERENCES.whyfiSite],
   },
   "whyfi-alternative-for-mac": {
-    kicker: "Alternative page",
-    title: "Compare the framing, not just the features",
+    kicker: "WhyFi vs MacWiFi",
+    title: "Where each app feels different in daily use",
     summary:
-      "WhyFi and MacWiFi overlap, but they are easiest to choose between when you ask which style of answer you want: health-monitor phrasing, or a stronger call-readiness and Wi-Fi-vs-upstream diagnosis frame.",
-    badges: ["Alternative intent", "Positioning matters", "Look at the job to be done"],
+      "WhyFi and MacWiFi overlap, but the difference becomes clearer once you ask whether you want a lighter Wi-Fi health readout or a stronger call-readiness and Wi-Fi-vs-upstream diagnosis view.",
+    badges: ["Call readiness", "Wi-Fi health", "Menu bar workflow"],
     mediaImage: "/assets/blog/whyfi-main-panel.png",
     mediaAlt: "WhyFi dashboard screenshot from the official product site.",
     mediaCaption:
-      "Alternative pages work best when they show the difference in framing as clearly as the difference in feature lists.",
+      "WhyFi's dashboard is useful context for how it presents ongoing Wi-Fi condition and network health.",
     comparisons: [
       {
         title: "Choose MacWiFi if",
@@ -773,18 +773,18 @@ const BLOG_ENHANCEMENTS = {
       },
       {
         title: "Choose WhyFi if",
-        note: "You prefer a health-monitor utility framing and like its presentation of ongoing Wi-Fi condition checks.",
-        emphasis: "Health utility framing",
+        note: "You prefer a lighter Wi-Fi health readout and like its presentation of ongoing condition checks.",
+        emphasis: "Lighter health view",
       },
       {
-        title: "Move up-market if",
+        title: "Choose heavier tools if",
         note: "You really need longer-running history, remote access, or heavier proof-building instead of a quick menu bar decision helper.",
         emphasis: "Monitoring / evidence",
       },
     ],
     cards: [
       {
-        eyebrow: "Most useful comparison",
+        eyebrow: "Start here",
         title: "How quickly can you act from the answer?",
         body: "The better tool for you is the one that makes the next move obvious under pressure.",
       },
@@ -796,7 +796,7 @@ const BLOG_ENHANCEMENTS = {
       {
         eyebrow: "Where WhyFi is useful",
         title: "Always-on Wi-Fi condition checking",
-        body: "If that framing fits the way you think about network problems, the overlap is still real and worth comparing honestly.",
+        body: "If that simpler readout fits the way you check network problems, the overlap is still real and worth comparing honestly.",
       },
     ],
     sources: [BLOG_REFERENCES.whyfiSite, BLOG_REFERENCES.peakHourSite],
@@ -954,6 +954,59 @@ const buildSourcesCard = (sources = []) => {
   return renderAsideCard("Useful References", `<div class="source-list">${links}</div>`);
 };
 
+const renderInlinePricingBlock = (variant = "intro") => {
+  if (variant === "closing") {
+    return `
+      <section class="inline-pricing-block inline-pricing-block--closing" aria-label="MacWiFi pricing">
+        <p>
+          If you would rather skip the manual checks next time,
+          <a href="/pricing">see the MacWiFi page</a>
+          and use the menu bar app that turns this into a quick local-versus-upstream read.
+        </p>
+        <span class="inline-pricing-block-label">See MacWiFi</span>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="inline-pricing-block inline-pricing-block--intro" aria-label="MacWiFi pricing">
+      <p>
+        Want the short version?
+        <a href="/pricing">See the MacWiFi page</a>
+        if you want these checks condensed into one quick menu bar answer before the next call.
+      </p>
+      <span class="inline-pricing-block-label">MacWiFi</span>
+    </section>
+  `;
+};
+
+const addInlinePricingBlocks = (articleBody) => {
+  if (!articleBody || articleBody.dataset.pricingBlocksAdded) return;
+  articleBody.dataset.pricingBlocksAdded = "true";
+
+  const paragraphs = [...articleBody.querySelectorAll(":scope > p")];
+  const firstSubstantiveParagraph =
+    paragraphs.find((paragraph) => (paragraph.textContent || "").trim().length >= 120) || paragraphs[0];
+
+  if (firstSubstantiveParagraph) {
+    firstSubstantiveParagraph.insertAdjacentHTML("afterend", renderInlinePricingBlock("intro"));
+  }
+
+  const trailingTarget = [...articleBody.children]
+    .reverse()
+    .find(
+      (element) =>
+        !element.classList?.contains("inline-pricing-block") &&
+        !/^H2$/i.test(element.tagName),
+    );
+
+  if (trailingTarget) {
+    trailingTarget.insertAdjacentHTML("afterend", renderInlinePricingBlock("closing"));
+  } else {
+    articleBody.insertAdjacentHTML("beforeend", renderInlinePricingBlock("closing"));
+  }
+};
+
 const enhanceBlogPost = () => {
   const { pageType, pageSlug } = getPageContext();
   if (pageType !== "blog_post") return;
@@ -971,6 +1024,8 @@ const enhanceBlogPost = () => {
   if (config) {
     articleLead.insertAdjacentHTML("afterend", renderInsightModule(config));
   }
+
+  addInlinePricingBlocks(articleBody);
 
   if (articleMeta && !articleMeta.querySelector(".reading-pill")) {
     articleMeta.insertAdjacentHTML("beforeend", buildReadingPill(articleBody));

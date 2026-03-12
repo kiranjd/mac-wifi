@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { CHECKOUT_URL } from '../config/commerce'
 import { decorateCheckoutHref } from '../lib/checkout'
 import { openLemonCheckout } from '../lib/lemon'
 
 type CheckoutButtonProps = {
-  children: string
+  children: ReactNode
   className: string
   successPath?: string
 }

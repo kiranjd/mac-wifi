@@ -1,3 +1,4 @@
+import { ShoppingCart } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import CheckoutButton from './CheckoutButton'
 import { navLink, primaryButton, shell } from '../lib/ui'
@@ -51,8 +52,9 @@ export default function SiteHeader() {
         </nav>
 
         <div className="ml-auto md:ml-6">
-          <CheckoutButton className={`${primaryButton} px-3.5 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm`}>
-            Buy for $9.99
+          <CheckoutButton className={`${primaryButton} gap-2 px-3.5 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm`}>
+            <ShoppingCart className="h-4 w-4" strokeWidth={2} />
+            <span>Buy for $9.99</span>
           </CheckoutButton>
         </div>
       </div>

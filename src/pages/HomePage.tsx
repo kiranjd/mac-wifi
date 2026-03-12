@@ -1,3 +1,4 @@
+import { ShoppingCart } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import CheckoutButton from '../components/CheckoutButton'
 import { PRICE } from '../config/commerce'
@@ -185,34 +186,10 @@ export default function HomePage() {
                 problem is likely your Wi-Fi or something upstream.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <CheckoutButton className={`${primaryButton} w-full sm:w-auto`}>Buy for {PRICE}</CheckoutButton>
-                <a
-                  className="inline-flex w-full items-center justify-center rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 text-[0.9rem] font-semibold text-slate-900 transition hover:bg-white sm:w-auto sm:text-[0.96rem]"
-                  href="#walkthrough"
-                >
-                  Watch 30-second demo
-                </a>
-              </div>
-
-              <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-9 sm:grid-cols-4">
-                {[
-                  ['One-time purchase', `${PRICE} once`],
-                  ['Native app', 'Menu bar, not a dashboard'],
-                  ['No account', 'Install it and use it'],
-                  ['Diagnosis', 'Wi-Fi side or ISP side'],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    className={`${card} min-h-0 p-4 sm:p-5`}
-                  >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm sm:tracking-[0.2em]">
-                      {label}
-                    </p>
-                    <p className="mt-2 text-[0.98rem] font-semibold leading-5 tracking-[-0.04em] text-slate-950 sm:text-lg">
-                      {value}
-                    </p>
-                  </div>
-                ))}
+                <CheckoutButton className={`${primaryButton} w-full gap-2 sm:w-auto`}>
+                  <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2} />
+                  <span>Buy for {PRICE}</span>
+                </CheckoutButton>
               </div>
             </div>
 
