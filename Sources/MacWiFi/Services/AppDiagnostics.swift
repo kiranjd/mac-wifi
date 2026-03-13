@@ -6,6 +6,8 @@ struct AppDiagnostics {
     let checkedDeveloperMarkerURLs: [URL]
     let developerMarkerURL: URL?
     let isDeveloperMachine: Bool
+    let applicationSupportDirectoryURL: URL
+    let developerLicenseStateURL: URL
     let logsDirectoryURL: URL
     let appLogURL: URL
     let analyticsLogURL: URL
@@ -38,6 +40,8 @@ struct AppDiagnostics {
         self.checkedDeveloperMarkerURLs = candidateURLs
         self.developerMarkerURL = markerURL
         self.isDeveloperMachine = markerURL != nil
+        self.applicationSupportDirectoryURL = applicationSupportURL
+        self.developerLicenseStateURL = applicationSupportURL.appendingPathComponent("license-state.json", isDirectory: false)
         self.logsDirectoryURL = logsDirectoryURL
         self.appLogURL = logsDirectoryURL.appendingPathComponent("app.log", isDirectory: false)
         self.analyticsLogURL = logsDirectoryURL.appendingPathComponent("analytics.log", isDirectory: false)

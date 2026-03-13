@@ -2,15 +2,17 @@ import AppKit
 import Foundation
 import Security
 
-#if DEBUG
-private let defaultLicenseKeychainService = "live.macwifi.license.debug"
-#else
 private let defaultLicenseKeychainService = "live.macwifi.license"
-#endif
+private let legacyDebugLicenseKeychainService = "live.macwifi.license.debug"
 
 @MainActor
 final class LemonSqueezyLicenseManager: ObservableObject {
     static let shared = LemonSqueezyLicenseManager()
+
+    private enum PersistenceBackend {
+        case developerFile(URL)
+        case keychain
+    }
 
     struct LicenseState: Codable, Equatable {
         let licenseKey: String
@@ -82,6 +84,8 @@ final class LemonSqueezyLicenseManager: ObservableObject {
     private let keychainService: String
     private let keychainAccount: String
     private let session: URLSession
+    private let persistenceBackend: PersistenceBackend
+    private let fileManager: FileManager
 
     private static let validationTTL: TimeInterval = 24 * 60 * 60
     private static let hyphenLikeCharacters = ["‐", "‑", "‒", "–", "—", "−", "﹘", "﹣", "－"]
@@ -89,11 +93,17 @@ final class LemonSqueezyLicenseManager: ObservableObject {
     init(
         session: URLSession = .shared,
         keychainService: String = defaultLicenseKeychainService,
-        keychainAccount: String = "license"
+        keychainAccount: String = "license",
+        fileManager: FileManager = .default,
+        diagnostics: AppDiagnostics = .shared
     ) {
         self.session = session
         self.keychainService = keychainService
         self.keychainAccount = keychainAccount
+        self.fileManager = fileManager
+        self.persistenceBackend = diagnostics.isDeveloperMachine
+            ? .developerFile(diagnostics.developerLicenseStateURL)
+            : .keychain
         self.state = loadPersistedState()
     }
 
@@ -250,30 +260,111 @@ final class LemonSqueezyLicenseManager: ObservableObject {
     }
 
     private func loadPersistedState() -> LicenseState? {
+        switch persistenceBackend {
+        case .developerFile(let url):
+            return loadPersistedState(fileURL: url)
+        case .keychain:
+            return loadPersistedState(service: keychainService)
+        }
+    }
+
+    private func loadPersistedState(fileURL: URL) -> LicenseState? {
+        guard let data = try? Data(contentsOf: fileURL) else {
+            return nil
+        }
+
+        do {
+            return try JSONDecoder().decode(LicenseState.self, from: data)
+        } catch {
+            AppLogger.shared.warning(
+                "Failed to decode developer license state",
+                category: .license,
+                metadata: [
+                    "path": fileURL.path,
+                    "error": error.localizedDescription,
+                ]
+            )
+            return nil
+        }
+    }
+
+    private func loadPersistedState(service: String) -> LicenseState? {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: keychainService,
+            kSecAttrService: service,
             kSecAttrAccount: keychainAccount,
             kSecReturnData: true,
             kSecMatchLimit: kSecMatchLimitOne,
         ]
 
         var item: CFTypeRef?
-        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status == errSecSuccess,
               let data = item as? Data,
               let decoded = try? JSONDecoder().decode(LicenseState.self, from: data) else {
+            if status != errSecItemNotFound {
+                AppLogger.shared.warning(
+                    "Failed to load license state from keychain",
+                    category: .license,
+                    metadata: [
+                        "service": service,
+                        "status": Self.describeKeychainStatus(status),
+                    ]
+                )
+            }
             return nil
         }
 
         return decoded
     }
 
-    private func saveState(_ nextState: LicenseState) {
-        guard let data = try? JSONEncoder().encode(nextState) else { return }
+    @discardableResult
+    private func saveState(_ nextState: LicenseState) -> Bool {
+        switch persistenceBackend {
+        case .developerFile(let url):
+            return saveState(nextState, fileURL: url)
+        case .keychain:
+            return saveState(nextState, service: keychainService)
+        }
+    }
+
+    @discardableResult
+    private func saveState(_ nextState: LicenseState, fileURL: URL) -> Bool {
+        do {
+            let data = try JSONEncoder().encode(nextState)
+            try fileManager.createDirectory(
+                at: fileURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try data.write(to: fileURL, options: [.atomic])
+            return true
+        } catch {
+            AppLogger.shared.warning(
+                "Failed to write developer license state",
+                category: .license,
+                metadata: [
+                    "path": fileURL.path,
+                    "error": error.localizedDescription,
+                ]
+            )
+            return false
+        }
+    }
+
+    @discardableResult
+    private func saveState(_ nextState: LicenseState, service: String) -> Bool {
+        guard let data = try? JSONEncoder().encode(nextState) else {
+            AppLogger.shared.warning(
+                "Failed to encode license state for keychain",
+                category: .license,
+                metadata: ["service": service]
+            )
+            return false
+        }
 
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: keychainService,
+            kSecAttrService: service,
             kSecAttrAccount: keychainAccount,
         ]
 
@@ -285,19 +376,92 @@ final class LemonSqueezyLicenseManager: ObservableObject {
         if updateStatus == errSecItemNotFound {
             var createQuery = query
             createQuery[kSecValueData] = data
-            SecItemAdd(createQuery as CFDictionary, nil)
+            createQuery[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            let createStatus = SecItemAdd(createQuery as CFDictionary, nil)
+            if createStatus != errSecSuccess {
+                AppLogger.shared.warning(
+                    "Failed to create license state in keychain",
+                    category: .license,
+                    metadata: [
+                        "service": service,
+                        "status": Self.describeKeychainStatus(createStatus),
+                    ]
+                )
+                return false
+            }
+            return true
         }
+
+        if updateStatus != errSecSuccess {
+            AppLogger.shared.warning(
+                "Failed to update license state in keychain",
+                category: .license,
+                metadata: [
+                    "service": service,
+                    "status": Self.describeKeychainStatus(updateStatus),
+                ]
+            )
+            return false
+        }
+
+        return true
     }
 
     private func clearState() {
+        switch persistenceBackend {
+        case .developerFile(let url):
+            deletePersistedState(fileURL: url)
+        case .keychain:
+            deletePersistedState(service: keychainService)
+        }
+        deletePersistedState(service: legacyDebugLicenseKeychainService)
+        state = nil
+    }
+
+    private func deletePersistedState(fileURL: URL) {
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            return
+        }
+
+        do {
+            try fileManager.removeItem(at: fileURL)
+        } catch {
+            AppLogger.shared.warning(
+                "Failed to delete developer license state",
+                category: .license,
+                metadata: [
+                    "path": fileURL.path,
+                    "error": error.localizedDescription,
+                ]
+            )
+        }
+    }
+
+    private func deletePersistedState(service: String) {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: keychainService,
+            kSecAttrService: service,
             kSecAttrAccount: keychainAccount,
         ]
 
-        SecItemDelete(query as CFDictionary)
-        state = nil
+        let status = SecItemDelete(query as CFDictionary)
+        if status != errSecSuccess && status != errSecItemNotFound {
+            AppLogger.shared.warning(
+                "Failed to delete license state from keychain",
+                category: .license,
+                metadata: [
+                    "service": service,
+                    "status": Self.describeKeychainStatus(status),
+                ]
+            )
+        }
+    }
+
+    private static func describeKeychainStatus(_ status: OSStatus) -> String {
+        if let message = SecCopyErrorMessageString(status, nil) as String? {
+            return "\(status): \(message)"
+        }
+        return "\(status)"
     }
 
     private static func decodeActivationResponse(

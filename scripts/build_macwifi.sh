@@ -31,8 +31,9 @@ AUTO_SIGN_DEBUG="${AUTO_SIGN_DEBUG:-1}"
 AUTO_SIGN_RELEASE="${AUTO_SIGN_RELEASE:-1}"
 
 # Backward-compatible env names from prior scripts.
-DEBUG_SIGN_IDENTITY="${DEBUG_SIGN_IDENTITY:-${LOCAL_SIGN_IDENTITY:-}}"
-RELEASE_SIGN_IDENTITY="${RELEASE_SIGN_IDENTITY:-}"
+DEFAULT_DEVELOPER_IDENTITY="Developer ID Application: Kiran Murthy Jd (MN4M99XHF7)"
+DEBUG_SIGN_IDENTITY="${DEBUG_SIGN_IDENTITY:-${LOCAL_SIGN_IDENTITY:-${DEFAULT_DEVELOPER_IDENTITY}}}"
+RELEASE_SIGN_IDENTITY="${RELEASE_SIGN_IDENTITY:-${DEFAULT_DEVELOPER_IDENTITY}}"
 
 usage() {
   cat <<__USAGE__
@@ -58,8 +59,8 @@ Environment overrides:
   INSTALL_ROOT          Default: ${INSTALL_ROOT}
   AUTO_SIGN_DEBUG       Default: ${AUTO_SIGN_DEBUG}
   AUTO_SIGN_RELEASE     Default: ${AUTO_SIGN_RELEASE}
-  DEBUG_SIGN_IDENTITY   Default: (auto-detect, prefers Apple Development)
-  RELEASE_SIGN_IDENTITY Default: (auto-detect, prefers Developer ID Application)
+  DEBUG_SIGN_IDENTITY   Default: ${DEBUG_SIGN_IDENTITY}
+  RELEASE_SIGN_IDENTITY Default: ${RELEASE_SIGN_IDENTITY}
 __USAGE__
 }
 
@@ -75,6 +76,8 @@ ensure_prereqs() {
   require_cmd swift
   require_cmd open
   require_cmd ditto
+  require_cmd codesign
+  require_cmd plutil
 
   if [[ ! -x "${ICON_SCRIPT_PATH}" ]]; then
     echo "Icon generator script missing or not executable: ${ICON_SCRIPT_PATH}" >&2
@@ -112,7 +115,11 @@ refresh_app_bundle() {
   fi
 
   echo "Refreshing app bundle at ${APP_BUNDLE_PATH}..."
-  "${ICON_SCRIPT_PATH}"
+  if [[ ! -f "${ICON_PATH}" ]]; then
+    "${ICON_SCRIPT_PATH}"
+  else
+    echo "Reusing existing app icon at ${ICON_PATH}."
+  fi
 
   mkdir -p "${APP_BUNDLE_PATH}/Contents/MacOS"
   mkdir -p "${APP_BUNDLE_PATH}/Contents/Resources"
@@ -135,13 +142,19 @@ detect_sign_identity() {
   fi
 
   if [[ "${mode}" == "debug" ]]; then
+    local developer_id_identity
+    developer_id_identity="$(printf '%s\n' "${identities}" | awk '/^Developer ID Application: / { print; exit }')"
+    if [[ -n "${developer_id_identity}" ]]; then
+      echo "${developer_id_identity}"
+      return 0
+    fi
+
     local debug_identity
     debug_identity="$(printf '%s\n' "${identities}" | awk '/^Apple Development: / { print; exit }')"
     if [[ -n "${debug_identity}" ]]; then
       echo "${debug_identity}"
       return 0
     fi
-    printf '%s\n' "${identities}" | awk '/^Developer ID Application: / { print; exit }'
     return 0
   fi
 
@@ -158,8 +171,6 @@ detect_sign_identity() {
 sign_app_bundle() {
   local identity="$1"
 
-  require_cmd codesign
-
   echo "Signing ${APP_BUNDLE_PATH} with identity: ${identity}"
   codesign --force --sign "${identity}" "${APP_BUNDLE_PATH}/Contents/MacOS/${PRODUCT}"
 
@@ -170,6 +181,44 @@ sign_app_bundle() {
   fi
 
   codesign --verify --deep --strict --verbose=1 "${APP_BUNDLE_PATH}"
+}
+
+expected_bundle_identifier() {
+  plutil -extract CFBundleIdentifier raw -o - "${INFO_PLIST_PATH}"
+}
+
+verify_signed_bundle() {
+  local expected_identifier
+  local details
+  local actual_identifier
+  local signature_size
+  local team_identifier
+  local authority
+
+  expected_identifier="$(expected_bundle_identifier)"
+  details="$(codesign -dv --verbose=4 "${APP_BUNDLE_PATH}" 2>&1)"
+
+  actual_identifier="$(printf '%s\n' "${details}" | awk -F= '/^Identifier=/{print $2; exit}')"
+  signature_size="$(printf '%s\n' "${details}" | awk -F= '/^Signature size=/{print $2; exit}')"
+  team_identifier="$(printf '%s\n' "${details}" | awk -F= '/^TeamIdentifier=/{print $2; exit}')"
+  authority="$(printf '%s\n' "${details}" | awk -F= '/^Authority=/{print $2; exit}')"
+
+  if [[ -z "${actual_identifier}" || "${actual_identifier}" != "${expected_identifier}" ]]; then
+    echo "Signed bundle identifier mismatch. Expected ${expected_identifier}, got ${actual_identifier:-<missing>}." >&2
+    return 1
+  fi
+
+  if [[ -z "${signature_size}" || "${signature_size}" == "0" || -z "${authority}" ]]; then
+    echo "Signed bundle is missing a CMS signature or signing authority." >&2
+    return 1
+  fi
+
+  if [[ -z "${team_identifier}" || "${team_identifier}" == "not set" ]]; then
+    echo "Signed bundle is missing a TeamIdentifier." >&2
+    return 1
+  fi
+
+  echo "Verified signature: ${actual_identifier} (${team_identifier})"
 }
 
 maybe_sign() {
@@ -204,8 +253,10 @@ maybe_sign() {
 
   if [[ -n "${identity}" ]]; then
     sign_app_bundle "${identity}"
+    verify_signed_bundle
   else
-    echo "No signing identity found. Continuing unsigned."
+    echo "No signing identity found for ${mode} build." >&2
+    exit 1
   fi
 }
 

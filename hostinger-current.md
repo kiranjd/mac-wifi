@@ -1,0 +1,314 @@
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - banner:
+      - generic [ref=e6]:
+        - link "hostinger" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img "hostinger" [ref=e9]
+        - generic [ref=e10]:
+          - generic [ref=e15] [cursor=pointer]:
+            - img [ref=e16]
+            - textbox "Search" [ref=e19]
+            - generic [ref=e22]:
+              - generic [ref=e24]: ⌘
+              - generic [ref=e26]: K
+          - generic [ref=e27]:
+            - link "Refer & earn up to $ 200" [ref=e29] [cursor=pointer]:
+              - /url: /referrals
+              - img [ref=e30]
+              - generic [ref=e32]: Refer & earn up to $ 200
+            - button "Ask" [ref=e36] [cursor=pointer]:
+              - img [ref=e37]
+              - generic [ref=e39]: Ask
+            - generic [ref=e41]:
+              - button [ref=e42] [cursor=pointer]:
+                - img [ref=e44]
+              - button [ref=e46] [cursor=pointer]:
+                - img [ref=e48]
+            - button "Open menu" [ref=e53] [cursor=pointer]:
+              - img [ref=e54]
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - generic [ref=e60]:
+          - navigation [ref=e66]:
+            - list [ref=e67]:
+              - listitem [ref=e68]:
+                - link "Home Home" [ref=e71] [cursor=pointer]:
+                  - /url: /
+                  - button "Home" [ref=e72]:
+                    - img [ref=e73]
+                  - generic [ref=e75]: Home
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e76]:
+                - link "Websites Websites" [ref=e79] [cursor=pointer]:
+                  - /url: /websites
+                  - button "Websites" [ref=e80]:
+                    - img [ref=e81]
+                  - generic [ref=e83]: Websites
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e84]:
+                - button "Domains Domains" [ref=e87] [cursor=pointer]:
+                  - button "Domains" [ref=e88]:
+                    - img [ref=e89]
+                  - generic [ref=e91]: Domains
+              - listitem [ref=e92]:
+                - list [ref=e93]:
+                  - listitem [ref=e94]:
+                    - link "Domain portfolio" [ref=e97] [cursor=pointer]:
+                      - /url: /domains
+                      - generic [ref=e98]: Domain portfolio
+                  - listitem [ref=e99]:
+                    - link "Get a new domain" [ref=e102] [cursor=pointer]:
+                      - /url: /domains/domain-checker
+                      - generic [ref=e103]: Get a new domain
+                  - listitem [ref=e104]:
+                    - link "Transfers" [ref=e107] [cursor=pointer]:
+                      - /url: /domains/transfers
+                      - generic [ref=e108]: Transfers
+              - listitem [ref=e109]:
+                - link "Horizons Horizons" [ref=e112] [cursor=pointer]:
+                  - /url: /horizons-list
+                  - button "Horizons" [ref=e113]:
+                    - img [ref=e114]
+                  - generic [ref=e116]: Horizons
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e117]:
+                - link "Emails Emails" [ref=e120] [cursor=pointer]:
+                  - /url: /emails
+                  - button "Emails" [ref=e121]:
+                    - img [ref=e122]
+                  - generic [ref=e124]: Emails
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e125]:
+                - link "Reach Reach" [ref=e128] [cursor=pointer]:
+                  - /url: /email-marketing
+                  - button "Reach" [ref=e129]:
+                    - img [ref=e130]
+                  - generic [ref=e132]: Reach
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e133]:
+                - link "VPS VPS" [ref=e136] [cursor=pointer]:
+                  - /url: /vps
+                  - button "VPS" [ref=e137]:
+                    - img [ref=e138]
+                  - generic [ref=e140]: VPS
+              - generic:
+                - listitem:
+                  - list
+              - listitem [ref=e141]:
+                - button "Billing Billing" [ref=e144] [cursor=pointer]:
+                  - button "Billing" [ref=e145]:
+                    - img [ref=e146]
+                  - generic [ref=e148]: Billing
+              - listitem [ref=e149]:
+                - list [ref=e150]:
+                  - listitem [ref=e151]:
+                    - link "Subscriptions" [ref=e154] [cursor=pointer]:
+                      - /url: /billing/subscriptions
+                      - generic [ref=e155]: Subscriptions
+                  - listitem [ref=e156]:
+                    - link "Payment history" [ref=e159] [cursor=pointer]:
+                      - /url: /billing/payment-history/paid
+                      - generic [ref=e160]: Payment history
+                  - listitem [ref=e161]:
+                    - link "Payment methods" [ref=e164] [cursor=pointer]:
+                      - /url: /billing/payment-methods
+                      - generic [ref=e165]: Payment methods
+              - listitem [ref=e166]:
+                - button "More services More services" [ref=e169] [cursor=pointer]:
+                  - button "More services" [ref=e170]:
+                    - img [ref=e171]
+                  - generic [ref=e173]: More services
+              - listitem [ref=e174]:
+                - list [ref=e175]:
+                  - listitem [ref=e176]:
+                    - link "Marketplace" [ref=e179] [cursor=pointer]:
+                      - /url: /marketplace
+                      - generic [ref=e180]: Marketplace
+                  - listitem [ref=e181]:
+                    - link "AI tools" [ref=e184] [cursor=pointer]:
+                      - /url: /ai-tools
+                      - generic [ref=e185]: AI tools
+                  - listitem [ref=e186]:
+                    - link "Dark web monitor Dark web monitor" [ref=e189] [cursor=pointer]:
+                      - /url: /dark-web-monitor
+                      - button "Dark web monitor" [ref=e190]:
+                        - img [ref=e191]
+                      - generic [ref=e193]: Dark web monitor
+          - navigation [ref=e196]:
+            - list [ref=e197]:
+              - listitem [ref=e198]:
+                - link "Account sharing Account sharing" [ref=e201] [cursor=pointer]:
+                  - /url: /profile/account-access/account-sharing?amplitudeLocation=side_menu
+                  - button "Account sharing" [ref=e202]:
+                    - img [ref=e203]
+                  - generic [ref=e205]: Account sharing
+              - generic:
+                - listitem:
+                  - list
+        - complementary [ref=e208]:
+          - generic [ref=e210]:
+            - generic [ref=e217]:
+              - group "Select domain":
+                - generic:
+                  - generic: Select domain
+              - generic: Select domain
+              - generic [ref=e219] [cursor=pointer]:
+                - textbox [ref=e220]: macwifi.live
+                - img
+            - navigation [ref=e224]:
+              - list [ref=e225]:
+                - listitem [ref=e226]:
+                  - menuitem "Domain Overview" [ref=e229] [cursor=pointer]:
+                    - img [ref=e231]
+                    - generic [ref=e234]: Domain Overview
+                - generic:
+                  - listitem:
+                    - list
+                - listitem [ref=e235]:
+                  - menuitem "DNS / Nameservers" [active] [ref=e238] [cursor=pointer]:
+                    - img [ref=e240]
+                    - generic [ref=e243]: DNS / Nameservers
+                - generic:
+                  - listitem:
+                    - list
+                - listitem [ref=e244]:
+                  - menuitem "Domain Ownership" [ref=e247] [cursor=pointer]:
+                    - img [ref=e249]
+                    - generic [ref=e252]: Domain Ownership
+                - generic:
+                  - listitem:
+                    - list
+                - listitem [ref=e253]:
+                  - menuitem "Brand protection" [ref=e256] [cursor=pointer]:
+                    - img [ref=e258]
+                    - generic [ref=e261]: Brand protection
+                - generic:
+                  - listitem:
+                    - list
+            - listitem [ref=e264]:
+              - menuitem "Give feedback" [ref=e267] [cursor=pointer]:
+                - img [ref=e269]
+                - generic [ref=e272]: Give feedback
+      - generic [ref=e275]:
+        - generic [ref=e277]:
+          - heading "DNS / Nameservers" [level=2] [ref=e278]
+          - generic [ref=e279]:
+            - img [ref=e280] [cursor=pointer]
+            - generic [ref=e282]: "- Domain portfolio"
+            - generic [ref=e283]: "- macwifi.live"
+            - generic [ref=e284]: "- DNS / Nameservers"
+        - main [ref=e286]:
+          - generic [ref=e290]:
+            - list [ref=e292]:
+              - listitem [ref=e293]:
+                - generic [ref=e295] [cursor=pointer]: DNS records
+              - listitem [ref=e296]:
+                - generic [ref=e298] [cursor=pointer]: Child nameservers
+              - listitem [ref=e299]:
+                - generic [ref=e301] [cursor=pointer]: Redirects
+              - listitem [ref=e302]:
+                - generic [ref=e304] [cursor=pointer]: DNSSEC
+              - listitem [ref=e305]:
+                - generic [ref=e307] [cursor=pointer]: DNS history
+            - generic [ref=e310]:
+              - generic [ref=e311]:
+                - generic [ref=e312]:
+                  - img [ref=e315]
+                  - generic [ref=e317]:
+                    - generic [ref=e318]: Your domain will be online soon
+                    - generic [ref=e320]:
+                      - text: It can take anywhere from 15 minutes to 24 hours for domains to start working after DNS changes. Once this happens, your website will be accessible via
+                      - strong [ref=e321]: macwifi.live
+                      - text: .
+                - button "More details" [ref=e324] [cursor=pointer]:
+                  - generic [ref=e325]: More details
+              - region [ref=e326]:
+                - paragraph [ref=e327]: Nameservers
+                - paragraph [ref=e328]: Nameservers handle internet requests for your domain. You can use Hostinger nameservers or use custom nameservers to point to other hosting provider.
+                - generic [ref=e329]:
+                  - paragraph [ref=e330]: ns1.dns-parking.com
+                  - paragraph [ref=e331]: ns2.dns-parking.com
+                - button "Change Nameservers" [ref=e332] [cursor=pointer]:
+                  - generic [ref=e333]: Change Nameservers
+              - region [ref=e334]:
+                - paragraph [ref=e335]: Nameservers
+                - paragraph [ref=e336]: These records define how your domain behaves. Common uses include pointing your domain at web servers or configuring email delivery for your domain.
+                - generic [ref=e338]:
+                  - generic [ref=e341]:
+                    - group "Type":
+                      - generic:
+                        - generic: Type
+                    - generic: Type
+                    - generic [ref=e343] [cursor=pointer]:
+                      - textbox [ref=e344]: A
+                      - img
+                  - generic [ref=e347]:
+                    - group "Name":
+                      - generic:
+                        - generic: Name
+                    - generic: Name
+                    - textbox [ref=e351]: "@"
+                  - generic [ref=e354]:
+                    - group "Points to":
+                      - generic:
+                        - generic: Points to
+                    - generic: Points to
+                    - textbox [ref=e358]
+                  - generic [ref=e361]:
+                    - group "TTL":
+                      - generic:
+                        - generic: TTL
+                    - generic: TTL
+                    - spinbutton [ref=e365]: "14400"
+                  - button "Add Record" [ref=e367] [cursor=pointer]:
+                    - generic [ref=e368]: Add Record
+              - region [ref=e369]:
+                - table [ref=e373]:
+                  - rowgroup [ref=e374]:
+                    - row "Type Name Priority Content TTL" [ref=e375]:
+                      - columnheader "Type" [ref=e376] [cursor=pointer]: Type
+                      - columnheader "Name" [ref=e381] [cursor=pointer]: Name
+                      - columnheader "Priority" [ref=e386] [cursor=pointer]: Priority
+                      - columnheader "Content" [ref=e391] [cursor=pointer]: Content
+                      - columnheader "TTL" [ref=e396] [cursor=pointer]: TTL
+                      - columnheader [ref=e401]
+                  - rowgroup [ref=e402]:
+                    - row "CNAME www 0 macwifi.live 300 Delete Edit" [ref=e403]:
+                      - cell "CNAME" [ref=e404]
+                      - cell "www" [ref=e405]
+                      - cell "0" [ref=e406]
+                      - cell "macwifi.live" [ref=e407]
+                      - cell "300" [ref=e408]
+                      - cell "Delete Edit" [ref=e409]:
+                        - button "Delete" [ref=e410] [cursor=pointer]:
+                          - generic [ref=e411]: Delete
+                        - button "Edit" [ref=e412] [cursor=pointer]:
+                          - generic [ref=e413]: Edit
+                    - row "A @ 0 2.57.91.91 50 Delete Edit" [ref=e414]:
+                      - cell "A" [ref=e415]
+                      - cell "@" [ref=e416]
+                      - cell "0" [ref=e417]
+                      - cell "2.57.91.91" [ref=e418]
+                      - cell "50" [ref=e419]
+                      - cell "Delete Edit" [ref=e420]:
+                        - button "Delete" [ref=e421] [cursor=pointer]:
+                          - generic [ref=e422]: Delete
+                        - button "Edit" [ref=e423] [cursor=pointer]:
+                          - generic [ref=e424]: Edit
+              - region [ref=e425]:
+                - paragraph [ref=e426]: Reset DNS records
+                - paragraph [ref=e427]: This feature resets all existing DNS records of macwifi.live to default.
+                - button "Reset DNS records" [ref=e428] [cursor=pointer]:
+                  - generic [ref=e429]: Reset DNS records
+  - img

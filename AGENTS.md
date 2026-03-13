@@ -8,6 +8,7 @@
 - When developer mode is enabled, logs are written to:
   - `~/Library/Logs/MacWiFi/app.log`
   - `~/Library/Logs/MacWiFi/analytics.log`
+- When developer mode is enabled, license persistence uses `~/Library/Application Support/MacWiFi/license-state.json` instead of Keychain to avoid repeated SecurityAgent prompts during local debugging.
 - `analytics.log` can be disabled without disabling developer mode by setting one of these in `dev.txt`:
   - `analytics=off`
   - `ga4_logs=off`
@@ -16,6 +17,8 @@
 
 - Check the log files above first when diagnosing release or debug behavior.
 - The app should only auto-open the popover for completed results after a user has opened it before and it later collapsed.
+- For local app runs, always use `./scripts/build_macwifi.sh debug`. Do not manually copy `.build` binaries into `MacWiFi.app`, because that can strip the stable signature and cause repeated keychain prompts.
+- The debug app should remain signed as `com.kiranjd.macwifi` with team `MN4M99XHF7`. If keychain prompts start repeating again, verify the app bundle with `codesign -dv --verbose=4 MacWiFi.app`.
 
 ## UI Guardrails
 

@@ -74,6 +74,7 @@ By default, it uses fixed identities and skips keychain identity discovery to re
   - With that marker present, the app writes readable logs to `~/Library/Logs/MacWiFi/app.log`.
   - GA4 request/response duplication goes to `~/Library/Logs/MacWiFi/analytics.log`.
   - Add `analytics=off` to `dev.txt` if you want developer logs but do not want GA4 payload duplication.
+  - On developer machines, license state is stored in `~/Library/Application Support/MacWiFi/license-state.json` instead of Keychain to avoid repeated macOS SecurityAgent prompts during local debugging.
 - Permission issues:
   - `MacWiFi` needs Location access to read SSID names (Apple requirement for Wi-Fi scans).
   - Open `System Settings > Privacy & Security > Location Services` and allow `MacWiFi`.

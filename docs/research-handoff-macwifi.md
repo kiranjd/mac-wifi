@@ -9,7 +9,7 @@ Assume this reflects the product **as currently implemented** in repo.
 - Platform: **macOS menu bar app** (agent app, no dock presence)
 - Category: **Consumer/prosumer network quality diagnostics**
 - Core promise: **Explain internet quality in plain language, not raw stats**
-- Current version in app bundle metadata: **1.2.0**
+- Current version in app bundle metadata: **1.2.1**
 - Bundle ID: `com.kiranjd.macwifi`
 
 ## 2) What The App Does Today

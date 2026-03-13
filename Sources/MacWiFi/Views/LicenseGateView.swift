@@ -8,6 +8,7 @@ enum LicenseGateSurface {
 struct LicenseGateView: View {
     @ObservedObject var licenseManager: LemonSqueezyLicenseManager
     let surface: LicenseGateSurface
+    var showsBackground: Bool = true
 
     @State private var licenseKey = ""
     @State private var showDeactivateConfirmation = false
@@ -25,7 +26,6 @@ struct LicenseGateView: View {
                 lockedLayout
             }
         }
-        .background(backgroundLayer)
         .confirmationDialog(
             "Deactivate this Mac?",
             isPresented: $showDeactivateConfirmation,
@@ -40,6 +40,11 @@ struct LicenseGateView: View {
         }
         .task {
             await licenseManager.validate(forceRemote: false)
+        }
+        .background {
+            if showsBackground {
+                backgroundLayer
+            }
         }
         .onAppear {
             guard !licenseManager.isLicensed else { return }
@@ -74,7 +79,17 @@ struct LicenseGateView: View {
                     .onSubmit(activateLicense)
 
                 HStack(spacing: 10) {
-                    Button("Activate", action: activateLicense)
+                    Button(action: activateLicense) {
+                        HStack(spacing: 7) {
+                            if licenseManager.isWorking {
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .scaleEffect(0.8)
+                            }
+                            Text(licenseManager.isWorking ? "Activating…" : "Activate")
+                        }
+                        .frame(minWidth: 104)
+                    }
                         .buttonStyle(.borderedProminent)
                         .keyboardShortcut(.defaultAction)
                         .disabled(isActivateDisabled)
@@ -82,11 +97,7 @@ struct LicenseGateView: View {
                     Button("Buy") {
                         licenseManager.openCheckout(source: isPopover ? "license_popover" : "license_settings")
                     }
-                }
-
-                if licenseManager.isWorking {
-                    ProgressView("Activating MacWiFi…")
-                        .controlSize(.small)
+                    .disabled(licenseManager.isWorking)
                 }
 
                 if let errorMessage = licenseManager.errorMessage, !errorMessage.isEmpty {
@@ -99,19 +110,13 @@ struct LicenseGateView: View {
     }
 
     private var licensedLayout: some View {
-        ScrollView(showsIndicators: !isPopover) {
-            VStack(alignment: .leading, spacing: 18) {
-                heroCard
-                activationCard
-                supportCard
-
-                if !isPopover {
-                    aboutCard
-                }
-            }
-            .padding(isPopover ? 18 : 24)
+        VStack(alignment: .leading, spacing: 14) {
+            heroCard
+            activationCard
+            supportCard
         }
-        .frame(width: isPopover ? 420 : 620, height: isPopover ? 540 : 520)
+        .padding(isPopover ? 16 : 24)
+        .frame(width: isPopover ? 420 : 620, height: isPopover ? 300 : 360, alignment: .topLeading)
     }
 
     private var backgroundLayer: some View {
@@ -142,31 +147,59 @@ struct LicenseGateView: View {
     }
 
     private var heroCard: some View {
-        HStack(alignment: .top, spacing: 16) {
-            appIcon
+        HStack(spacing: 14) {
+            licensedHeroIcon
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("MacWiFi is activated on this Mac.")
-                    .font(.system(size: isPopover ? 24 : 28, weight: .semibold, design: .rounded))
+            VStack(alignment: .leading, spacing: 4) {
+                Text("License active")
+                    .font(.system(size: isPopover ? 21 : 24, weight: .semibold, design: .rounded))
                     .foregroundStyle(.primary)
 
-                Text(heroDescription)
-                    .font(.system(size: 13))
+                Text("This Mac is activated.")
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppPalette.textMuted)
-
-                HStack(spacing: 8) {
-                    LicenseBenefitPill(title: "One-time purchase")
-                    LicenseBenefitPill(title: "Per-Mac activation")
-                    LicenseBenefitPill(title: "Direct email key")
-                }
             }
+
+            Spacer(minLength: 0)
         }
-        .padding(20)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(AppPalette.borderSoft.opacity(0.75), lineWidth: 1)
         )
+    }
+
+    private var licensedHeroIcon: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Group {
+                if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
+                   let nsImage = NSImage(contentsOf: url) {
+                    Image(nsImage: nsImage)
+                        .resizable()
+                } else {
+                    Image(systemName: "wifi")
+                        .resizable()
+                        .scaledToFit()
+                        .padding(12)
+                        .foregroundStyle(AppPalette.accentStrong)
+                        .background(AppPalette.accentFaint)
+                }
+            }
+            .frame(width: 54, height: 54)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(AppPalette.borderSoft.opacity(0.45), lineWidth: 1)
+            )
+
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Color(nsColor: .systemGreen))
+                .background(Color(nsColor: .windowBackgroundColor), in: Circle())
+                .offset(x: 4, y: 4)
+        }
     }
 
     private var appIcon: some View {
@@ -203,35 +236,20 @@ struct LicenseGateView: View {
     }
 
     private var activationCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 16) {
-                if let state = licenseManager.state, state.isLicensed {
-                    licensedStateSection(state)
-                } else {
-                    lockedStateSection
-                }
+        Group {
+            if let state = licenseManager.state, state.isLicensed {
+                licensedStateSection(state)
+            } else {
+                lockedStateSection
             }
-            .padding(2)
-        } label: {
-            Label(
-                licenseManager.isLicensed ? "License Status" : "Activate License",
-                systemImage: licenseManager.isLicensed ? "checkmark.shield" : "key.horizontal"
-            )
-            .font(.system(size: 13, weight: .semibold))
         }
-        .groupBoxStyle(.automatic)
     }
 
     @ViewBuilder
     private func licensedStateSection(_ state: LemonSqueezyLicenseManager.LicenseState) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             statusRow(title: "Status", value: "Active on this Mac")
             statusRow(title: "License Key", value: state.maskedKey)
-            statusRow(title: "Last Validation", value: formattedValidationDate(state.lastValidatedAt))
-
-            if let expiresAt = state.expiresAt {
-                statusRow(title: "Expires", value: formattedDate(expiresAt))
-            }
 
             if licenseManager.isWorking {
                 ProgressView("Contacting the license server…")
@@ -242,17 +260,20 @@ struct LicenseGateView: View {
                 errorBanner(errorMessage)
             }
 
-            HStack(spacing: 10) {
-                Button("Validate Now") {
-                    Task { await licenseManager.validate(forceRemote: true) }
-                }
-                .keyboardShortcut("r", modifiers: [.command])
-
+            HStack {
+                Spacer()
                 Button("Deactivate This Mac", role: .destructive) {
                     showDeactivateConfirmation = true
                 }
             }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(AppPalette.borderSoft.opacity(0.55), lineWidth: 1)
+        )
     }
 
     private var lockedStateSection: some View {
@@ -296,49 +317,26 @@ struct LicenseGateView: View {
     }
 
     private var supportCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Need a key, a receipt, or help with activation?")
-                    .font(.system(size: 13))
-                    .foregroundStyle(AppPalette.textMuted)
+        HStack {
+            Spacer()
 
-                HStack(spacing: 10) {
-                    Link("Activation Guide", destination: URL(string: "https://macwifi.live/help/activate-license")!)
-                    Link("Email Support", destination: URL(string: "mailto:support@macwifi.live")!)
+            Link(destination: URL(string: "https://macwifi.live/help/activate-license")!) {
+                HStack(spacing: 6) {
+                    Text("Need help with activation?")
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 10, weight: .semibold))
                 }
+                .font(.system(size: 12, weight: .medium))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.thinMaterial, in: Capsule())
             }
-            .padding(2)
-        } label: {
-            Label("Support", systemImage: "questionmark.circle")
-                .font(.system(size: 13, weight: .semibold))
         }
-    }
-
-    private var aboutCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 8) {
-                statusRow(title: "Version", value: appVersion)
-                Text("MacWiFi is a native menu bar utility for diagnosing whether the problem is your Wi-Fi, your router, or the path beyond it.")
-                    .font(.system(size: 13))
-                    .foregroundStyle(AppPalette.textMuted)
-            }
-            .padding(2)
-        } label: {
-            Label("About", systemImage: "info.circle")
-                .font(.system(size: 13, weight: .semibold))
-        }
+        .foregroundStyle(AppPalette.accentStrong)
     }
 
     private var isActivateDisabled: Bool {
         licenseManager.isWorking || licenseKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    private var heroDescription: String {
-        "Your license is active, validated locally on this Mac, and ready for background checks, network scans, and diagnostics."
-    }
-
-    private var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
     }
 
     private func activateLicense() {
@@ -385,33 +383,5 @@ struct LicenseGateView: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
-
-    private func formattedValidationDate(_ date: Date?) -> String {
-        guard let date else { return "Never" }
-
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
-
-    private func formattedDate(_ date: Date) -> String {
-        date.formatted(date: .abbreviated, time: .omitted)
-    }
-}
-
-private struct LicenseBenefitPill: View {
-    let title: String
-
-    var body: some View {
-        Text(title)
-            .font(.system(size: 11, weight: .medium))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(AppPalette.accentFaint, in: Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(AppPalette.borderSoft.opacity(0.45), lineWidth: 1)
-            )
     }
 }

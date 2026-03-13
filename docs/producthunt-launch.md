@@ -6,7 +6,7 @@
 - Website: `https://macwifi.live`
 - Checkout URL: `https://kiranjd8.lemonsqueezy.com/checkout/buy/dc36a9dc-bba2-46af-9426-f1c41120c477`
 - Download URL: `https://github.com/kiranjd/mac-wifi/releases/latest`
-- Current release: `v1.2.0`
+- Current release: `v1.2.1`
 - Platform: `macOS`
 - Price: `$9.99 one-time`
 - Product Hunt draft: `https://www.producthunt.com/products/macwifi?launch=macwifi`

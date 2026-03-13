@@ -1,4 +1,4 @@
-import { ShoppingCart, CheckCircle2, Wifi, Zap, Layout } from 'lucide-react'
+import { ShoppingCart, CheckCircle2, Wifi, Zap, Layout, Video, Router, Globe } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import CheckoutButton from '../components/CheckoutButton'
 import { PRICE } from '../config/commerce'
@@ -104,15 +104,33 @@ const practicalUses = [
   {
     icon: <Wifi className="h-6 w-6 text-emerald-500" />,
     eyebrow: 'Clarity',
-    title: 'Wi-Fi or ISP problem?',
-    copy: 'Separate shaky local Wi-Fi from upstream outages. Know exactly who to blame (and what to fix).',
+    title: 'Know who to blame.',
+    copy: 'Instantly tell if your Wi-Fi is shaky or if your ISP is having an outage. No more guessing.',
   },
   {
     icon: <Layout className="h-6 w-6 text-amber-500" />,
     eyebrow: 'Simplicity',
-    title: 'Answers, not numbers.',
-    copy: 'No more deciphering dBm or latency spikes. Just clear, plain-English advice on your connection.',
+    title: 'Plain-English answers.',
+    copy: 'Forget deciphering jitter or packet loss. Get clear advice on whether you are ready to join.',
   },
+]
+
+const useCases = [
+  {
+    title: 'Before the big meeting',
+    copy: 'Run a 10-second check before you join a call. Avoid the embarrassment of freezing mid-sentence.',
+    icon: '🎯'
+  },
+  {
+    title: 'Finding the best spot',
+    copy: 'Walk around your house to find where your signal actually stays stable, not just where the "bars" are full.',
+    icon: '🏠'
+  },
+  {
+    title: 'Troubleshooting outages',
+    copy: 'Know exactly when to restart your own router versus when it is time to call your ISP.',
+    icon: '🛠️'
+  }
 ]
 
 const productSections = [
@@ -267,9 +285,6 @@ export default function HomePage() {
                   }`}
                 >
                   <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
-                    <div className={`inline-block px-4 py-1 rounded-full ${item.accent} text-indigo-700 font-bold text-sm mb-6`}>
-                      Step {index + 1}
-                    </div>
                     <h2 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-slate-900 mb-8">
                       {item.title}
                     </h2>
@@ -277,14 +292,14 @@ export default function HomePage() {
                       {item.copy}
                     </p>
                     <div className="mt-10 space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="mt-1 rounded-full bg-emerald-100 p-1">
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-full bg-emerald-100 p-1">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                         </div>
                         <p className="font-medium text-slate-700">Instant visual feedback</p>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="mt-1 rounded-full bg-emerald-100 p-1">
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-full bg-emerald-100 p-1">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                         </div>
                         <p className="font-medium text-slate-700">Native macOS performance</p>
@@ -304,6 +319,73 @@ export default function HomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className={`${section} bg-indigo-900 text-white overflow-hidden`}>
+          <div className={`${shell} relative`}>
+            <div className="absolute top-0 right-0 w-[40%] h-[100%] bg-indigo-800 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 opacity-50" />
+            
+            <div className="relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+              <div>
+                <h2 className="text-4xl lg:text-7xl font-extrabold tracking-tight mb-8 text-white">
+                  Built for your <br />remote work day.
+                </h2>
+                <p className="text-xl text-indigo-100 mb-12 max-w-lg">
+                  MacWiFi is not just a tool—it is your insurance against internet anxiety. Here is how our users use it every day.
+                </p>
+                
+                <div className="space-y-8">
+                  {useCases.map((use) => (
+                    <div key={use.title} className="flex gap-6 group">
+                      <div className="text-4xl shrink-0 group-hover:scale-110 transition duration-300">{use.icon}</div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-2 text-white">{use.title}</h3>
+                        <p className="text-indigo-100/80 leading-relaxed">{use.copy}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="absolute -inset-10 bg-indigo-500 rounded-full opacity-10 blur-[100px]" />
+                <div className="relative bg-white/5 backdrop-blur-2xl rounded-[48px] p-8 lg:p-12 border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
+                   <div className="space-y-6">
+                      <div className="flex items-center gap-6 p-6 rounded-[28px] bg-white/5 border border-white/10 hover:bg-white/10 transition group">
+                        <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                          <Video className="h-7 w-7" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-white">Zoom Call Quality: 10/10</p>
+                          <p className="text-sm text-indigo-200/60">Ready for your 2PM presentation</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-6 p-6 rounded-[28px] bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                        <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                          <Router className="h-7 w-7" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-white">Local Network: 2ms Delay</p>
+                          <p className="text-sm text-indigo-200/60">Your router is performing perfectly</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-6 p-6 rounded-[28px] bg-white/5 border border-white/10 hover:bg-white/10 transition opacity-80">
+                        <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                          <Globe className="h-7 w-7" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-white">ISP Outage Detected</p>
+                          <p className="text-sm text-indigo-200/60">Minor packet loss at the local exchange</p>
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

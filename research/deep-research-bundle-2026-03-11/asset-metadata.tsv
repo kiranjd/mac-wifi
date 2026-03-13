@@ -1,0 +1,38 @@
+bundle_path	type	width	height	duration_seconds	bytes
+assets/01-canonical-product-shots/advanced-info.png	image	740	916		836792
+assets/01-canonical-product-shots/dns-response.png	image	756	1000		904005
+assets/01-canonical-product-shots/gallery-01-overview.jpg	image	880	1080		63242
+assets/01-canonical-product-shots/gallery-02-diagnostics.jpg	image	880	1080		57970
+assets/01-canonical-product-shots/wi-fi-main-status.png	image	734	1258		1037150
+assets/02-demo-videos/macwifi-demo-readme.mp4	video	880	1080	12.816667	10642807
+assets/02-demo-videos/macwifi-demo-social.mp4	video	880	1080	12.816667	10642807
+assets/02-demo-videos/macwifi-demo.mp4	video	880	1080	12.816000	10642815
+assets/03-social-exports/cap-audio-replaced.mp4	video	1008	1080	25.900011	15473905
+assets/03-social-exports/cap-base.mp4	video	1008	1080	25.933000	15544812
+assets/03-social-exports/linkedin-1080x1350-cover8s.mp4	video	1080	1350	26.700000	10497397
+assets/03-social-exports/linkedin-1080x1350.mp4	video	1080	1350	25.933333	11069562
+assets/03-social-exports/social-1080x1080-vol80.mp4	video	1080	1080	25.933333	9339804
+assets/03-social-exports/social-1080x1080.mp4	video	1080	1080	25.933333	9348056
+assets/03-social-exports/social-1080x1920-vol80.mp4	video	1080	1920	25.933333	9729654
+assets/03-social-exports/social-1080x1920.mp4	video	1080	1920	25.933333	9737906
+assets/04-brand-and-icons/icon-1024.png	image	1024	1024		1285453
+assets/04-brand-and-icons/iconset/icon_128x128.png	image	128	128		22518
+assets/04-brand-and-icons/iconset/icon_128x128@2x.png	image	256	256		77211
+assets/04-brand-and-icons/iconset/icon_16x16.png	image	16	16		782
+assets/04-brand-and-icons/iconset/icon_16x16@2x.png	image	32	32		2147
+assets/04-brand-and-icons/iconset/icon_256x256.png	image	256	256		77211
+assets/04-brand-and-icons/iconset/icon_256x256@2x.png	image	512	512		301660
+assets/04-brand-and-icons/iconset/icon_32x32.png	image	32	32		2147
+assets/04-brand-and-icons/iconset/icon_32x32@2x.png	image	64	64		6723
+assets/04-brand-and-icons/iconset/icon_512x512.png	image	512	512		301660
+assets/04-brand-and-icons/iconset/icon_512x512@2x.png	image	1024	1024		1285453
+assets/04-brand-and-icons/social-card.png	image	1200	630		465092
+assets/05-website-mockups/macwifi-desktop-final-top.png	image	1440	1200		1083843
+assets/05-website-mockups/macwifi-home-local.png	image	1185	6866		1096964
+assets/05-website-mockups/macwifi-mobile-final-top.png	image	390	844		243415
+assets/05-website-mockups/macwifi-mobile-top.png	image	390	844		245363
+assets/05-website-mockups/macwifi-viewport-home-top.png	image	1440	1200		1074910
+assets/05-website-mockups/macwifi-viewport-top.png	image	1440	1200		752119
+assets/06-misc-unreferenced/What you do today matters most.mp4	video				0
+assets/06-misc-unreferenced/apk-installer.png	image	1024	1024		869530
+assets/06-misc-unreferenced/image.png	image	1024	1024		170725
